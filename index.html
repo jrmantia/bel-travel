@@ -1010,7 +1010,8 @@ window.__reapplyStoredCustomizations = function applyStoredCustomizations() {
       if (vehNotes[vc.Cluster_ID] !== undefined) vc.Coach_Note = vehNotes[vc.Cluster_ID];
     }
   } catch (e) { console.warn(e); }
-})();
+};
+window.__reapplyStoredCustomizations();
 
 let vehicleSubFilter = 'upcoming'; // 'upcoming' | 'warnings' | 'confirmed' | 'all_with_past'
 let vehicleTravelerFilter = '';
@@ -1201,12 +1202,13 @@ function matchesQuery(rowObjOrArr, q, phase) {
 }
 
 function renderActive() {
+  if (!DATA.personMatrix || !DATA.personMatrix.length) return;
   updateGlobalStats();
   const q = document.getElementById('searchBox').value.trim().toLowerCase();
   const phase = document.getElementById('phaseFilter').value;
 
   if (currentTab === 'matrix') {
-    const cols = Object.keys(DATA.personMatrix[0]);
+    const cols = Object.keys(DATA.personMatrix[0] || {});
     let html = '<div class="table-wrap"><table><thead><tr>';
     for (const c of cols) html += `<th>${esc(c)}</th>`;
     html += '</tr></thead><tbody>';

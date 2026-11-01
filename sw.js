@@ -1,4 +1,4 @@
-const CACHE_NAME = 'team-bel-travel-v1';
+const CACHE_NAME = 'team-bel-travel-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -25,7 +25,7 @@ self.addEventListener('activate', (e) => {
 
 self.addEventListener('fetch', (e) => {
   e.respondWith(
-    fetch(e.request)
+    fetch(e.request, { cache: 'no-store' })
       .then((res) => {
         const clone = res.clone();
         caches.open(CACHE_NAME).then((c) => c.put(e.request, clone));
