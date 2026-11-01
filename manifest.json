@@ -1,14 +1,14 @@
 {
-  "id": "/team-belgium-travel/",
-  "name": "Team Belgium Short Track Travel",
+  "id": "/team-belgium-travel/app",
+  "name": "Team Belgium Travel",
   "short_name": "BEL Travel",
   "description": "Team Belgium Short Track 2026/27 Flights, Tickets by Vehicle, Hotels, and Checklist.",
-  "start_url": "./index.html?tab=vehicles",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "orientation": "any",
+  "orientation": "portrait",
   "background_color": "#f8fafc",
-  "theme_color": "#0f172a",
+  "theme_color": "#ffffff",
   "icons": [
     {
       "src": "travel-icon-192.png",
