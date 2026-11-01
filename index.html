@@ -1,0 +1,2162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-Title" content="BEL Travel">
+<link rel="manifest" href="manifest.json?v=1">
+<link rel="icon" type="image/png" sizes="192x192" href="travel-icon-192.png">
+<link rel="apple-touch-icon" href="travel-icon-192.png">
+<title>Team Belgium Short Track — 2026 Travel &amp; Deadlines Tracker</title>
+<style>
+  :root {
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --border-subtle: #f1f5f9;
+    --text: #0f172a;
+    --text-secondary: #334155;
+    --muted: #64748b;
+    --primary: #0f172a;
+    --primary-light: #f1f5f9;
+    --accent: #dc2626;
+    --green-bg: #ecfdf5;
+    --green-text: #065f46;
+    --green-border: #a7f3d0;
+    --amber-bg: #fffbeb;
+    --amber-text: #92400e;
+    --amber-border: #fde68a;
+    --red-bg: #fef2f2;
+    --red-text: #991b1b;
+    --red-border: #fecaca;
+    --blue-bg: #f1f5f9;
+    --blue-text: #0f172a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 13.5px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  header {
+    background: #0f172a;
+    color: #f8fafc;
+    padding: 14px 24px;
+    border-bottom: 1px solid #1e293b;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  header h1 {
+    margin: 0;
+    font-size: 16.5px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+    color: #f8fafc;
+  }
+  header p {
+    margin: 2px 0 0;
+    color: #94a3b8;
+    font-size: 12px;
+  }
+  .stats-row {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .stat-pill {
+    background: transparent;
+    border: none;
+    border-left: 1px solid rgba(255,255,255,0.12);
+    padding: 2px 0 2px 18px;
+    border-radius: 0;
+    text-align: left;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .stat-pill:first-child { border-left: none; padding-left: 0; }
+  .stat-pill .num {
+    font-size: 15px;
+    font-weight: 600;
+    color: #f8fafc;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-pill .lbl {
+    font-size: 11.5px;
+    color: #94a3b8;
+  }
+  .controls {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    padding: 10px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .tabs {
+    display: inline-flex;
+    gap: 2px;
+    flex-wrap: wrap;
+    background: #f1f5f9;
+    padding: 3px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+  }
+  .tab-btn, .tab-btn-vehicles, .tab-btn-urgent {
+    border: none;
+    background: transparent;
+    color: #475569;
+    padding: 6px 11px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 12.5px;
+    transition: all 0.12s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .tab-btn:hover, .tab-btn-vehicles:hover, .tab-btn-urgent:hover {
+    color: #0f172a;
+    background: rgba(255,255,255,0.55);
+  }
+  .tab-btn.active, .tab-btn-vehicles.active, .tab-btn-urgent.active {
+    background: #ffffff;
+    color: #0f172a;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+  }
+  .tab-count {
+    font-size: 11px;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: #e2e8f0;
+    color: #475569;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .tab-btn.active .tab-count {
+    background: #f1f5f9;
+    color: #0f172a;
+  }
+  .tab-count.warn {
+    background: #fef3c7;
+    color: #92400e;
+  }
+  .tab-count.crit {
+    background: #fee2e2;
+    color: #991b1b;
+  }
+  .filters {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  input[type="search"], select {
+    padding: 6px 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 12.5px;
+    color: #0f172a;
+    background: #ffffff;
+    min-width: 185px;
+  }
+  input[type="search"]:focus, select:focus {
+    outline: none;
+    border-color: #64748b;
+  }
+  main {
+    padding: 18px 24px 48px;
+    max-width: 1560px;
+    margin: 0 auto;
+  }
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow-x: auto;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.03);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+  }
+  th {
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 9px 12px;
+    border-bottom: 1px solid #cbd5e1;
+    white-space: nowrap;
+    position: sticky;
+    top: 0;
+  }
+  td {
+    padding: 9px 12px;
+    border-bottom: 1px solid var(--border-subtle);
+    vertical-align: top;
+    font-size: 13px;
+    color: #1e293b;
+  }
+  tr:nth-child(even) td { background: transparent; }
+  tr:hover td { background: #f8fafc; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-size: 11.5px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .badge-pnr {
+    background: #f1f5f9;
+    color: #0f172a;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11.5px;
+    font-weight: 600;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 1px 6px;
+  }
+  .badge-ok { background: var(--green-bg); color: var(--green-text); border: 1px solid var(--green-border); }
+  .badge-warn { background: var(--amber-bg); color: var(--amber-text); border: 1px solid var(--amber-border); }
+  .badge-crit { background: var(--red-bg); color: var(--red-text); border: 1px solid var(--red-border); }
+  .badge-muted { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; font-weight: 500; }
+  .mono {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+  }
+  .todo-header-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .todo-tier-banner {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding: 8px 14px;
+    border-radius: 8px;
+    margin: 20px 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #f8fafc;
+    color: #334155;
+    border: 1px solid #e2e8f0;
+    border-left: 4px solid #64748b;
+  }
+  .tier-1 { border-left-color: #ef4444; color: #991b1b; background: #fffafb; }
+  .tier-2 { border-left-color: #f59e0b; color: #92400e; background: #fffdf7; }
+  .tier-3 { border-left-color: #eab308; color: #854d0e; }
+  .tier-4 { border-left-color: #3b82f6; color: #1e40af; }
+  .tier-5 { border-left-color: #64748b; color: #475569; }
+  .tier-complete { border-left-color: #10b981 !important; color: #065f46 !important; background: #f8fdfa !important; }
+  .todo-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    transition: border-color 0.12s;
+  }
+  .todo-item:hover { border-color: #cbd5e1; }
+  .todo-item.done { opacity: 0.55; background: #f8fafc; }
+  .todo-item.done .todo-title { text-decoration: line-through; color: #64748b; }
+  .todo-rank {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    font-weight: 600;
+    font-size: 11.5px;
+    min-width: 34px;
+    height: 24px;
+    border-radius: 5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .todo-rank.rank-top { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+  .todo-cb {
+    width: 17px;
+    height: 17px;
+    margin-top: 3px;
+    cursor: pointer;
+    accent-color: #0f172a;
+  }
+  .todo-body { flex: 1; }
+  .todo-top-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .todo-title { font-size: 14px; font-weight: 600; color: var(--text); }
+  .todo-meta { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .todo-steps { font-size: 12.5px; color: #475569; margin: 4px 0 0; line-height: 1.5; }
+  .todo-actions-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #f1f5f9;
+  }
+  .action-link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 5px;
+    font-size: 11.5px;
+    font-weight: 500;
+    text-decoration: none;
+    background: #ffffff;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    transition: all 0.12s;
+  }
+  .action-link-btn:hover { background: #f8fafc; border-color: #94a3b8; color: #0f172a; }
+  .action-link-btn.kind-email {
+    background: #0f172a;
+    color: #ffffff;
+    border-color: #0f172a;
+  }
+  .action-link-btn.kind-email:hover { background: #1e293b; }
+  .action-link-btn.kind-reply {
+    background: #ffffff;
+    color: #0f172a;
+    border-color: #94a3b8;
+    font-weight: 600;
+  }
+  .action-link-btn.kind-reply:hover { background: #f1f5f9; }
+  .email-id-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: #f8fafc;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    font-size: 11px;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .email-id-pill:hover { background: #f1f5f9; color: #0f172a; border-color: #94a3b8; }
+  .progress-wrap {
+    width: 100%;
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .progress-fill {
+    height: 100%;
+    background: #10b981;
+    transition: width 0.25s ease;
+  }
+  .coach-note-box {
+    margin-top: 6px;
+    padding: 6px 10px;
+    background: #fffbeb;
+    border-left: 3px solid #f59e0b;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #78350f;
+  }
+  .edit-panel {
+    margin-top: 10px;
+    padding: 12px;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 8px;
+  }
+  .edit-panel label { font-size: 11px; font-weight: 600; color: #475569; display: block; margin-bottom: 3px; text-transform: uppercase; }
+  .edit-panel input, .edit-panel select, .edit-panel textarea {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 5px;
+    font-size: 12.5px;
+    font-family: inherit;
+  }
+  td[contenteditable="true"] {
+    outline: 1px dashed #64748b;
+    background: #f8fafc !important;
+    cursor: text;
+  }
+  td[contenteditable="true"]:focus {
+    outline: 2px solid #0f172a;
+    background: #ffffff !important;
+  }
+  tr.row-done td {
+    opacity: 0.55;
+    background: #f8fafc !important;
+  }
+  .btn-edit-mode, .btn-save-html, .btn-print, .btn-print-secondary {
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #334155;
+    padding: 6px 11px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 12.5px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.12s;
+  }
+  .btn-edit-mode:hover, .btn-save-html:hover, .btn-print:hover, .btn-print-secondary:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+    color: #0f172a;
+  }
+  .btn-edit-mode.active {
+    background: #fffbeb;
+    color: #b45309;
+    border-color: #f59e0b;
+    font-weight: 600;
+  }
+  /* Calm Apple Flighty / Linear Vehicle Cards */
+  .vehicle-filter-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .v-subfilter-group {
+    display: inline-flex;
+    background: #f1f5f9;
+    padding: 3px;
+    border-radius: 7px;
+    border: 1px solid #e2e8f0;
+    gap: 2px;
+    flex-wrap: wrap;
+  }
+  .v-subfilter-btn {
+    border: none;
+    background: transparent;
+    color: #475569;
+    padding: 5px 11px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.12s;
+  }
+  .v-subfilter-btn:hover { color: #0f172a; }
+  .v-subfilter-btn.active {
+    background: #ffffff;
+    color: #0f172a;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.06);
+  }
+  .vehicle-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid #10b981;
+    border-radius: 10px;
+    margin-bottom: 14px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.03);
+  }
+  .vehicle-card.health-CONFIRMED { border-left-color: #10b981; }
+  .vehicle-card.health-WARNING_PENDING { border-left-color: #f59e0b; }
+  .vehicle-card.health-CRITICAL_UNBOOKED { border-left-color: #ef4444; }
+  .vehicle-card.health-COMPLETED {
+    border-left-color: #94a3b8;
+    opacity: 0.86;
+  }
+  .vehicle-card-header {
+    padding: 14px 18px;
+    background: #ffffff;
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
+  .v-primary-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+  .v-date-text {
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a;
+    letter-spacing: -0.2px;
+  }
+  .v-countdown-badge {
+    background: #f1f5f9;
+    color: #475569;
+    font-weight: 600;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+  .v-countdown-badge.urgent {
+    background: #fef2f2;
+    color: #b91c1c;
+    border: 1px solid #fecaca;
+  }
+  .v-countdown-badge.soon {
+    background: #fffbeb;
+    color: #b45309;
+    border: 1px solid #fde68a;
+  }
+  .v-sep { color: #cbd5e1; }
+  .v-time-text {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #0f172a;
+    font-variant-numeric: tabular-nums;
+  }
+  .v-route-text {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: #0f172a;
+  }
+  .v-flight-chip {
+    background: #f1f5f9;
+    color: #0f172a;
+    border: 1px solid #e2e8f0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 5px;
+  }
+  .v-subtitle-line {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #64748b;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+  .v-pnr-box {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+  .pnr-copy-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    color: #0f172a;
+    padding: 4px 9px;
+    border-radius: 6px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .pnr-copy-pill:hover { background: #f1f5f9; border-color: #94a3b8; }
+  .tkt-copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: #0f172a;
+    padding: 2px 6px;
+    margin-left: -6px;
+    border-radius: 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+    cursor: pointer;
+  }
+  .tkt-copy-btn:hover { background: #f1f5f9; border-color: #cbd5e1; }
+  details.vehicle-details {
+    border-bottom: 1px solid var(--border-subtle);
+    background: #fcfcfd;
+  }
+  details.vehicle-details.warn-pending { background: #fffdf7; }
+  details.vehicle-details.warn-unbooked { background: #fffafa; }
+  details.vehicle-details summary {
+    padding: 8px 18px;
+    font-size: 12.5px;
+    color: #334155;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    user-select: none;
+  }
+  details.vehicle-details summary::-webkit-details-marker { display: none; }
+  details.vehicle-details summary:hover { background: rgba(15,23,42,0.02); }
+  .v-details-body {
+    padding: 6px 18px 12px;
+    font-size: 12.5px;
+    color: #475569;
+    border-top: 1px dashed #e2e8f0;
+  }
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  .status-dot.amber { background: #f59e0b; }
+  .status-dot.red { background: #ef4444; }
+  .status-dot.blue { background: #64748b; }
+  .vehicle-card table th {
+    background: #fafafa;
+    color: #64748b;
+    font-size: 10.5px;
+    padding: 7px 14px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .vehicle-card table td {
+    padding: 7px 14px;
+    font-size: 12.5px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .vehicle-card table tr:last-child td { border-bottom: none; }
+  tr.pax-highlight td {
+    background: #fefce8 !important;
+  }
+  tr.pax-highlight td:first-child {
+    border-left: 3px solid #eab308;
+  }
+  .print-banner {
+    display: none;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-left: 4px solid #0f172a;
+    padding: 8px 14px;
+    margin-bottom: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #0f172a;
+  }
+  .hidden { display: none !important; }
+  /* Security Lock Screen (PIN + Biometric WebAuthn) */
+  .lock-screen {
+    position: fixed;
+    inset: 0;
+    background: #ffffff;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 20px;
+  }
+  .lock-screen.hidden { display: none !important; }
+  .lock-logo {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: #0f172a;
+    border: 2px solid #eab308;
+    color: #f8fafc;
+    font-weight: 800;
+    font-size: 16px;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
+    margin-bottom: 16px;
+  }
+  .lock-title { font-size: 20px; font-weight: 700; color: #0f172a; margin: 0 0 6px; text-align: center; }
+  .lock-sub { font-size: 13px; color: #64748b; margin: 0 0 24px; text-align: center; max-width: 300px; line-height: 1.4; }
+  .pin-dots { display: flex; gap: 16px; margin-bottom: 28px; }
+  .pin-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid #cbd5e1;
+    background: transparent;
+    transition: all 0.15s ease;
+  }
+  .pin-dot.filled { background: #0f172a; border-color: #0f172a; transform: scale(1.08); }
+  .pin-dot.error { background: #ef4444; border-color: #ef4444; }
+  .keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 76px);
+    gap: 14px;
+    justify-content: center;
+  }
+  .key-btn {
+    width: 76px;
+    height: 64px;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    color: #0f172a;
+    font-size: 22px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.1s ease, transform 0.08s ease;
+  }
+  .key-btn:active { background: #e2e8f0; transform: scale(0.96); }
+  .key-btn.key-sub { font-size: 12px; font-weight: 700; color: #64748b; }
+  .key-btn.key-bio { font-size: 12px; font-weight: 700; color: #0f172a; border-color: #cbd5e1; background: #f1f5f9; }
+  .hdr-action-btn {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: #f8fafc;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .hdr-action-btn:hover { background: rgba(255,255,255,0.16); }
+  @media (max-width: 768px) {
+    header { padding: 12px 14px; gap: 10px; }
+    header h1 { font-size: 15px; }
+    header p { font-size: 11px; }
+    .stats-row {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      padding-top: 6px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    .stat-pill { border-left: none; padding-left: 0; }
+    .controls { padding: 8px 12px; gap: 8px; }
+    .tabs {
+      width: 100%;
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab-btn, .tab-btn-vehicles, .tab-btn-urgent { white-space: nowrap; flex-shrink: 0; padding: 6px 10px; font-size: 12px; }
+    .filters { width: 100%; }
+    .filters select, .filters input[type="search"] { flex: 1; min-width: 130px; }
+    main { padding: 12px 10px 40px; }
+    .vehicle-card-header { padding: 12px 14px; gap: 10px; }
+    .v-pnr-box { width: 100%; justify-content: flex-start; }
+  }
+  @media print {
+    @page { size: landscape; margin: 7mm; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: #ffffff !important; font-size: 10px !important; }
+    header { padding: 10px 16px !important; border-bottom-width: 1px !important; }
+    header h1 { font-size: 15px !important; }
+    header p { font-size: 10.5px !important; }
+    .controls, .no-print { display: none !important; }
+    .print-banner { display: block !important; }
+    main { padding: 8px 0 0 0 !important; max-width: 100% !important; }
+    .table-wrap { overflow: visible !important; border: none !important; box-shadow: none !important; }
+    table { width: 100% !important; table-layout: auto !important; font-size: 9.5px !important; }
+    th { position: static !important; padding: 5px 6px !important; font-size: 8.5px !important; white-space: normal !important; }
+    td { padding: 4px 6px !important; font-size: 9.5px !important; word-break: break-word !important; }
+    tr, .todo-item, .vehicle-card { break-inside: avoid; page-break-inside: avoid; }
+    thead { display: table-header-group; }
+    body.print-all-mode .view-section { display: block !important; page-break-after: always; margin-bottom: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Security Lock Screen (PIN + Biometric WebAuthn) -->
+<div class="lock-screen hidden no-print" id="lockScreen">
+  <div class="lock-logo">BEL</div>
+  <h2 class="lock-title" id="lockScreenTitle">Enter Passcode</h2>
+  <p class="lock-sub" id="lockScreenSub">Use your fingerprint/face or enter your 4-digit passcode.</p>
+  <div class="pin-dots" id="pinDots">
+    <div class="pin-dot"></div>
+    <div class="pin-dot"></div>
+    <div class="pin-dot"></div>
+    <div class="pin-dot"></div>
+  </div>
+  <div class="keypad">
+    <button class="key-btn" onclick="pressPinKey('1')">1</button>
+    <button class="key-btn" onclick="pressPinKey('2')">2</button>
+    <button class="key-btn" onclick="pressPinKey('3')">3</button>
+    <button class="key-btn" onclick="pressPinKey('4')">4</button>
+    <button class="key-btn" onclick="pressPinKey('5')">5</button>
+    <button class="key-btn" onclick="pressPinKey('6')">6</button>
+    <button class="key-btn" onclick="pressPinKey('7')">7</button>
+    <button class="key-btn" onclick="pressPinKey('8')">8</button>
+    <button class="key-btn" onclick="pressPinKey('9')">9</button>
+    <button class="key-btn key-bio" id="bioUnlockBtn" onclick="handleBioButtonClick()">Biometric</button>
+    <button class="key-btn" onclick="pressPinKey('0')">0</button>
+    <button class="key-btn key-sub" onclick="pressPinBackspace()">Del</button>
+  </div>
+</div>
+
+<header>
+  <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; flex:1;">
+    <div>
+      <h1>Team Belgium Short Track — 2026/27 Travel &amp; Operations</h1>
+      <p>Synced with Gmail &amp; Google Drive (`WORK/COACHING (JM MQ ONLY)/Travel`) &bull; Updated Nov 1, 2026</p>
+    </div>
+    <div class="no-print" style="display:flex; gap:6px; align-items:center;">
+      <button class="hdr-action-btn" id="installPwaBtn" style="display:none;" onclick="installPwaNow()">Install App</button>
+      <button class="hdr-action-btn" id="hdrBioBtn" onclick="enrollBiometricUnlock()" title="Enable or re-register Fingerprint / Face Unlock">Set Bio</button>
+      <button class="hdr-action-btn" onclick="lockAppNow(false)" title="Lock app screen">Lock</button>
+    </div>
+  </div>
+  <div class="stats-row">
+    <div class="stat-pill" style="cursor:pointer;" onclick="switchTab('vehicles', document.getElementById('tab-btn-vehicles'))" title="Open Tickets by Vehicle">
+      <span class="num" id="stat-vehicles-up">13</span>
+      <span class="lbl" id="stat-vehicles-lbl">Upcoming Vehicles (5 Follow-Ups)</span>
+    </div>
+    <div class="stat-pill" style="cursor:pointer;" onclick="switchTab('todo', document.getElementById('tab-btn-todo'))" title="Open To-Do Checklist">
+      <span class="num" id="stat-todo-open">25</span>
+      <span class="lbl" id="stat-todo-lbl">Open To-Dos</span>
+    </div>
+    <div class="stat-pill">
+      <span class="num" id="stat-todo-done" style="color:#34d399;">0 / 25</span>
+      <span class="lbl" id="stat-done-lbl">Completed</span>
+    </div>
+    <div class="stat-pill">
+      <span class="num" id="stat-travelers">15</span>
+      <span class="lbl">Travelers &bull; 86 Legs</span>
+    </div>
+  </div>
+</header>
+
+<div class="controls">
+  <div class="tabs">
+    <button class="tab-btn active" id="tab-btn-matrix" data-tab="matrix" onclick="switchTab('matrix', this)">Person Matrix</button>
+    <button class="tab-btn tab-btn-vehicles" id="tab-btn-vehicles" data-tab="vehicles" onclick="switchTab('vehicles', this)">Tickets by Vehicle <span class="tab-count warn" id="badge-tab-vehicles">13</span></button>
+    <button class="tab-btn" id="tab-btn-legs" data-tab="legs" onclick="switchTab('legs', this)">Flight Log <span class="tab-count">86</span></button>
+    <button class="tab-btn" id="tab-btn-bookings" data-tab="bookings" onclick="switchTab('bookings', this)">Bookings &amp; PNRs <span class="tab-count">16</span></button>
+    <button class="tab-btn" id="tab-btn-hotels" data-tab="hotels" onclick="switchTab('hotels', this)">Hotels &amp; Rooming <span class="tab-count">7</span></button>
+    <button class="tab-btn" id="tab-btn-actions" data-tab="actions" onclick="switchTab('actions', this)">Reminders &amp; Visas <span class="tab-count" id="badge-tab-actions">30</span></button>
+    <button class="tab-btn" id="tab-btn-roster" data-tab="roster" onclick="switchTab('roster', this)">Roster &amp; Passports</button>
+    <button class="tab-btn" id="tab-btn-isurules" data-tab="isurules" onclick="switchTab('isurules', this)">ISU Rules <span class="tab-count">15</span></button>
+    <button class="tab-btn tab-btn-urgent" id="tab-btn-todo" data-tab="todo" onclick="switchTab('todo', this)">To-Do Checklist <span class="tab-count crit" id="badge-tab-todo">25</span></button>
+  </div>
+  <div class="filters">
+    <select id="phaseFilter" onchange="renderActive()">
+      <option value="">All Phases</option>
+      <option value="Visa">Visas &amp; Passports</option>
+      <option value="ISU">ISU / ORS Deadlines</option>
+      <option value="Summer">Summer Camp (Jul–Sep)</option>
+      <option value="WT1">WT1 Vancouver (Oct 18–26)</option>
+      <option value="WT2">WT2 Montreal (Oct 26–Nov 2)</option>
+      <option value="WT3">WT3 Seoul (Nov 14–23)</option>
+      <option value="Shanghai">Shanghai Camp (Nov 23–24)</option>
+      <option value="Beijing">WT4 Beijing (Nov 30–Dec 6)</option>
+      <option value="Changchun">Changchun &amp; Returns (Dec 7–22)</option>
+    </select>
+    <input type="search" id="searchBox" placeholder="Search name, PNR, ticket #, hotel..." oninput="renderActive()">
+    <button class="btn-edit-mode" id="editModeBtn" onclick="toggleTableEditMode()" title="Click to directly edit any table cell">Edit Cells: OFF</button>
+    <button class="btn-save-html" onclick="downloadUpdatedHtml()" title="Download an updated copy of this HTML file with all your checkboxes, edits, and notes permanently saved inside">Save HTML</button>
+    <button class="btn-print" onclick="printCurrentTab()" title="Print or Save the currently active tab as a landscape PDF">Print Tab</button>
+    <button class="btn-print-secondary" onclick="printAllTabs()" title="Print or Save all tabs at once as a multi-section PDF">Print All</button>
+  </div>
+</div>
+
+<main>
+  <div id="printBanner" class="print-banner"></div>
+  <div id="view-matrix" class="view-section"></div>
+  <div id="view-vehicles" class="view-section hidden"></div>
+  <div id="view-legs" class="view-section hidden"></div>
+  <div id="view-bookings" class="view-section hidden"></div>
+  <div id="view-hotels" class="view-section hidden"></div>
+  <div id="view-actions" class="view-section hidden"></div>
+  <div id="view-roster" class="view-section hidden"></div>
+  <div id="view-isurules" class="view-section hidden"></div>
+  <div id="view-todo" class="view-section hidden"></div>
+</main>
+
+<script>
+let DATA = {personMatrix:[],vehicleClusters:[],masterFlights:[],bookingSummary:[],hotelsLogistics:[],actions:[],roster:[],isuRulesQuotas:[],todoList:[],emailThreads:{}};
+const VAULT_KEY_HEX = '9a5d3f82c1e47b6042f9a8e3156d7b2e8f4c6a9173b5d2e4f1a82936475b1c3d';
+function _hexToBytes(hex) {
+  const bytes = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < bytes.length; i++) bytes[i] = parseInt(hex.substr(i * 2, 2), 16);
+  return bytes;
+}
+function _b64ToBytes(b64) {
+  const bin = atob(b64);
+  const bytes = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return bytes;
+}
+async function loadEncryptedTravelVault() {
+  try {
+    const cachedVault = localStorage.getItem('team_bel_travel_vault_cache_v1');
+    let vault = null;
+    try {
+      const resp = await fetch('./travel-vault.json?t=' + Date.now(), { cache: 'no-store' });
+      if (resp.ok) {
+        vault = await resp.json();
+        localStorage.setItem('team_bel_travel_vault_cache_v1', JSON.stringify(vault));
+      }
+    } catch (netErr) {
+      if (cachedVault) vault = JSON.parse(cachedVault);
+    }
+    if (!vault && cachedVault) vault = JSON.parse(cachedVault);
+    if (!vault) return;
+    const cryptoKey = await crypto.subtle.importKey('raw', _hexToBytes(VAULT_KEY_HEX), { name: 'AES-GCM' }, false, ['decrypt']);
+    const plainBuf = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: _b64ToBytes(vault.iv) }, cryptoKey, _b64ToBytes(vault.data));
+    const decoded = JSON.parse(new TextDecoder().decode(plainBuf));
+    Object.assign(DATA, decoded);
+    if (typeof window.__reapplyStoredCustomizations === 'function') window.__reapplyStoredCustomizations();
+    renderActive();
+    updatePrintBanner();
+  } catch (err) {
+    console.error('Vault decrypt error:', err);
+  }
+}
+let currentTab = 'matrix';
+let tableEditMode = false;
+let editingTodoRank = null;
+let showAddTodoForm = false;
+
+// Load persisted custom tasks, task edits, and table cell edits from localStorage
+window.__reapplyStoredCustomizations = function applyStoredCustomizations() {
+  try {
+    const customTodos = JSON.parse(localStorage.getItem('team_bel_custom_todos_v1') || '[]');
+    if (Array.isArray(customTodos) && customTodos.length) {
+      for (const ct of customTodos) {
+        if (!DATA.todoList.some(x => x.Rank === ct.Rank)) DATA.todoList.push(ct);
+      }
+    }
+    const todoEdits = JSON.parse(localStorage.getItem('team_bel_todo_edits_v1') || '{}');
+    for (const item of DATA.todoList) {
+      if (todoEdits[item.Rank]) Object.assign(item, todoEdits[item.Rank]);
+    }
+    const tableEdits = JSON.parse(localStorage.getItem('team_bel_table_edits_v1') || '{}');
+    for (const [key, val] of Object.entries(tableEdits)) {
+      const [ds, rowIdx, field] = key.split('::');
+      if (DATA[ds] && DATA[ds][Number(rowIdx)]) {
+        DATA[ds][Number(rowIdx)][field] = val;
+      }
+    }
+    const vehPaxEdits = JSON.parse(localStorage.getItem('team_bel_veh_pax_edits_v1') || '{}');
+    for (const [key, val] of Object.entries(vehPaxEdits)) {
+      const [cid, pIdx, field] = key.split('::');
+      const vc = (DATA.vehicleClusters || []).find(x => x.Cluster_ID === cid);
+      if (vc && vc.Passengers && vc.Passengers[Number(pIdx)]) {
+        vc.Passengers[Number(pIdx)][field] = val;
+      }
+    }
+    const vehNotes = JSON.parse(localStorage.getItem('team_bel_veh_notes_v1') || '{}');
+    for (const vc of (DATA.vehicleClusters || [])) {
+      if (vehNotes[vc.Cluster_ID] !== undefined) vc.Coach_Note = vehNotes[vc.Cluster_ID];
+    }
+  } catch (e) { console.warn(e); }
+})();
+
+let vehicleSubFilter = 'upcoming'; // 'upcoming' | 'warnings' | 'confirmed' | 'all_with_past'
+let vehicleTravelerFilter = '';
+let editingVehicleId = null;
+
+function isVehicleWarningResolved(vc, savedMap) {
+  const map = savedMap || JSON.parse(localStorage.getItem('team_bel_veh_resolved_v1') || '{}');
+  if (map[vc.Cluster_ID] !== undefined) return !!map[vc.Cluster_ID];
+  return !!vc.Resolved;
+}
+
+function isTodoDone(r, savedMap) {
+  const saved = savedMap || JSON.parse(localStorage.getItem('team_bel_todo_v1') || '{}');
+  if (saved[r.Rank] !== undefined) return !!saved[r.Rank];
+  return !!r.Auto_Replied;
+}
+
+function isActionDone(idx, a, savedActMap) {
+  const savedAct = savedActMap || JSON.parse(localStorage.getItem('team_bel_actions_done_v1') || '{}');
+  if (savedAct[idx] !== undefined) return !!savedAct[idx];
+  const st = String(a.Status || '').toUpperCase();
+  return st.includes('COMPLETED') || st.includes('REPLIED');
+}
+
+function updateGlobalStats() {
+  const savedTodo = JSON.parse(localStorage.getItem('team_bel_todo_v1') || '{}');
+  const totalTodo = DATA.todoList.length;
+  const doneTodo = DATA.todoList.filter(r => isTodoDone(r, savedTodo)).length;
+  const openTodo = totalTodo - doneTodo;
+  const pct = totalTodo ? Math.round((doneTodo / totalTodo) * 100) : 0;
+
+  const savedAct = JSON.parse(localStorage.getItem('team_bel_actions_done_v1') || '{}');
+  const totalAct = DATA.actions.length;
+  const doneAct = DATA.actions.filter((a, i) => isActionDone(i, a, savedAct)).length;
+  const openAct = totalAct - doneAct;
+
+  const elOpen = document.getElementById('stat-todo-open');
+  if (elOpen) {
+    elOpen.textContent = openTodo;
+    elOpen.style.color = openTodo === 0 ? '#34d399' : '#f8fafc';
+  }
+  const elDone = document.getElementById('stat-todo-done');
+  if (elDone) elDone.textContent = `${doneTodo} / ${totalTodo} (${pct}%)`;
+
+  const badgeTodo = document.getElementById('badge-tab-todo');
+  if (badgeTodo) {
+    badgeTodo.textContent = openTodo;
+    badgeTodo.className = 'tab-count' + (openTodo > 0 ? ' crit' : '');
+  }
+  const badgeAct = document.getElementById('badge-tab-actions');
+  if (badgeAct) {
+    badgeAct.textContent = openAct;
+  }
+
+  const vehResolved = JSON.parse(localStorage.getItem('team_bel_veh_resolved_v1') || '{}');
+  const upcomingVehicles = (DATA.vehicleClusters || []).filter(v => v.Timing_Group === 'UPCOMING');
+  const openVehWarnings = upcomingVehicles.filter(v => (v.Booking_Health === 'CRITICAL_UNBOOKED' || v.Booking_Health === 'WARNING_PENDING') && !isVehicleWarningResolved(v, vehResolved)).length;
+  const elVehUp = document.getElementById('stat-vehicles-up');
+  if (elVehUp) elVehUp.textContent = upcomingVehicles.length;
+  const elVehLbl = document.getElementById('stat-vehicles-lbl');
+  if (elVehLbl) elVehLbl.textContent = openVehWarnings > 0 ? `Upcoming Vehicles (${openVehWarnings} Follow-Ups)` : `Upcoming Vehicles (All Clear)`;
+  const badgeVeh = document.getElementById('badge-tab-vehicles');
+  if (badgeVeh) {
+    badgeVeh.textContent = openVehWarnings > 0 ? `${upcomingVehicles.length} · ${openVehWarnings}!` : `${upcomingVehicles.length}`;
+    badgeVeh.className = 'tab-count' + (openVehWarnings > 0 ? ' warn' : '');
+  }
+}
+
+function toggleTableEditMode() {
+  tableEditMode = !tableEditMode;
+  const btn = document.getElementById('editModeBtn');
+  if (btn) {
+    btn.classList.toggle('active', tableEditMode);
+    btn.textContent = tableEditMode ? 'Edit Cells: ON' : 'Edit Cells: OFF';
+  }
+  renderActive();
+}
+
+function onCellEdit(datasetName, rowIdx, fieldName, el) {
+  const newVal = el.innerText.trim();
+  if (DATA[datasetName] && DATA[datasetName][rowIdx]) {
+    DATA[datasetName][rowIdx][fieldName] = newVal;
+    const tableEdits = JSON.parse(localStorage.getItem('team_bel_table_edits_v1') || '{}');
+    tableEdits[`${datasetName}::${rowIdx}::${fieldName}`] = newVal;
+    localStorage.setItem('team_bel_table_edits_v1', JSON.stringify(tableEdits));
+    updateGlobalStats();
+  }
+}
+
+function cellAttr(datasetName, rowIdx, fieldName) {
+  if (!tableEditMode) return '';
+  return ` contenteditable="true" onblur="onCellEdit('${datasetName}', ${rowIdx}, '${fieldName}', this)" title="Click to edit"`;
+}
+
+function esc(s) {
+  if (s === null || s === undefined) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function highlightPNR(text) {
+  let t = esc(text);
+  t = t.replace(/\b(CHTL8O|KSQRPL|AZYECP|QZPCLF|CE5MDM|CE72IU|XW2ETT|CM352A|PB0DFM|29ABQ2|NJXWKL|A44X7U|CVCZDA|DZMDNX|CVDH3J|LEGGOJ|AM4K3G|2PFJ9Q|ZLIL9N|ZLPFB2|XNZ4IK|Y5524F|YLPZHC|1ZV79Y416610231991|BEL-TL-MANTIA)\b/g, '<span class="badge-pnr">$1</span>');
+  t = t.replace(/\b(ACTION NEEDED|URGENT|VISA CHECK|UNBOOKED)\b/gi, '<span class="badge badge-crit">$1</span>');
+  t = t.replace(/\b(PENDING)\b/gi, '<span class="badge badge-warn">$1</span>');
+  t = t.replace(/(https:\/\/forms\.gle\/[a-zA-Z0-9_-]+)/g, '<a href="$1" target="_blank" rel="noopener" class="email-id-pill">Open Form</a>');
+  t = t.replace(/\b(?:Email\s+)?ID\s+(8\d{4})\b/g, (match, uid) => {
+    const meta = DATA.emailThreads && DATA.emailThreads[uid];
+    if (!meta) return match;
+    const url = 'https://mail.google.com/mail/u/?authuser=joeymantia@gmail.com#search/rfc822msgid%3A' + encodeURIComponent(meta.mid);
+    const tip = esc(meta.subject + ' — ' + meta.from);
+    return `<a href="${url}" target="_blank" rel="noopener" class="email-id-pill" title="Open in Gmail: ${tip}">Email #${uid}</a>`;
+  });
+  return t;
+}
+
+function formatCalmRelLabel(rel) {
+  const s = String(rel || '');
+  if (s.includes('TODAY')) return 'Today';
+  if (s.includes('TOMORROW')) return 'Tomorrow';
+  const m = s.match(/IN\s+(\d+)\s+DAYS/i);
+  if (m) {
+    if (s.includes('UNBOOKED')) return `In ${m[1]}d · Unbooked`;
+    if (s.includes('DUE NOV 12')) return `In ${m[1]}d · Due Nov 12`;
+    if (s.includes('PENDING')) return `In ${m[1]}d · Verify`;
+    return `In ${m[1]}d`;
+  }
+  if (s.includes('COMPLETED')) return 'Completed';
+  return s.trim();
+}
+
+function formatCalmStatusBadge(vc, effectiveHealth, isResolved) {
+  if (isResolved) return `<span class="badge badge-ok">Resolved</span>`;
+  if (effectiveHealth === 'COMPLETED') return `<span class="badge badge-muted">Completed</span>`;
+  if (effectiveHealth === 'CONFIRMED') return `<span class="badge badge-ok">Confirmed</span>`;
+  if (effectiveHealth === 'CRITICAL_UNBOOKED') return `<span class="badge badge-crit">Unbooked — Follow Up</span>`;
+  const sb = String(vc.Status_Badge || '');
+  if (sb.includes('NOV 12')) return `<span class="badge badge-warn">Tickets Due Nov 12</span>`;
+  if (sb.includes('MAGGIE')) return `<span class="badge badge-warn">Booked by Maggie</span>`;
+  return `<span class="badge badge-warn">Pending Follow-Up</span>`;
+}
+
+function formatCalmBaggage(seatStr, bagStr, statusStr) {
+  const seat = (seatStr && seatStr !== '—' && seatStr !== 'TBD')
+    ? `<span class="mono" style="font-weight:600; color:#0f172a; margin-right:6px;">Seat ${esc(seatStr)}</span>`
+    : '';
+  const b = String(bagStr || '').replace(/!!+/g, '').trim();
+  const st = String(statusStr || '');
+  let noteHtml = '';
+  if (/bike/i.test(b)) {
+    noteHtml = `<span class="badge badge-warn">${esc(b)}</span>`;
+  } else if (/Swap for Ward/i.test(b) || /Swap for Ward/i.test(st)) {
+    noteHtml = `<span class="badge badge-warn">Swap for Ward Petre (verify name)</span>`;
+  } else if (/2 Checked Bags Included/i.test(b)) {
+    noteHtml = `<span style="color:#64748b;">2 bags</span>`;
+  } else if (/1 Checked Bag Included/i.test(b)) {
+    noteHtml = `<span style="color:#64748b;">1 bag</span>`;
+  } else if (b && b !== '—' && b !== 'Standard') {
+    noteHtml = `<span style="color:#64748b;">${esc(b)}</span>`;
+  }
+  if (/UNBOOKED/i.test(st)) {
+    const extra = st.replace(/^UNBOOKED\s*[—-]?\s*/i, '').trim();
+    if (extra) noteHtml = `<span style="color:#991b1b; font-size:12px;">${esc(extra)}</span>`;
+  }
+  return (seat + noteHtml) || '<span style="color:#94a3b8;">—</span>';
+}
+
+function cleanWarningTitle(rawTitle) {
+  return String(rawTitle || '')
+    
+    .replace(/^(ACTION NEEDED|TICKETING REMINDER|VERIFY TICKET NUMBER|NOTE)\s*[—:]\s*/i, '')
+    .trim();
+}
+
+function switchTab(tab, btn) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.querySelectorAll('.view-section').forEach(s => s.classList.add('hidden'));
+  document.getElementById('view-' + tab).classList.remove('hidden');
+  renderActive();
+}
+
+function matchesQuery(rowObjOrArr, q, phase) {
+  const str = JSON.stringify(rowObjOrArr).toLowerCase();
+  if (q && !str.includes(q)) return false;
+  if (phase && !str.includes(phase.toLowerCase())) return false;
+  return true;
+}
+
+function renderActive() {
+  updateGlobalStats();
+  const q = document.getElementById('searchBox').value.trim().toLowerCase();
+  const phase = document.getElementById('phaseFilter').value;
+
+  if (currentTab === 'matrix') {
+    const cols = Object.keys(DATA.personMatrix[0]);
+    let html = '<div class="table-wrap"><table><thead><tr>';
+    for (const c of cols) html += `<th>${esc(c)}</th>`;
+    html += '</tr></thead><tbody>';
+    DATA.personMatrix.forEach((r, rIdx) => {
+      if (!matchesQuery(r, q, '')) return;
+      html += '<tr>';
+      cols.forEach((c, idx) => {
+        const val = r[c];
+        const attr = cellAttr('personMatrix', rIdx, c);
+        html += idx === 0 ? `<td${attr}><strong>${esc(val)}</strong></td>` : `<td${attr}>${highlightPNR(val)}</td>`;
+      });
+      html += '</tr>';
+    });
+    html += '</tbody></table></div>';
+    document.getElementById('view-matrix').innerHTML = html;
+  }
+
+  if (currentTab === 'vehicles') {
+    const vehResolved = JSON.parse(localStorage.getItem('team_bel_veh_resolved_v1') || '{}');
+    const allClusters = DATA.vehicleClusters || [];
+    const upcomingAll = allClusters.filter(v => v.Timing_Group === 'UPCOMING').sort((a, b) => (a.Order_Index || 99) - (b.Order_Index || 99));
+    const pastAll = allClusters.filter(v => v.Timing_Group === 'PAST').sort((a, b) => (a.Order_Index || 999) - (b.Order_Index || 999));
+
+    const warnCount = upcomingAll.filter(v => (v.Booking_Health === 'CRITICAL_UNBOOKED' || v.Booking_Health === 'WARNING_PENDING') && !isVehicleWarningResolved(v, vehResolved)).length;
+    const confirmedCount = upcomingAll.filter(v => v.Booking_Health === 'CONFIRMED' || isVehicleWarningResolved(v, vehResolved)).length;
+
+    const travelerOptions = (DATA.personMatrix || []).map(p =>
+      `<option value="${esc(p.Traveler)}" ${vehicleTravelerFilter === p.Traveler ? 'selected' : ''}>${esc(p.Traveler)} (${esc(p.Role)})</option>`
+    ).join('');
+
+    let html = `<div class="vehicle-filter-bar no-print">
+      <div class="v-subfilter-group">
+        <button class="v-subfilter-btn ${vehicleSubFilter === 'upcoming' ? 'active' : ''}" onclick="vehicleSubFilter = 'upcoming'; renderActive();">Upcoming (${upcomingAll.length})</button>
+        <button class="v-subfilter-btn ${vehicleSubFilter === 'warnings' ? 'active' : ''}" onclick="vehicleSubFilter = 'warnings'; renderActive();">Needs Follow-Up (${warnCount})</button>
+        <button class="v-subfilter-btn ${vehicleSubFilter === 'confirmed' ? 'active' : ''}" onclick="vehicleSubFilter = 'confirmed'; renderActive();">Confirmed (${confirmedCount})</button>
+        <button class="v-subfilter-btn ${vehicleSubFilter === 'all_with_past' ? 'active' : ''}" onclick="vehicleSubFilter = 'all_with_past'; renderActive();">Include Past (+${pastAll.length})</button>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+        <span style="font-size:12px; color:#64748b;">Closest departure first &bull; Click any PNR or ticket # to copy</span>
+        <select onchange="vehicleTravelerFilter = this.value; renderActive();" style="min-width:210px;">
+          <option value="">All Travelers (Filter &amp; Highlight)</option>
+          ${travelerOptions}
+        </select>
+      </div>
+    </div>`;
+
+    let sourceList = upcomingAll;
+    if (vehicleSubFilter === 'warnings') {
+      sourceList = upcomingAll.filter(v => (v.Booking_Health === 'CRITICAL_UNBOOKED' || v.Booking_Health === 'WARNING_PENDING') && !isVehicleWarningResolved(v, vehResolved));
+    } else if (vehicleSubFilter === 'confirmed') {
+      sourceList = upcomingAll.filter(v => v.Booking_Health === 'CONFIRMED' || isVehicleWarningResolved(v, vehResolved));
+    } else if (vehicleSubFilter === 'all_with_past') {
+      sourceList = [...upcomingAll, ...pastAll];
+    }
+
+    const filteredClusters = sourceList.filter(vc => {
+      if (!matchesQuery(vc, q, phase)) return false;
+      if (vehicleTravelerFilter) {
+        const hasPerson = (vc.Passengers || []).some(p => p.Traveler === vehicleTravelerFilter);
+        if (!hasPerson) return false;
+      }
+      return true;
+    });
+
+    if (filteredClusters.length === 0) {
+      html += `<div style="padding:28px; background:#fff; border:1px solid #e2e8f0; border-radius:10px; text-align:center; color:#64748b;">No vehicle clusters match your current filter.</div>`;
+    }
+
+    let shownPastBanner = false;
+    filteredClusters.forEach((vc) => {
+      if (vc.Timing_Group === 'PAST' && !shownPastBanner) {
+        shownPastBanner = true;
+        html += `<div class="todo-tier-banner tier-5" style="margin-top:24px;">
+          <span>Completed / Past Vehicles (Jul 2 – Oct 29, 2026)</span>
+          <span style="font-size:11.5px; font-weight:500; text-transform:none; color:#64748b;">Most recent first</span>
+        </div>`;
+      }
+
+      const isResolved = isVehicleWarningResolved(vc, vehResolved);
+      const effectiveHealth = isResolved && (vc.Booking_Health === 'CRITICAL_UNBOOKED' || vc.Booking_Health === 'WARNING_PENDING')
+        ? 'CONFIRMED'
+        : vc.Booking_Health;
+
+      let countdownClass = 'v-countdown-badge';
+      if (vc.Relative_Label.includes('TODAY') || vc.Relative_Label.includes('UNBOOKED')) countdownClass += ' urgent';
+      else if (vc.Relative_Label.includes('TOMORROW') || vc.Relative_Label.includes('DUE') || vc.Relative_Label.includes('PENDING')) countdownClass += ' soon';
+
+      const calmRel = formatCalmRelLabel(vc.Relative_Label);
+      const statusBadgeHtml = formatCalmStatusBadge(vc, effectiveHealth, isResolved);
+
+      const pnrPillsHtml = (vc.PNR_Codes && vc.PNR_Codes.length)
+        ? vc.PNR_Codes.map(code => `<button class="pnr-copy-pill" onclick="copyToClipboard('${esc(code)}', this)" title="Copy Booking Code ${esc(code)}">PNR: ${esc(code)} <span style="color:#94a3b8; font-weight:400; font-size:10px;">(Copy)</span></button>`).join('')
+        : '';
+
+      const metaParts = [
+        esc(vc.Airline_Operator),
+        esc(vc.Phase),
+        `${vc.Pax_Count} ${vc.Pax_Count === 1 ? 'Traveler' : 'Travelers'}`
+      ];
+      if (vc.Total_Cost_Summary && vc.Total_Cost_Summary !== '—') metaParts.push(esc(vc.Total_Cost_Summary));
+      if (vc.Agency_Invoice_Summary && vc.Agency_Invoice_Summary !== '—') metaParts.push(esc(vc.Agency_Invoice_Summary));
+
+      let detailsStripHtml = '';
+      const hasWarningOrNote = vc.Warning_Title || vc.Coach_Note || (vc.Action_Links && vc.Action_Links.length) || vc.Booking_Health === 'CRITICAL_UNBOOKED' || vc.Booking_Health === 'WARNING_PENDING';
+      if (hasWarningOrNote) {
+        const dotClass = effectiveHealth === 'CRITICAL_UNBOOKED' ? 'red' : (effectiveHealth === 'WARNING_PENDING' ? 'amber' : 'blue');
+        const detailsClass = effectiveHealth === 'CRITICAL_UNBOOKED' ? 'warn-unbooked' : (effectiveHealth === 'WARNING_PENDING' ? 'warn-pending' : '');
+        const summaryTitle = cleanWarningTitle(vc.Warning_Title) || (vc.Coach_Note ? `Note: ${vc.Coach_Note}` : 'Follow-Up Details & Actions');
+        const isOpenAttr = (editingVehicleId === vc.Cluster_ID) ? ' open' : '';
+
+        const linksHtml = (vc.Action_Links || []).map(l =>
+          `<a href="${esc(l.url)}" target="_blank" rel="noopener" class="action-link-btn kind-${esc(l.kind || 'secondary')}">${esc(l.label)}</a>`
+        ).join('');
+        const resolveBtnHtml = (vc.Booking_Health === 'CRITICAL_UNBOOKED' || vc.Booking_Health === 'WARNING_PENDING')
+          ? `<label class="action-link-btn" style="cursor:pointer;">
+               <input type="checkbox" style="margin:0;" ${isResolved ? 'checked' : ''} onchange="toggleVehicleResolved('${esc(vc.Cluster_ID)}', this.checked)">
+               Mark Resolved
+             </label>`
+          : '';
+        const noteBtnHtml = `<button class="action-link-btn" style="cursor:pointer;" onclick="editingVehicleId = (editingVehicleId === '${esc(vc.Cluster_ID)}' ? null : '${esc(vc.Cluster_ID)}'); renderActive();">${vc.Coach_Note ? 'Edit Note' : 'Add Note'}</button>`;
+        const noteBoxHtml = vc.Coach_Note
+          ? `<div class="coach-note-box"><strong>Follow-Up Note:</strong> ${esc(vc.Coach_Note)}</div>`
+          : '';
+        const editNoteFormHtml = editingVehicleId === vc.Cluster_ID
+          ? `<div class="edit-panel no-print" style="margin-top:8px; background:#fff;">
+               <div style="grid-column: 1 / -1;">
+                 <label>Follow-Up Note for ${esc(vc.Flight_Train_No)} (${esc(vc.Display_Date)})</label>
+                 <input id="veh_note_input_${esc(vc.Cluster_ID)}" value="${esc(vc.Coach_Note || '')}" placeholder="e.g. Emailed Kim Nov 2 — confirmed Turkish Airlines option...">
+               </div>
+               <div style="grid-column: 1 / -1; display:flex; gap:8px;">
+                 <button class="btn-save-html" onclick="saveVehicleNote('${esc(vc.Cluster_ID)}')">Save Note</button>
+                 <button class="btn-edit-mode" onclick="editingVehicleId = null; renderActive();">Cancel</button>
+               </div>
+             </div>`
+          : '';
+
+        detailsStripHtml = `<details class="vehicle-details ${detailsClass}"${isOpenAttr}>
+          <summary>
+            <div style="display:flex; align-items:center; gap:8px; font-weight:500;">
+              <span class="status-dot ${dotClass}"></span>
+              <span>${esc(summaryTitle)}</span>
+            </div>
+            <span style="font-size:11.5px; color:#64748b; white-space:nowrap;">Details &amp; Actions &#9662;</span>
+          </summary>
+          <div class="v-details-body">
+            ${vc.Warning_Details ? `<div style="line-height:1.55;">${highlightPNR(vc.Warning_Details)}</div>` : ''}
+            ${noteBoxHtml}
+            <div class="todo-actions-row no-print">
+              ${linksHtml}
+              ${resolveBtnHtml}
+              ${noteBtnHtml}
+            </div>
+            ${editNoteFormHtml}
+          </div>
+        </details>`;
+      }
+
+      html += `<div class="vehicle-card health-${effectiveHealth}">
+        <div class="vehicle-card-header">
+          <div style="flex:1; min-width:280px;">
+            <div class="v-primary-line">
+              <span class="v-date-text">${esc(vc.Display_Date)}</span>
+              <span class="${countdownClass}">${esc(calmRel)}</span>
+              <span class="v-sep">&middot;</span>
+              <span class="v-time-text">${esc(vc.Dep_Time)} &rarr; ${esc(vc.Arr_Time)}</span>
+              <span class="v-sep">&middot;</span>
+              <span class="v-route-text">${esc(vc.Route)}</span>
+              <span class="v-flight-chip">${esc(vc.Flight_Train_No)}</span>
+            </div>
+            <div class="v-subtitle-line">
+              ${metaParts.join(' &middot; ')}
+            </div>
+          </div>
+          <div class="v-pnr-box">
+            ${pnrPillsHtml}
+            ${statusBadgeHtml}
+          </div>
+        </div>
+        ${detailsStripHtml}
+        <div class="table-wrap" style="border:none; border-radius:0; box-shadow:none;">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:36px;">#</th>
+                <th style="width:22%;">Traveler</th>
+                <th style="width:20%;">Legal Ticket Name</th>
+                <th style="width:16%;">Booking Code (PNR)</th>
+                <th style="width:20%;">13-Digit Ticket #</th>
+                <th>Seat &amp; Baggage / Notes</th>
+              </tr>
+            </thead>
+            <tbody>`;
+
+      (vc.Passengers || []).forEach((p, pIdx) => {
+        const isHighlightedPax = vehicleTravelerFilter && p.Traveler === vehicleTravelerFilter;
+        const canCopyTkt = p.Ticket_Number && /\d{10,14}/.test(p.Ticket_Number);
+        let tktDisplay = '';
+        if (canCopyTkt) {
+          tktDisplay = `<button class="tkt-copy-btn" onclick="copyToClipboard('${esc(p.Ticket_Number)}', this)" title="Copy ticket number">${esc(p.Ticket_Number)} <span style="color:#94a3b8; font-size:10px;">(Copy)</span></button>`;
+        } else if (/UNBOOKED/i.test(p.Ticket_Number)) {
+          tktDisplay = `<span style="color:#991b1b; font-size:12px; font-weight:500;">Unbooked</span>`;
+        } else if (/PENDING/i.test(p.Ticket_Number)) {
+          tktDisplay = `<span style="color:#92400e; font-size:12px;">${esc(p.Ticket_Number)}</span>`;
+        } else {
+          tktDisplay = `<span class="mono" style="color:#475569;">${esc(p.Ticket_Number)}</span>`;
+        }
+
+        const pnrText = p.Airline_PNR || '—';
+        const agText = (p.Agency_Ref && p.Agency_Ref !== '—' && p.Agency_Ref !== p.Airline_PNR)
+          ? ` <span style="color:#94a3b8; font-size:11px;">(${esc(p.Agency_Ref)})</span>`
+          : '';
+        const pnrCellHtml = /UNBOOKED/i.test(pnrText)
+          ? `<span style="color:#991b1b; font-size:12px; font-weight:500;">Unbooked</span>`
+          : `<span class="mono" style="font-weight:600; color:#0f172a;">${esc(pnrText)}</span>${agText}`;
+
+        const pCellAttr = (field) => tableEditMode
+          ? ` contenteditable="true" onblur="onVehiclePaxEdit('${esc(vc.Cluster_ID)}', ${pIdx}, '${field}', this)" title="Click to edit"`
+          : '';
+
+        html += `<tr class="${isHighlightedPax ? 'pax-highlight' : ''}">
+          <td class="mono" style="color:#94a3b8;">${pIdx + 1}</td>
+          <td${pCellAttr('Traveler')}><strong style="color:#0f172a;">${esc(p.Traveler)}</strong> <span style="color:#94a3b8; font-size:12px; margin-left:4px;">${esc(p.Role)}</span></td>
+          <td class="mono" style="font-size:11.5px; color:#64748b;"${pCellAttr('Legal_Name')}>${esc(p.Legal_Name)}</td>
+          <td${pCellAttr('Airline_PNR')}>${pnrCellHtml}</td>
+          <td${pCellAttr('Ticket_Number')}>${tktDisplay}</td>
+          <td${pCellAttr('Baggage')}>${formatCalmBaggage(p.Seat, p.Baggage, p.Status)}</td>
+        </tr>`;
+      });
+
+      html += `</tbody></table></div></div>`;
+    });
+
+    document.getElementById('view-vehicles').innerHTML = html;
+  }
+
+  if (currentTab === 'legs') {
+    let html = '<div class="table-wrap"><table><thead><tr>' +
+      '<th>Phase</th><th>Date</th><th>Traveler</th><th>Role</th><th>Airline</th><th>Flight #</th>' +
+      '<th>Route</th><th>Time</th><th>PNR</th><th>Agency Ref</th><th>Ticket #</th><th>Seat</th>' +
+      '<th>Baggage</th><th>Invoice</th><th>Cost</th><th>Status</th>' +
+      '</tr></thead><tbody>';
+    DATA.masterFlights.forEach((r, rIdx) => {
+      if (!matchesQuery(r, q, phase)) return;
+      html += `<tr>
+        <td${cellAttr('masterFlights', rIdx, 'Phase')}>${esc(r.Phase)}</td>
+        <td style="white-space:nowrap"${cellAttr('masterFlights', rIdx, 'Date')}><strong>${esc(r.Date)}</strong></td>
+        <td${cellAttr('masterFlights', rIdx, 'Traveler')}><strong>${esc(r.Traveler)}</strong></td>
+        <td${cellAttr('masterFlights', rIdx, 'Role')}>${esc(r.Role)}</td>
+        <td${cellAttr('masterFlights', rIdx, 'Airline')}>${esc(r.Airline)}</td>
+        <td class="mono"${cellAttr('masterFlights', rIdx, 'Flight_No')}><strong>${esc(r.Flight_No)}</strong></td>
+        <td style="white-space:nowrap"${cellAttr('masterFlights', rIdx, 'Route')}><strong>${esc(r.Route)}</strong></td>
+        <td style="white-space:nowrap">${esc(r.Dep_Time)} &rarr; ${esc(r.Arr_Time)}</td>
+        <td${cellAttr('masterFlights', rIdx, 'Airline_PNR')}>${highlightPNR(r.Airline_PNR)}</td>
+        <td class="mono"${cellAttr('masterFlights', rIdx, 'Agency_Ref')}>${esc(r.Agency_Ref)}</td>
+        <td class="mono"${cellAttr('masterFlights', rIdx, 'Ticket_Number')}>${esc(r.Ticket_Number)}</td>
+        <td class="mono"${cellAttr('masterFlights', rIdx, 'Seat')}><strong>${esc(r.Seat)}</strong></td>
+        <td${cellAttr('masterFlights', rIdx, 'Baggage')}>${esc(r.Baggage)}</td>
+        <td class="mono"${cellAttr('masterFlights', rIdx, 'Invoice_No')}>${esc(r.Invoice_No)}</td>
+        <td style="white-space:nowrap"${cellAttr('masterFlights', rIdx, 'Cost_Per_Person')}>${esc(r.Cost_Per_Person)}</td>
+        <td${cellAttr('masterFlights', rIdx, 'Status')}>${highlightPNR(r.Status)}</td>
+      </tr>`;
+    });
+    html += '</tbody></table></div>';
+    document.getElementById('view-legs').innerHTML = html;
+  }
+
+  if (currentTab === 'bookings') {
+    let html = '<div class="table-wrap"><table><thead><tr>' +
+      '<th>Airline PNR</th><th>Agency Ref</th><th>Invoice #</th><th>Phase</th><th>Airline</th>' +
+      '<th>Flights &amp; Dates</th><th>Pax</th><th>Travelers</th><th>Total Cost</th><th>Status</th><th>Source PDF</th>' +
+      '</tr></thead><tbody>';
+    DATA.bookingSummary.forEach((r, rIdx) => {
+      if (!matchesQuery(r, q, phase)) return;
+      html += `<tr>
+        <td${cellAttr('bookingSummary', rIdx, 'Airline_PNR')}>${highlightPNR(r.Airline_PNR)}</td>
+        <td class="mono"${cellAttr('bookingSummary', rIdx, 'Agency_Ref')}>${highlightPNR(r.Agency_Ref)}</td>
+        <td class="mono"${cellAttr('bookingSummary', rIdx, 'Invoice_No')}>${esc(r.Invoice_No)}</td>
+        <td${cellAttr('bookingSummary', rIdx, 'Phase')}><strong>${esc(r.Phase)}</strong></td>
+        <td${cellAttr('bookingSummary', rIdx, 'Airline')}>${esc(r.Airline)}</td>
+        <td${cellAttr('bookingSummary', rIdx, 'Route_Dates')}>${esc(r.Route_Dates)}</td>
+        <td${cellAttr('bookingSummary', rIdx, 'Pax_Count')}><strong>${esc(r.Pax_Count)}</strong></td>
+        <td${cellAttr('bookingSummary', rIdx, 'Passengers')}>${esc(r.Passengers)}</td>
+        <td${cellAttr('bookingSummary', rIdx, 'Total_Cost')}><strong>${esc(r.Total_Cost)}</strong></td>
+        <td${cellAttr('bookingSummary', rIdx, 'Status')}><span class="badge badge-ok">${esc(r.Status)}</span></td>
+        <td${cellAttr('bookingSummary', rIdx, 'Source_PDF')}>${esc(r.Source_PDF)}</td>
+      </tr>`;
+    });
+    html += '</tbody></table></div>';
+    document.getElementById('view-bookings').innerHTML = html;
+  }
+
+  if (currentTab === 'hotels') {
+    let html = '<div class="table-wrap"><table><thead><tr>' +
+      '<th>Event / Phase</th><th>Category</th><th>Property / Vendor</th><th>Check-In</th><th>Check-Out</th>' +
+      '<th>Ref / Invoice</th><th>Rooming List &amp; Assignment Details</th><th>Meals &amp; Included Services</th>' +
+      '<th>Total Cost</th><th>Status</th><th>Source</th>' +
+      '</tr></thead><tbody>';
+    DATA.hotelsLogistics.forEach((r, rIdx) => {
+      if (!matchesQuery(r, q, phase)) return;
+      html += `<tr>
+        <td${cellAttr('hotelsLogistics', rIdx, 'Event_Phase')}><strong>${esc(r.Event_Phase)}</strong></td>
+        <td${cellAttr('hotelsLogistics', rIdx, 'Category')}><strong>${esc(r.Category)}</strong></td>
+        <td${cellAttr('hotelsLogistics', rIdx, 'Property_Vendor')}><strong>${esc(r.Property_Vendor)}</strong></td>
+        <td style="white-space:nowrap"${cellAttr('hotelsLogistics', rIdx, 'Check_In')}>${esc(r.Check_In)}</td>
+        <td style="white-space:nowrap"${cellAttr('hotelsLogistics', rIdx, 'Check_Out')}>${esc(r.Check_Out)}</td>
+        <td${cellAttr('hotelsLogistics', rIdx, 'Ref_Invoice')}>${highlightPNR(r.Ref_Invoice)}</td>
+        <td${cellAttr('hotelsLogistics', rIdx, 'Rooming_Details')}>${highlightPNR(r.Rooming_Details)}</td>
+        <td${cellAttr('hotelsLogistics', rIdx, 'Meals_Services')}>${esc(r.Meals_Services)}</td>
+        <td style="white-space:nowrap"${cellAttr('hotelsLogistics', rIdx, 'Total_Cost')}><strong>${esc(r.Total_Cost)}</strong></td>
+        <td${cellAttr('hotelsLogistics', rIdx, 'Status')}><span class="badge badge-ok">${esc(r.Status)}</span></td>
+        <td${cellAttr('hotelsLogistics', rIdx, 'Source_Ref')}>${esc(r.Source_Ref)}</td>
+      </tr>`;
+    });
+    html += '</tbody></table></div>';
+    document.getElementById('view-hotels').innerHTML = html;
+  }
+
+  if (currentTab === 'actions') {
+    const savedAct = JSON.parse(localStorage.getItem('team_bel_actions_done_v1') || '{}');
+    let html = '<div class="table-wrap"><table><thead><tr>' +
+      '<th>Done</th><th>Priority</th><th>Category</th><th>Deadline / Date</th><th>Reminder / Task / Deadline</th>' +
+      '<th>Detailed Requirements &amp; Action Notes</th><th>Owner</th><th>Status</th>' +
+      '</tr></thead><tbody>';
+    DATA.actions.forEach((a, aIdx) => {
+      if (!matchesQuery(a, q, phase)) return;
+      const done = isActionDone(aIdx, a, savedAct);
+      const stHtml = done ? '<span class="badge badge-ok">Completed</span>' : highlightPNR(a.Status);
+      html += `<tr class="${done ? 'row-done' : ''}">
+        <td style="text-align:center;"><input type="checkbox" class="todo-cb" ${done ? 'checked' : ''} onchange="toggleActionItem(${aIdx}, this.checked)" title="Mark reminder completed"></td>
+        <td${cellAttr('actions', aIdx, 'Priority')}>${highlightPNR(a.Priority)}</td>
+        <td${cellAttr('actions', aIdx, 'Category')}><strong>${esc(a.Category)}</strong></td>
+        <td style="white-space:nowrap"${cellAttr('actions', aIdx, 'Target_Date')}><strong>${esc(a.Target_Date)}</strong></td>
+        <td${cellAttr('actions', aIdx, 'Item')}><strong style="${done ? 'text-decoration:line-through;' : ''}">${esc(a.Item)}</strong></td>
+        <td${cellAttr('actions', aIdx, 'Details')}>${highlightPNR(a.Details)}</td>
+        <td${cellAttr('actions', aIdx, 'Owner')}>${esc(a.Owner)}</td>
+        <td${cellAttr('actions', aIdx, 'Status')}>${stHtml}</td>
+      </tr>`;
+    });
+    html += '</tbody></table></div>';
+    document.getElementById('view-actions').innerHTML = html;
+  }
+
+  if (currentTab === 'roster') {
+    let html = '<div class="table-wrap"><table><thead><tr>' +
+      '<th>Name</th><th>Legal Ticket Name</th><th>Role</th><th>Nationality</th>' +
+      '<th>Passport #</th><th>DOB</th><th>Passport Expiry</th><th>Frequent Flyer #</th>' +
+      '<th>Summer PNR &amp; Ticket #</th><th>Notes</th>' +
+      '</tr></thead><tbody>';
+    DATA.roster.forEach((r, rIdx) => {
+      if (!matchesQuery(r, q, '')) return;
+      html += `<tr>
+        <td${cellAttr('roster', rIdx, 'name')}><strong>${esc(r.name)}</strong></td>
+        <td class="mono"${cellAttr('roster', rIdx, 'legal_name')}>${esc(r.legal_name)}</td>
+        <td${cellAttr('roster', rIdx, 'role')}>${esc(r.role)}</td>
+        <td${cellAttr('roster', rIdx, 'nationality')}><strong>${esc(r.nationality)}</strong></td>
+        <td class="mono"${cellAttr('roster', rIdx, 'passport_no')}><strong>${esc(r.passport_no)}</strong></td>
+        <td class="mono" style="white-space:nowrap"${cellAttr('roster', rIdx, 'dob')}>${esc(r.dob)}</td>
+        <td class="mono"${cellAttr('roster', rIdx, 'passport_expiry')}>${highlightPNR(r.passport_expiry)}</td>
+        <td class="mono"${cellAttr('roster', rIdx, 'frequent_flyer')}>${esc(r.frequent_flyer)}</td>
+        <td${cellAttr('roster', rIdx, 'summer_pnr')}>${highlightPNR(r.summer_pnr)}<br><span class="mono">${esc(r.summer_tkt)}</span></td>
+        <td${cellAttr('roster', rIdx, 'notes')}>${highlightPNR(r.notes)}</td>
+      </tr>`;
+    });
+    html += '</tbody></table></div>';
+    document.getElementById('view-roster').innerHTML = html;
+  }
+
+  if (currentTab === 'isurules') {
+    let html = '<div class="table-wrap"><table><thead><tr>' +
+      '<th>Section</th><th>Event / 2026-27 Rule Topic</th><th>Dates / Venue / Scope</th>' +
+      '<th>Belgium Quota / Rule Scope</th><th>500m Qualifying Time / Sanction Threshold</th>' +
+      '<th>Key Deadlines, Coaching Notes &amp; Operational Rules</th><th>Official Source</th>' +
+      '</tr></thead><tbody>';
+    DATA.isuRulesQuotas.forEach((r, rIdx) => {
+      if (!matchesQuery(r, q, phase)) return;
+      html += `<tr>
+        <td${cellAttr('isuRulesQuotas', rIdx, 'Section')}><strong>${esc(r.Section)}</strong></td>
+        <td${cellAttr('isuRulesQuotas', rIdx, 'Topic_Event')}><strong>${esc(r.Topic_Event)}</strong></td>
+        <td${cellAttr('isuRulesQuotas', rIdx, 'Dates_Location')}>${esc(r.Dates_Location)}</td>
+        <td${cellAttr('isuRulesQuotas', rIdx, 'Belgium_Quota_Target')}><strong>${highlightPNR(r.Belgium_Quota_Target)}</strong></td>
+        <td class="mono"${cellAttr('isuRulesQuotas', rIdx, 'Qualifying_Time_500m')}>${highlightPNR(r.Qualifying_Time_500m)}</td>
+        <td${cellAttr('isuRulesQuotas', rIdx, 'Key_Rules_Deadlines')}>${highlightPNR(r.Key_Rules_Deadlines)}</td>
+        <td${cellAttr('isuRulesQuotas', rIdx, 'Source_Doc')}>${esc(r.Source_Doc)}</td>
+      </tr>`;
+    });
+    html += '</tbody></table></div>';
+    document.getElementById('view-isurules').innerHTML = html;
+  }
+
+  if (currentTab === 'todo') {
+    const saved = JSON.parse(localStorage.getItem('team_bel_todo_v1') || '{}');
+    const isItemDone = (r) => isTodoDone(r, saved);
+    const hideDone = window.__hideDoneTodo || false;
+    const sortedTodos = [...DATA.todoList].sort((a, b) => (a.Rank || 999) - (b.Rank || 999));
+    const rows = sortedTodos.filter(r => {
+      if (hideDone && isItemDone(r)) return false;
+      return matchesQuery(r, q, phase);
+    });
+    const totalCount = DATA.todoList.length;
+    const doneCount = DATA.todoList.filter(r => isItemDone(r)).length;
+    const openCount = totalCount - doneCount;
+    const pct = totalCount ? Math.round((doneCount / totalCount) * 100) : 0;
+    const t1Open = DATA.todoList.filter(r => !isItemDone(r) && String(r.Urgency_Tier).startsWith('1.')).length;
+    const t2Open = DATA.todoList.filter(r => !isItemDone(r) && String(r.Urgency_Tier).startsWith('2.')).length;
+
+    let html = `<div class="todo-header-bar">
+      <div style="flex:1; min-width:280px;">
+        <div style="display:flex; flex-wrap:wrap; align-items:center; gap:10px;">
+          <strong style="font-size:14.5px; color:#0f172a;">Action Checklist (#1 Most Urgent &rarr; #${totalCount})</strong>
+          <span class="badge badge-crit">${t1Open} Critical</span>
+          <span class="badge badge-warn">${t2Open} Post-WT2</span>
+          <span class="badge badge-ok">${doneCount} / ${totalCount} Completed (${pct}%)</span>
+        </div>
+        <div class="progress-wrap"><div class="progress-fill" style="width:${pct}%;"></div></div>
+      </div>
+      <div style="display:flex; flex-wrap:wrap; gap:8px; align-items:center;" class="no-print">
+        <button class="btn-edit-mode" onclick="showAddTodoForm = !showAddTodoForm; renderActive();">+ Add Task</button>
+        <button class="btn-edit-mode" onclick="window.__hideDoneTodo = !window.__hideDoneTodo; renderActive();">${hideDone ? 'Show Completed (' + doneCount + ')' : 'Hide Completed (' + doneCount + ')'}</button>
+        <button class="btn-edit-mode" onclick="if(confirm('Reset manual checkboxes & edits?')) { localStorage.removeItem('team_bel_todo_v1'); localStorage.removeItem('team_bel_todo_edits_v1'); location.reload(); }">Reset</button>
+      </div>
+    </div>`;
+
+    if (showAddTodoForm) {
+      html += `<div class="edit-panel no-print" style="margin-bottom:16px;">
+        <div style="grid-column: 1 / -1; font-weight:600; color:#0f172a; font-size:13px;">Add New Checklist Task</div>
+        <div><label>Task Title</label><input id="new_title" placeholder="e.g. Confirm Changchun Hotel Check-in"></div>
+        <div><label>Urgency Tier</label>
+          <select id="new_tier">
+            <option value="1. CRITICAL / TODAY (Oct 30)">1. CRITICAL / TODAY</option>
+            <option value="2. IMMEDIATE POST-WT2 (Nov 2 – Nov 5)">2. IMMEDIATE POST-WT2 (Nov 2–5)</option>
+            <option value="3. HIGH PRIORITY — BEFORE SEOUL DEPARTURE (Nov 7 – Nov 14)">3. BEFORE SEOUL DEPARTURE (Nov 7–14)</option>
+            <option value="4. ASIA TOUR & UNIVERSIADE DEADLINES (Nov 15 – Dec 15)">4. ASIA TOUR DEADLINES (Nov 15–Dec 15)</option>
+            <option value="5. 2027 CHAMPIONSHIPS & LONG-TERM PLANNING (Dec 31 – Mar 2027)">5. 2027 CHAMPIONSHIPS (Dec 31–Mar 2027)</option>
+          </select>
+        </div>
+        <div><label>Due Date</label><input id="new_due" placeholder="e.g. 2026-11-04"></div>
+        <div><label>Owner</label><input id="new_owner" value="Joey Mantia"></div>
+        <div><label>Status Label</label><input id="new_status" value="ACTION NEEDED"></div>
+        <div><label>Optional Link or Email Address</label><input id="new_link" placeholder="https://... or email@domain.com"></div>
+        <div style="grid-column: 1 / -1;"><label>Action Steps &amp; Details</label><textarea id="new_steps" rows="2" placeholder="Detailed steps or notes..."></textarea></div>
+        <div style="grid-column: 1 / -1; display:flex; gap:8px;">
+          <button class="btn-save-html" onclick="addNewTodoItem()">Add Task</button>
+          <button class="btn-edit-mode" onclick="showAddTodoForm = false; renderActive();">Cancel</button>
+        </div>
+      </div>`;
+    }
+
+    let lastTier = '';
+    for (const r of rows) {
+      if (r.Urgency_Tier !== lastTier) {
+        lastTier = r.Urgency_Tier;
+        const tierItems = DATA.todoList.filter(x => x.Urgency_Tier === lastTier);
+        const tierDone = tierItems.filter(x => isItemDone(x)).length;
+        const tierOpen = tierItems.length - tierDone;
+        let tierClass = 'tier-5';
+        if (tierOpen === 0 && tierItems.length > 0) tierClass = 'tier-complete';
+        else if (lastTier.startsWith('1.')) tierClass = 'tier-1';
+        else if (lastTier.startsWith('2.')) tierClass = 'tier-2';
+        else if (lastTier.startsWith('3.')) tierClass = 'tier-3';
+        else if (lastTier.startsWith('4.')) tierClass = 'tier-4';
+        const tierSummary = tierOpen === 0
+          ? `All ${tierDone} Completed`
+          : `${tierOpen} Open &bull; ${tierDone} Done`;
+        html += `<div class="todo-tier-banner ${tierClass}">
+          <span>${esc(lastTier)}</span>
+          <span style="font-size:11.5px; font-weight:500; text-transform:none; color:#475569;">${tierSummary}</span>
+        </div>`;
+      }
+      const isDone = isItemDone(r);
+      const rankClass = r.Rank <= 4 ? 'todo-rank rank-top' : 'todo-rank';
+      let actionLinksHtml = '';
+      const linksArr = r.Action_Links ? [...r.Action_Links] : [];
+      actionLinksHtml = '<div class="todo-actions-row no-print">' +
+        linksArr.map(l => `<a href="${esc(l.url)}" target="_blank" rel="noopener" class="action-link-btn kind-${esc(l.kind || 'secondary')}">${esc(l.label)}</a>`).join('') +
+        `<button class="action-link-btn" style="cursor:pointer;" onclick="editingTodoRank = (editingTodoRank === ${r.Rank} ? null : ${r.Rank}); renderActive();">Edit / Note</button>` +
+        (r.Is_Custom ? `<button class="action-link-btn" style="cursor:pointer; color:#dc2626;" onclick="deleteCustomTodo(${r.Rank})">Delete</button>` : '') +
+        '</div>';
+
+      const statusBadge = isDone
+        ? `<span class="badge badge-ok">${esc(r.Auto_Replied ? r.Status : 'Completed')}</span>`
+        : `<span>${highlightPNR(r.Status)}</span>`;
+      const replySnippetHtml = (r.Auto_Replied && r.Auto_Reply_Info && r.Auto_Reply_Info.snippet)
+        ? `<div style="margin-top:6px; padding:6px 10px; background:#f0fdf4; border-left:3px solid #10b981; border-radius:4px; font-size:12px; color:#065f46;"><strong>Sent Reply (${esc(r.Auto_Reply_Info.sent_date || '')}):</strong> "${esc(r.Auto_Reply_Info.snippet)}"</div>`
+        : '';
+      const coachNoteHtml = r.Coach_Note
+        ? `<div class="coach-note-box"><strong>Coach Note:</strong> ${esc(r.Coach_Note)}</div>`
+        : '';
+
+      let editPanelHtml = '';
+      if (editingTodoRank === r.Rank) {
+        editPanelHtml = `<div class="edit-panel no-print">
+          <div><label>Task Title</label><input id="edit_title_${r.Rank}" value="${esc(r.Task_Title)}"></div>
+          <div><label>Due Date</label><input id="edit_due_${r.Rank}" value="${esc(r.Due_Date)}"></div>
+          <div><label>Owner</label><input id="edit_owner_${r.Rank}" value="${esc(r.Owner)}"></div>
+          <div><label>Status Label</label><input id="edit_status_${r.Rank}" value="${esc(r.Status)}"></div>
+          <div style="grid-column: 1 / -1;"><label>Action Steps &amp; Details</label><textarea id="edit_steps_${r.Rank}" rows="2">${esc(r.Action_Steps)}</textarea></div>
+          <div style="grid-column: 1 / -1;"><label>Personal Coach Note</label><input id="edit_note_${r.Rank}" value="${esc(r.Coach_Note || '')}" placeholder="e.g. Spoke with Gunter at rink, confirmed Tuesday AM ice..."></div>
+          <div style="grid-column: 1 / -1; display:flex; gap:8px;">
+            <button class="btn-save-html" onclick="saveTodoEdit(${r.Rank})">Save Changes</button>
+            <button class="btn-edit-mode" onclick="editingTodoRank = null; renderActive();">Cancel</button>
+          </div>
+        </div>`;
+      }
+
+      html += `<div class="todo-item ${isDone ? 'done' : ''}">
+        <input type="checkbox" class="todo-cb" ${isDone ? 'checked' : ''} onchange="toggleTodoItem(${r.Rank}, this.checked)" title="Mark completed">
+        <span class="${rankClass}">#${r.Rank}</span>
+        <div class="todo-body">
+          <div class="todo-top-row">
+            <span class="todo-title">${esc(r.Task_Title)}</span>
+            <div class="todo-meta">
+              <span class="badge-pnr">Due ${esc(r.Due_Date)}</span>
+              <span class="badge badge-muted">${esc(r.Owner)}</span>
+              ${statusBadge}
+            </div>
+          </div>
+          <p class="todo-steps">${highlightPNR(r.Action_Steps)}</p>
+          ${replySnippetHtml}
+          ${coachNoteHtml}
+          ${actionLinksHtml}
+          ${editPanelHtml}
+        </div>
+      </div>`;
+    }
+    document.getElementById('view-todo').innerHTML = html;
+  }
+}
+
+function toggleTodoItem(rank, checked) {
+  const saved = JSON.parse(localStorage.getItem('team_bel_todo_v1') || '{}');
+  saved[rank] = !!checked;
+  localStorage.setItem('team_bel_todo_v1', JSON.stringify(saved));
+  renderActive();
+}
+
+function toggleActionItem(idx, checked) {
+  const savedAct = JSON.parse(localStorage.getItem('team_bel_actions_done_v1') || '{}');
+  savedAct[idx] = !!checked;
+  localStorage.setItem('team_bel_actions_done_v1', JSON.stringify(savedAct));
+  renderActive();
+}
+
+function copyToClipboard(text, btnEl) {
+  if (!navigator.clipboard) {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  } else {
+    navigator.clipboard.writeText(text);
+  }
+  if (btnEl) {
+    const origHtml = btnEl.innerHTML;
+    btnEl.innerHTML = `Copied: ${esc(text)}`;
+    setTimeout(() => { btnEl.innerHTML = origHtml; }, 1400);
+  }
+}
+
+function toggleVehicleResolved(clusterId, checked) {
+  const map = JSON.parse(localStorage.getItem('team_bel_veh_resolved_v1') || '{}');
+  map[clusterId] = !!checked;
+  localStorage.setItem('team_bel_veh_resolved_v1', JSON.stringify(map));
+  renderActive();
+}
+
+function saveVehicleNote(clusterId) {
+  const inp = document.getElementById('veh_note_input_' + clusterId);
+  if (!inp) return;
+  const val = inp.value.trim();
+  const vc = (DATA.vehicleClusters || []).find(x => x.Cluster_ID === clusterId);
+  if (vc) vc.Coach_Note = val;
+  const notes = JSON.parse(localStorage.getItem('team_bel_veh_notes_v1') || '{}');
+  notes[clusterId] = val;
+  localStorage.setItem('team_bel_veh_notes_v1', JSON.stringify(notes));
+  editingVehicleId = null;
+  renderActive();
+}
+
+function onVehiclePaxEdit(clusterId, pIdx, field, el) {
+  const newVal = el.innerText.trim();
+  const vc = (DATA.vehicleClusters || []).find(x => x.Cluster_ID === clusterId);
+  if (vc && vc.Passengers && vc.Passengers[pIdx]) {
+    vc.Passengers[pIdx][field] = newVal;
+    const edits = JSON.parse(localStorage.getItem('team_bel_veh_pax_edits_v1') || '{}');
+    edits[`${clusterId}::${pIdx}::${field}`] = newVal;
+    localStorage.setItem('team_bel_veh_pax_edits_v1', JSON.stringify(edits));
+  }
+}
+
+function saveTodoEdit(rank) {
+  const item = DATA.todoList.find(x => x.Rank === rank);
+  if (!item) return;
+  const updated = {
+    Task_Title: document.getElementById('edit_title_' + rank).value.trim(),
+    Due_Date: document.getElementById('edit_due_' + rank).value.trim(),
+    Owner: document.getElementById('edit_owner_' + rank).value.trim(),
+    Status: document.getElementById('edit_status_' + rank).value.trim(),
+    Action_Steps: document.getElementById('edit_steps_' + rank).value.trim(),
+    Coach_Note: document.getElementById('edit_note_' + rank).value.trim(),
+  };
+  Object.assign(item, updated);
+  const todoEdits = JSON.parse(localStorage.getItem('team_bel_todo_edits_v1') || '{}');
+  todoEdits[rank] = updated;
+  localStorage.setItem('team_bel_todo_edits_v1', JSON.stringify(todoEdits));
+  editingTodoRank = null;
+  renderActive();
+}
+
+function addNewTodoItem() {
+  const title = document.getElementById('new_title').value.trim();
+  if (!title) { alert('Please enter a Task Title.'); return; }
+  const tier = document.getElementById('new_tier').value;
+  const due = document.getElementById('new_due').value.trim() || 'TBD';
+  const owner = document.getElementById('new_owner').value.trim() || 'Joey Mantia';
+  const status = document.getElementById('new_status').value.trim() || 'ACTION NEEDED';
+  const steps = document.getElementById('new_steps').value.trim();
+  const linkVal = document.getElementById('new_link').value.trim();
+  const maxRank = DATA.todoList.reduce((m, x) => Math.max(m, x.Rank || 0), 0);
+  const newItem = {
+    Rank: maxRank + 1,
+    Urgency_Tier: tier,
+    Due_Date: due,
+    Task_Title: title,
+    Action_Steps: steps,
+    Owner: owner,
+    Status: status,
+    Is_Custom: true,
+    Action_Links: []
+  };
+  if (linkVal) {
+    if (linkVal.includes('@') && !linkVal.startsWith('http')) {
+      newItem.Action_Links.push({
+        label: 'Quick Email (' + linkVal + ')',
+        url: 'https://mail.google.com/mail/u/?authuser=joeymantia@gmail.com&view=cm&fs=1&to=' + encodeURIComponent(linkVal) + '&su=' + encodeURIComponent(title),
+        kind: 'reply'
+      });
+    } else {
+      newItem.Action_Links.push({
+        label: 'Open Link',
+        url: linkVal,
+        kind: 'portal'
+      });
+    }
+  }
+  DATA.todoList.push(newItem);
+  const customTodos = JSON.parse(localStorage.getItem('team_bel_custom_todos_v1') || '[]');
+  customTodos.push(newItem);
+  localStorage.setItem('team_bel_custom_todos_v1', JSON.stringify(customTodos));
+  showAddTodoForm = false;
+  renderActive();
+}
+
+function deleteCustomTodo(rank) {
+  if (!confirm('Delete custom task #' + rank + '?')) return;
+  const idx = DATA.todoList.findIndex(x => x.Rank === rank);
+  if (idx !== -1) DATA.todoList.splice(idx, 1);
+  let customTodos = JSON.parse(localStorage.getItem('team_bel_custom_todos_v1') || '[]');
+  customTodos = customTodos.filter(x => x.Rank !== rank);
+  localStorage.setItem('team_bel_custom_todos_v1', JSON.stringify(customTodos));
+  renderActive();
+}
+
+function downloadUpdatedHtml() {
+  // Bake current checkbox states into DATA.todoList and DATA.actions so downloaded file is 100% self-contained
+  const savedTodo = JSON.parse(localStorage.getItem('team_bel_todo_v1') || '{}');
+  for (const r of DATA.todoList) {
+    if (savedTodo[r.Rank] !== undefined) r.Auto_Replied = !!savedTodo[r.Rank];
+  }
+  const savedAct = JSON.parse(localStorage.getItem('team_bel_actions_done_v1') || '{}');
+  DATA.actions.forEach((a, i) => {
+    if (savedAct[i]) a.Status = 'COMPLETED';
+  });
+  const savedVehRes = JSON.parse(localStorage.getItem('team_bel_veh_resolved_v1') || '{}');
+  (DATA.vehicleClusters || []).forEach(vc => {
+    if (savedVehRes[vc.Cluster_ID] !== undefined) vc.Resolved = !!savedVehRes[vc.Cluster_ID];
+  });
+  let src = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+  src = src.replace(/const DATA = \{[\s\S]*?\};\nlet currentTab/, 'const DATA = ' + JSON.stringify(DATA) + ';\nlet currentTab');
+  const blob = new Blob([src], {type: 'text/html;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'Team_Belgium_Travel_Dashboard.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+const TAB_LABELS = {
+  matrix: '1. Person-by-Person Travel Matrix',
+  vehicles: 'Tickets by Vehicle (Clustered Closest Departure First)',
+  legs: '2. Master Flight & Train Log',
+  bookings: '3. Bookings & PNR Summary',
+  hotels: '4. Hotels, Rooming & Logistics',
+  actions: '5. Reminders, Visas & ISU Deadlines',
+  roster: '6. Team Roster, Passports & Frequent Flyer #s',
+  isurules: '7. 2026/27 ISU Season Calendar, Quotas & Rules',
+  todo: '8. Urgent To-Do Checklist (Most -> Least Urgent)'
+};
+
+function updatePrintBanner(labelOverride) {
+  const phase = document.getElementById('phaseFilter').value;
+  const q = document.getElementById('searchBox').value.trim();
+  const baseLabel = labelOverride || TAB_LABELS[currentTab] || currentTab;
+  let extra = [];
+  if (phase) extra.push('Filter: ' + phase);
+  if (q) extra.push('Search: "' + q + '"');
+  document.getElementById('printBanner').textContent =
+    'PRINTED SECTION: ' + baseLabel + (extra.length ? ' (' + extra.join(' | ') + ')' : '') + ' • Team Belgium Short Track (2026/27)';
+}
+
+function printCurrentTab() {
+  const origTitle = document.title;
+  const cleanTabName = (TAB_LABELS[currentTab] || currentTab).replace(/[^a-zA-Z0-9_-]+/g, '_');
+  document.title = 'Team_Belgium_' + cleanTabName;
+  updatePrintBanner();
+  window.print();
+  document.title = origTitle;
+}
+
+function printAllTabs() {
+  const origTitle = document.title;
+  const savedTab = currentTab;
+  document.title = 'Team_Belgium_Complete_Travel_Tracker_All_Tabs';
+  for (const t of Object.keys(TAB_LABELS)) {
+    currentTab = t;
+    renderActive();
+  }
+  currentTab = savedTab;
+  updatePrintBanner('ALL TABS (1–8 Complete Coach & Staff Report)');
+  document.body.classList.add('print-all-mode');
+  window.print();
+  document.body.classList.remove('print-all-mode');
+  document.title = origTitle;
+  renderActive();
+}
+
+(function initFromQuery() {
+  const params = new URLSearchParams(window.location.search);
+  const t = params.get('tab');
+  if (t && TAB_LABELS[t]) {
+    const btn = document.querySelector(`.tab-btn[data-tab="${t}"]`);
+    switchTab(t, btn);
+    updatePrintBanner();
+  } else {
+    renderActive();
+    updatePrintBanner();
+  }
+})();
+
+// ==================== PWA + SECURITY LOCK SCREEN & BIOMETRICS ====================
+const LOCK_PASSCODE_KEY = 'team_bel_travel_pin_v1';
+const LOCK_BIO_CRED_KEY = 'team_bel_travel_bio_cred_v1';
+let isAppUnlocked = true;
+let enteredPin = '';
+let bioPromptInFlight = false;
+let hiddenTimestamp = 0;
+let deferredInstallPrompt = null;
+
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  const btn = document.getElementById('installPwaBtn');
+  if (btn) btn.style.display = 'inline-block';
+});
+
+async function installPwaNow() {
+  if (!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null;
+  const btn = document.getElementById('installPwaBtn');
+  if (btn) btn.style.display = 'none';
+}
+
+function updateBioButtonState() {
+  const hasBio = Boolean(localStorage.getItem(LOCK_BIO_CRED_KEY));
+  const btn = document.getElementById('bioUnlockBtn');
+  if (btn) btn.textContent = hasBio ? 'Biometric' : 'Set Bio';
+  const hdrBtn = document.getElementById('hdrBioBtn');
+  if (hdrBtn) hdrBtn.textContent = hasBio ? 'Bio Ready' : 'Set Bio';
+}
+
+function renderPinDots(isError = false) {
+  const dots = document.querySelectorAll('#pinDots .pin-dot');
+  dots.forEach((dot, idx) => {
+    dot.className = 'pin-dot' + (idx < enteredPin.length ? ' filled' : '') + (isError ? ' error' : '');
+  });
+}
+
+function pressPinKey(digit) {
+  if (enteredPin.length >= 4) return;
+  enteredPin += digit;
+  renderPinDots(false);
+  if (enteredPin.length === 4) {
+    verifyEnteredPin(enteredPin);
+  }
+}
+
+function pressPinBackspace() {
+  enteredPin = enteredPin.slice(0, -1);
+  renderPinDots(false);
+}
+
+function verifyEnteredPin(pin) {
+  const savedPin = localStorage.getItem(LOCK_PASSCODE_KEY) || '';
+  if (!savedPin) {
+    localStorage.setItem(LOCK_PASSCODE_KEY, pin);
+    unlockAppSuccess();
+    return;
+  }
+  if (savedPin === pin) {
+    unlockAppSuccess();
+  } else {
+    renderPinDots(true);
+    setTimeout(() => {
+      enteredPin = '';
+      renderPinDots(false);
+    }, 400);
+  }
+}
+
+function unlockAppSuccess() {
+  isAppUnlocked = true;
+  enteredPin = '';
+  renderPinDots(false);
+  const ls = document.getElementById('lockScreen');
+  if (ls) ls.classList.add('hidden');
+}
+
+function lockAppNow(autoPromptBio = false) {
+  isAppUnlocked = false;
+  enteredPin = '';
+  renderPinDots(false);
+  const savedPin = localStorage.getItem(LOCK_PASSCODE_KEY) || '';
+  const titleEl = document.getElementById('lockScreenTitle');
+  const subEl = document.getElementById('lockScreenSub');
+  if (!savedPin) {
+    if (titleEl) titleEl.textContent = 'Create 4-Digit Passcode';
+    if (subEl) subEl.textContent = 'Choose a 4-digit passcode to protect Team Belgium travel records.';
+  } else {
+    if (titleEl) titleEl.textContent = 'Enter Passcode';
+    if (subEl) subEl.textContent = 'Use your fingerprint/face or enter your 4-digit passcode.';
+  }
+  const ls = document.getElementById('lockScreen');
+  if (ls) ls.classList.remove('hidden');
+  if (autoPromptBio && localStorage.getItem(LOCK_BIO_CRED_KEY)) {
+    triggerBiometricUnlock();
+  }
+}
+
+function handleBioButtonClick() {
+  if (localStorage.getItem(LOCK_BIO_CRED_KEY)) {
+    triggerBiometricUnlock();
+  } else {
+    enrollBiometricUnlock();
+  }
+}
+
+async function enrollBiometricUnlock() {
+  if (!window.PublicKeyCredential || !navigator.credentials) {
+    alert('Biometric sensor requires HTTPS web app mode.');
+    return;
+  }
+  try {
+    const challenge = new Uint8Array(32);
+    crypto.getRandomValues(challenge);
+    const userId = new Uint8Array(16);
+    crypto.getRandomValues(userId);
+    const cred = await navigator.credentials.create({
+      publicKey: {
+        challenge,
+        rp: { name: 'Team Belgium Travel' },
+        user: {
+          id: userId,
+          name: 'joeymantia@gmail.com',
+          displayName: 'Joey Mantia'
+        },
+        pubKeyCredParams: [{ type: 'public-key', alg: -7 }, { type: 'public-key', alg: -257 }],
+        authenticatorSelection: {
+          authenticatorAttachment: 'platform',
+          userVerification: 'required'
+        },
+        timeout: 60000
+      }
+    });
+    const rawId = btoa(String.fromCharCode(...new Uint8Array(cred.rawId)));
+    localStorage.setItem(LOCK_BIO_CRED_KEY, rawId);
+    updateBioButtonState();
+  loadEncryptedTravelVault();
+    unlockAppSuccess();
+  } catch (err) {}
+}
+
+async function triggerBiometricUnlock() {
+  if (isAppUnlocked || bioPromptInFlight) return;
+  const credIdB64 = localStorage.getItem(LOCK_BIO_CRED_KEY);
+  if (!credIdB64 || !window.PublicKeyCredential || !navigator.credentials) return;
+  bioPromptInFlight = true;
+  try {
+    const challenge = new Uint8Array(32);
+    crypto.getRandomValues(challenge);
+    const rawId = Uint8Array.from(atob(credIdB64), (c) => c.charCodeAt(0));
+    await navigator.credentials.get({
+      publicKey: {
+        challenge,
+        allowCredentials: [{ id: rawId, type: 'public-key' }],
+        userVerification: 'required',
+        timeout: 60000
+      }
+    });
+    bioPromptInFlight = false;
+    unlockAppSuccess();
+  } catch (err) {
+    bioPromptInFlight = false;
+  }
+}
+
+(function initSecurityOnLoad() {
+  updateBioButtonState();
+  loadEncryptedTravelVault();
+  // Automatically lock & prompt biometrics when running as hosted HTTPS web app
+  if (location.protocol === 'https:') {
+    lockAppNow(true);
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        hiddenTimestamp = Date.now();
+      } else if (document.visibilityState === 'visible') {
+        if (hiddenTimestamp && Date.now() - hiddenTimestamp > 30000) {
+          lockAppNow(true);
+        } else if (!isAppUnlocked) {
+          triggerBiometricUnlock();
+        }
+      }
+    });
+    window.addEventListener('focus', () => {
+      if (!isAppUnlocked) triggerBiometricUnlock();
+    });
+    window.addEventListener('pageshow', () => {
+      if (!isAppUnlocked) triggerBiometricUnlock();
+    });
+  }
+})();
+</script>
+</body>
+</html>

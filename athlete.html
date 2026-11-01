@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team Belgium Short Track — Athlete Travel &amp; Season Hub (Read-Only)</title>
+<style>
+  :root {
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --border-subtle: #f1f5f9;
+    --text: #0f172a;
+    --muted: #64748b;
+    --primary: #0f172a;
+    --green-bg: #ecfdf5;
+    --green-text: #065f46;
+    --green-border: #a7f3d0;
+    --amber-bg: #fffbeb;
+    --amber-text: #92400e;
+    --amber-border: #fde68a;
+    --red-bg: #fef2f2;
+    --red-text: #991b1b;
+    --red-border: #fecaca;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 13.5px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  header {
+    background: #0f172a;
+    color: #f8fafc;
+    padding: 14px 24px;
+    border-bottom: 1px solid #1e293b;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
+  header h1 { margin: 0; font-size: 16.5px; font-weight: 600; letter-spacing: -0.2px; color: #f8fafc; }
+  header p { margin: 2px 0 0; color: #94a3b8; font-size: 12px; }
+  .ro-pill {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.16);
+    color: #e2e8f0;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11.5px;
+    font-weight: 500;
+  }
+  .controls {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    padding: 10px 24px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  .tabs {
+    display: inline-flex;
+    gap: 2px;
+    flex-wrap: wrap;
+    background: #f1f5f9;
+    padding: 3px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+  }
+  .tab-btn, .tab-btn-vehicles {
+    border: none;
+    background: transparent;
+    color: #475569;
+    padding: 6px 11px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 12.5px;
+    transition: all 0.12s;
+  }
+  .tab-btn:hover, .tab-btn-vehicles:hover { color: #0f172a; background: rgba(255,255,255,0.55); }
+  .tab-btn.active, .tab-btn-vehicles.active {
+    background: #ffffff;
+    color: #0f172a;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+  }
+  .filters { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  input[type="search"], select {
+    padding: 6px 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 12.5px;
+    color: #0f172a;
+    background: #ffffff;
+  }
+  select.athlete-picker {
+    font-weight: 600;
+    min-width: 210px;
+  }
+  main { padding: 18px 24px 48px; max-width: 1560px; margin: 0 auto; }
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow-x: auto;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.03);
+  }
+  table { width: 100%; border-collapse: collapse; text-align: left; }
+  th {
+    background: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 9px 12px;
+    border-bottom: 1px solid #cbd5e1;
+    white-space: nowrap;
+  }
+  td { padding: 9px 12px; border-bottom: 1px solid var(--border-subtle); vertical-align: top; font-size: 13px; color: #1e293b; }
+  tr:nth-child(even) td { background: transparent; }
+  tr:hover td { background: #f8fafc; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-size: 11.5px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .badge-pnr {
+    background: #f1f5f9;
+    color: #0f172a;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11.5px;
+    font-weight: 600;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    padding: 1px 6px;
+  }
+  .badge-ok { background: var(--green-bg); color: var(--green-text); border: 1px solid var(--green-border); }
+  .badge-warn { background: var(--amber-bg); color: var(--amber-text); border: 1px solid var(--amber-border); }
+  .badge-crit { background: var(--red-bg); color: var(--red-text); border: 1px solid var(--red-border); }
+  .badge-muted { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; font-weight: 500; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; font-variant-numeric: tabular-nums; }
+  .btn-print, .btn-print-secondary {
+    border: 1px solid #cbd5e1;
+    background: #ffffff;
+    color: #334155;
+    padding: 6px 11px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 12.5px;
+  }
+  .btn-print:hover, .btn-print-secondary:hover { background: #f8fafc; border-color: #94a3b8; color: #0f172a; }
+  .vehicle-filter-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .v-subfilter-group {
+    display: inline-flex;
+    background: #f1f5f9;
+    padding: 3px;
+    border-radius: 7px;
+    border: 1px solid #e2e8f0;
+    gap: 2px;
+  }
+  .v-subfilter-btn {
+    border: none;
+    background: transparent;
+    color: #475569;
+    padding: 5px 11px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.12s;
+  }
+  .v-subfilter-btn.active {
+    background: #ffffff;
+    color: #0f172a;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.06);
+  }
+  .vehicle-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid #10b981;
+    border-radius: 10px;
+    margin-bottom: 14px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.03);
+  }
+  .vehicle-card.health-CONFIRMED { border-left-color: #10b981; }
+  .vehicle-card.health-WARNING_PENDING { border-left-color: #f59e0b; }
+  .vehicle-card.health-CRITICAL_UNBOOKED { border-left-color: #ef4444; }
+  .vehicle-card.health-COMPLETED { border-left-color: #94a3b8; opacity: 0.86; }
+  .vehicle-card-header {
+    padding: 14px 18px;
+    background: #ffffff;
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
+  .v-primary-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+  }
+  .v-date-text { font-size: 15px; font-weight: 700; color: #0f172a; letter-spacing: -0.2px; }
+  .v-countdown-badge {
+    background: #f1f5f9;
+    color: #475569;
+    font-weight: 600;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+  .v-sep { color: #cbd5e1; }
+  .v-time-text { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13.5px; font-weight: 600; color: #0f172a; }
+  .v-route-text { font-size: 14.5px; font-weight: 600; color: #0f172a; }
+  .v-flight-chip {
+    background: #f1f5f9;
+    color: #0f172a;
+    border: 1px solid #e2e8f0;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 5px;
+  }
+  .v-subtitle-line {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #64748b;
+  }
+  .v-pnr-box {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+  .pnr-copy-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    color: #0f172a;
+    padding: 4px 9px;
+    border-radius: 6px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .pnr-copy-pill:hover { background: #f1f5f9; border-color: #94a3b8; }
+  .tkt-copy-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: transparent;
+    border: 1px solid transparent;
+    color: #0f172a;
+    padding: 2px 6px;
+    margin-left: -6px;
+    border-radius: 4px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .tkt-copy-btn:hover { background: #f1f5f9; border-color: #cbd5e1; }
+  .vehicle-card table th {
+    background: #fafafa;
+    color: #64748b;
+    font-size: 10.5px;
+    padding: 7px 14px;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .vehicle-card table td {
+    padding: 7px 14px;
+    font-size: 12.5px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .vehicle-card table tr:last-child td { border-bottom: none; }
+  tr.pax-highlight td { background: #fefce8 !important; }
+  tr.pax-highlight td:first-child { border-left: 3px solid #eab308; }
+  .print-banner {
+    display: none;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-left: 4px solid #0f172a;
+    padding: 8px 14px;
+    margin-bottom: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #0f172a;
+  }
+  .hidden { display: none !important; }
+  /* Security Lock Screen (PIN + Biometric WebAuthn) */
+  .lock-screen {
+    position: fixed;
+    inset: 0;
+    background: #ffffff;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 20px;
+  }
+  .lock-screen.hidden { display: none !important; }
+  .lock-logo {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: #0f172a;
+    border: 2px solid #eab308;
+    color: #f8fafc;
+    font-weight: 800;
+    font-size: 16px;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(15, 23, 42, 0.18);
+    margin-bottom: 16px;
+  }
+  .lock-title { font-size: 20px; font-weight: 700; color: #0f172a; margin: 0 0 6px; text-align: center; }
+  .lock-sub { font-size: 13px; color: #64748b; margin: 0 0 24px; text-align: center; max-width: 300px; line-height: 1.4; }
+  .pin-dots { display: flex; gap: 16px; margin-bottom: 28px; }
+  .pin-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid #cbd5e1;
+    background: transparent;
+    transition: all 0.15s ease;
+  }
+  .pin-dot.filled { background: #0f172a; border-color: #0f172a; transform: scale(1.08); }
+  .pin-dot.error { background: #ef4444; border-color: #ef4444; }
+  .keypad {
+    display: grid;
+    grid-template-columns: repeat(3, 76px);
+    gap: 14px;
+    justify-content: center;
+  }
+  .key-btn {
+    width: 76px;
+    height: 64px;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    color: #0f172a;
+    font-size: 22px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.1s ease, transform 0.08s ease;
+  }
+  .key-btn:active { background: #e2e8f0; transform: scale(0.96); }
+  .key-btn.key-sub { font-size: 12px; font-weight: 700; color: #64748b; }
+  .key-btn.key-bio { font-size: 12px; font-weight: 700; color: #0f172a; border-color: #cbd5e1; background: #f1f5f9; }
+  .hdr-action-btn {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: #f8fafc;
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 11.5px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .hdr-action-btn:hover { background: rgba(255,255,255,0.16); }
+  @media (max-width: 768px) {
+    header { padding: 12px 14px; gap: 10px; }
+    header h1 { font-size: 15px; }
+    header p { font-size: 11px; }
+    .stats-row {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      padding-top: 6px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+    }
+    .stat-pill { border-left: none; padding-left: 0; }
+    .controls { padding: 8px 12px; gap: 8px; }
+    .tabs {
+      width: 100%;
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab-btn, .tab-btn-vehicles, .tab-btn-urgent { white-space: nowrap; flex-shrink: 0; padding: 6px 10px; font-size: 12px; }
+    .filters { width: 100%; }
+    .filters select, .filters input[type="search"] { flex: 1; min-width: 130px; }
+    main { padding: 12px 10px 40px; }
+    .vehicle-card-header { padding: 12px 14px; gap: 10px; }
+    .v-pnr-box { width: 100%; justify-content: flex-start; }
+  }
+  @media print {
+    @page { size: landscape; margin: 7mm; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+    body { background: #ffffff !important; font-size: 10px !important; }
+    header { padding: 10px 16px !important; border-bottom-width: 1px !important; }
+    header h1 { font-size: 15px !important; }
+    header p { font-size: 10.5px !important; }
+    .controls, .no-print { display: none !important; }
+    .print-banner { display: block !important; }
+    main { padding: 8px 0 0 0 !important; max-width: 100% !important; }
+    .table-wrap { overflow: visible !important; border: none !important; box-shadow: none !important; }
+    table { width: 100% !important; table-layout: auto !important; font-size: 9.5px !important; }
+    th { position: static !important; padding: 5px 6px !important; font-size: 8.5px !important; white-space: normal !important; }
+    td { padding: 4px 6px !important; font-size: 9.5px !important; word-break: break-word !important; }
+    tr, .vehicle-card { break-inside: avoid; page-break-inside: avoid; }
+    thead { display: table-header-group; }
+    body.print-all-mode .view-section { display: block !important; page-break-after: always; margin-bottom: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Team Belgium Short Track — Athlete Travel &amp; Season Hub</h1>
+    <p>Flights, Booking Codes (PNRs), Hotels &amp; Rooming, Equipment Rules &amp; 2026/27 Season Schedule</p>
+  </div>
+  <div class="ro-pill">Read-Only Athlete Edition</div>
+</header>
+
+<div class="controls">
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="matrix" onclick="switchTab('matrix', this)">Trip Overview</button>
+    <button class="tab-btn tab-btn-vehicles" data-tab="vehicles" onclick="switchTab('vehicles', this)">Tickets by Vehicle</button>
+    <button class="tab-btn" data-tab="legs" onclick="switchTab('legs', this)">Flights &amp; Trains</button>
+    <button class="tab-btn" data-tab="hotels" onclick="switchTab('hotels', this)">Hotels &amp; Rooming</button>
+    <button class="tab-btn" data-tab="reminders" onclick="switchTab('reminders', this)">Reminders &amp; Rules</button>
+    <button class="tab-btn" data-tab="isurules" onclick="switchTab('isurules', this)">ISU Rules</button>
+    <button class="tab-btn" data-tab="roster" onclick="switchTab('roster', this)">Frequent Flyer &amp; Passports</button>
+  </div>
+  <div class="filters">
+    <select id="personFilter" class="athlete-picker" onchange="renderActive()">
+      <option value="">All Athletes &amp; Staff (Filter by Name)</option>
+      <option value="Joey Mantia">Joey Mantia (Head Coach)</option>
+      <option value="Matt Zukowski">Matt Zukowski (Assistant Coach)</option>
+      <option value="Mengyao (Maggie) Qi">Mengyao (Maggie) Qi (Team Leader)</option>
+      <option value="Jeremy Kozuback">Jeremy Kozuback (Physiotherapist (Asia))</option>
+      <option value="Martin Zacharias">Martin Zacharias (Physiotherapist (WT1/WT2))</option>
+      <option value="Hanne Desmet">Hanne Desmet (Athlete (F))</option>
+      <option value="Tineke Den Dulk">Tineke Den Dulk (Athlete (F))</option>
+      <option value="Stijn Desmet">Stijn Desmet (Athlete (M))</option>
+      <option value="Adriaan Dewagtere">Adriaan Dewagtere (Athlete (M))</option>
+      <option value="Warre Noiron">Warre Noiron (Athlete (M))</option>
+      <option value="Ward Petre">Ward Petre (Athlete (M))</option>
+      <option value="Enzo Proost">Enzo Proost (Athlete (M))</option>
+      <option value="Aleyandro Rivero Maerschalck">Aleyandro Rivero Maerschalck (Athlete (M))</option>
+      <option value="Fre Van Damme">Fre Van Damme (Athlete (M))</option>
+      <option value="Warre Van Damme">Warre Van Damme (Athlete (M))</option>
+    </select>
+    <input type="search" id="searchBox" placeholder="Search flight, PNR, hotel, rule..." oninput="renderActive()">
+    <button class="btn-print" onclick="printCurrentTab()" title="Print or Save the currently active tab as a landscape PDF">Print Tab</button>
+    <button class="btn-print-secondary" onclick="printAllTabs()" title="Print or Save all tabs at once as a multi-section PDF">Print All</button>
+  </div>
+</div>
+
+<main>
+  <div id="printBanner" class="print-banner"></div>
+  <div id="view-matrix" class="view-section"></div>
+  <div id="view-vehicles" class="view-section hidden"></div>
+  <div id="view-legs" class="view-section hidden"></div>
+  <div id="view-hotels" class="view-section hidden"></div>
+  <div id="view-reminders" class="view-section hidden"></div>
+  <div id="view-isurules" class="view-section hidden"></div>
+  <div id="view-roster" class="view-section hidden"></div>
+</main>
+
+<script>
+const DATA = {"personMatrix": [{"Traveler": "Joey Mantia", "Role": "Head Coach", "Leg 1: Summer Camp (Jul–Sep)": "In Calgary / SLC", "Leg 2: WT1 Vancouver (Oct 18)": "AC 2021 (was AC213) YYC->YVR (12:40-13:18) | PNR: CHTL8O | Tkt: 0149400713473 | Hotel: Sheraton Wall Centre (Single)", "Leg 3: WT2 Montreal (Oct 26)": "AC 312 (was AC304) YVR->YUL (09:20-17:04) | PNR: CHTL8O | Tkt: 0149400713473 | Hotel Universel (Single)", "Leg 4: Post-WT2 Return (Nov 1-2)": "AC 321 YUL->YYC (13:15-17:10) Nov 2 | PNR: CHTL8O | Tkt: 0149400713473", "Leg 5: WT3 Seoul (Nov 14)": "AC 205 YYC->YVR + AC 63 YVR->ICN (Arr Nov 15 17:10) | Group PNR: CM352A | Hotel: ibis Styles Yongsan (Double)", "Leg 6: Shanghai Camp (Nov 23-24)": "CZ 314 ICN->PVG (12:35-13:55) Nov 23 | PNR: PB0DFM (29ABQ2) | Tkt: 7844830129578", "Leg 7: WT4 Beijing (Nov 30)": "High-Speed Bullet Train PVG->PEK (Booked by Maggie)", "Leg 8: Changchun Camp (Dec 7)": "High-Speed Bullet Train PEK->CGQ (Maggie arranging)", "Leg 9: Home Return (Dec 7/10/22)": "Dec 22: OZ 304 (becomes KE flight Nov 2) CGQ->ICN (11:35-14:30) + KE 5023 ICN->SLC (18:40-13:52) | PNR: 2PFJ9Q | Tkt: 1804830295474"}, {"Traveler": "Matt Zukowski", "Role": "Assistant Coach", "Leg 1: Summer Camp (Jul–Sep)": "In Calgary (YYC)", "Leg 2: WT1 Vancouver (Oct 18)": "AC 2021 YYC->YVR (12:40-13:18) | PNR: AZYECP | Tkt: 0149400713482 | Seat 27B | Sheraton Wall Centre (Single)", "Leg 3: WT2 Montreal (Oct 26)": "AC 312 YVR->YUL (09:20-17:04) | PNR: AZYECP | Tkt: 0149400713482 | Seat 38A | Hotel Universel (Single)", "Leg 4: Post-WT2 Return (Nov 1-2)": "AC 321 YUL->YYC (13:15-17:10) Nov 2 | PNR: AZYECP | Tkt: 0149400713482 | Seat 25F", "Leg 5: WT3 Seoul (Nov 14)": "AC 205 YYC->YVR + AC 63 YVR->ICN (Arr Nov 15 17:10) | Group PNR: CM352A | Hotel: ibis Styles Yongsan (Double)", "Leg 6: Shanghai Camp (Nov 23-24)": "CZ 314 ICN->PVG (12:35-13:55) Nov 23 | PNR: PB0DFM (29ABQ2) | Tkt: 7844830129581", "Leg 7: WT4 Beijing (Nov 30)": "High-Speed Bullet Train PVG->PEK (Booked by Maggie)", "Leg 8: Changchun Camp (Dec 7)": "High-Speed Bullet Train PEK->CGQ (Maggie arranging)", "Leg 9: Home Return (Dec 7/10/22)": "Dec 10: OZ 304 CGQ->ICN + AC 64 ICN->YVR + AC 218 YVR->YYC | PNR: AM4K3G | Tkt: 0144830214405"}, {"Traveler": "Mengyao (Maggie) Qi", "Role": "Team Leader", "Leg 1: Summer Camp (Jul–Sep)": "In Calgary (YYC)", "Leg 2: WT1 Vancouver (Oct 18)": "Own travel Oct 21-26 | Hotel: Sheraton Wall Centre (Double room)", "Leg 3: WT2 Montreal (Oct 26)": "Own travel Oct 27-Nov 1 | Hotel: Hotel Universel Montreal (Single room Oct 27-Nov 1)", "Leg 4: Post-WT2 Return (Nov 1-2)": "Own travel Nov 1", "Leg 5: WT3 Seoul (Nov 14)": "Not travelling to Seoul", "Leg 6: Shanghai Camp (Nov 23-24)": "Nov 24: AC 205 YYC->YVR (09:00) + AC 25 YVR->PVG (Arr Nov 25 16:00) | PNR: CVCZDA | Tkt: 0149400980796", "Leg 7: WT4 Beijing (Nov 30)": "High-Speed Bullet Train PVG->PEK (Booked by Maggie)", "Leg 8: Changchun Camp (Dec 7)": "High-Speed Bullet Train PEK->CGQ (Maggie arranging)", "Leg 9: Home Return (Dec 7/10/22)": "Dec 10: OZ 304 CGQ->ICN + AC 64 ICN->YVR + AC 218 YVR->YYC | PNR: AM4K3G | Tkt: 0144830214404"}, {"Traveler": "Jeremy Kozuback", "Role": "Physiotherapist (Asia)", "Leg 1: Summer Camp (Jul–Sep)": "In Calgary (YYC)", "Leg 2: WT1 Vancouver (Oct 18)": "Not travelling (Martin covers WT1)", "Leg 3: WT2 Montreal (Oct 26)": "Not travelling (Martin covers WT2)", "Leg 4: Post-WT2 Return (Nov 1-2)": "—", "Leg 5: WT3 Seoul (Nov 14)": "AC 205 YYC->YVR + AC 63 YVR->ICN (Arr Nov 15 17:10) | Group PNR: CM352A | Hotel: ibis Styles Yongsan (Double)", "Leg 6: Shanghai Camp (Nov 23-24)": "CZ 314 ICN->PVG (12:35-13:55) Nov 23 | PNR: PB0DFM (29ABQ2) | Tkt: 7844830129577", "Leg 7: WT4 Beijing (Nov 30)": "High-Speed Bullet Train PVG->PEK (Booked by Maggie)", "Leg 8: Changchun Camp (Dec 7)": "Departs Beijing Dec 7 (Does not go to Changchun)", "Leg 9: Home Return (Dec 7/10/22)": "Dec 7: AC 30 PEK->YVR (20:05-15:45) + AC 222 YVR->YYC (18:30-20:59) | PNR: CVDH3J | Tkt: 0149400980798"}, {"Traveler": "Martin Zacharias", "Role": "Physiotherapist (WT1/WT2)", "Leg 1: Summer Camp (Jul–Sep)": "In Calgary (YYC)", "Leg 2: WT1 Vancouver (Oct 18)": "Oct 21: AC 203 YYC->YVR (06:50-07:28) & Oct 25: AC 226 YVR->YYC (20:05-22:34) | PNR: CE5MDM | Tkt: 0142336020072 | Sheraton Wall Centre (Single Oct 21-25)", "Leg 3: WT2 Montreal (Oct 26)": "Oct 27: AC 326 YYC->YUL (17:10-23:18) | PNR: CE72IU | Tkt: 0142336020077 | Seat 31D | Hotel Universel (Single Oct 27-Nov 1)", "Leg 4: Post-WT2 Return (Nov 1-2)": "Nov 1: AC 327 YUL->YYC (20:55-00:50+1) | PNR: CE72IU | Tkt: 0142336020077 | Seat 31D", "Leg 5: WT3 Seoul (Nov 14)": "Not travelling (Jeremy covers Asia)", "Leg 6: Shanghai Camp (Nov 23-24)": "—", "Leg 7: WT4 Beijing (Nov 30)": "—", "Leg 8: Changchun Camp (Dec 7)": "—", "Leg 9: Home Return (Dec 7/10/22)": "—"}, {"Traveler": "Hanne Desmet", "Role": "Athlete (F)", "Leg 1: Summer Camp (Jul–Sep)": "Jul 2 BRU-AMS-YYC (Seats 21A/27G) / Sep 14 YYC-YYZ-AMS-BRU | KLM PNR: ZLIL9N | Tkt: 0742139952279", "Leg 2: WT1 Vancouver (Oct 18)": "AC 2021 YYC->YVR (12:40-13:18) | PNR: CHTL8O | Tkt: 0149400713478 | Sheraton Wall Centre (Twin w/ Tineke)", "Leg 3: WT2 Montreal (Oct 26)": "AC 312 YVR->YUL (09:20-17:04) | PNR: CHTL8O | Tkt: 0149400713478 (+Bag 9434 & Bike 9440) | Hotel Universel (w/ Tineke)", "Leg 4: Post-WT2 Return (Nov 1-2)": "AC 321 YUL->YYC (13:15-17:10) Nov 2 | PNR: CHTL8O | Tkt: 0149400713478", "Leg 5: WT3 Seoul (Nov 14)": "AC 205 YYC->YVR + AC 63 YVR->ICN (Arr Nov 15 17:10) | Group PNR: CM352A | ibis Styles (Twin w/ Tineke)", "Leg 6: Shanghai Camp (Nov 23-24)": "CZ 314 ICN->PVG (12:35-13:55) Nov 23 | PNR: NJXWKL (A44X7U) | Tkt: 7844830129572", "Leg 7: WT4 Beijing (Nov 30)": "High-Speed Bullet Train PVG->PEK (Booked by Maggie)", "Leg 8: Changchun Camp (Dec 7)": "High-Speed Bullet Train PEK->CGQ (Maggie arranging)", "Leg 9: Home Return (Dec 7/10/22)": "ACTION NEEDED: Dec 22 CGQ/PEK -> BRU (Quoted PEK->IST->BRU Turkish $705 vs PEK->MUC->BRU Lufthansa $1,063)"}, {"Traveler": "Tineke Den Dulk", "Role": "Athlete (F)", "Leg 1: Summer Camp (Jul–Sep)": "Jul 2 BRU-AMS-YYC (Seats 21D/27E) / Sep 14 YYC-YYZ-AMS-BRU | KLM PNR: ZLIL9N | Tkt: 0742139952277", "Leg 2: WT1 Vancouver (Oct 18)": "AC 2021 YYC->YVR (12:40-13:18) | PNR: CHTL8O | Tkt: 0149400713477 | Sheraton Wall Centre (Twin w/ Hanne)", "Leg 3: WT2 Montreal (Oct 26)": "AC 312 YVR->YUL (09:20-17:04) | PNR: CHTL8O | Tkt: 0149400713477 (+Bike 0144117279431) | Hotel Universel (w/ Hanne)", "Leg 4: Post-WT2 Return (Nov 1-2)": "AC 321 YUL->YYC (13:15-17:10) Nov 2 | PNR: CHTL8O | Tkt: 0149400713477", "Leg 5: WT3 Seoul (Nov 14)": "AC 205 YYC->YVR + AC 63 YVR->ICN (Arr Nov 15 17:10) | Group PNR: CM352A | ibis Styles (Twin w/ Hanne)", "Leg 6: Shanghai Camp (Nov 23-24)": "CZ 314 ICN->PVG (12:35-13:55) Nov 23 | PNR: NJXWKL (A44X7U) | Tkt: 7844830129571", "Leg 7: WT4 Beijing (Nov 30)": "High-Speed Bullet Train PVG->PEK (Booked by Maggie)", "Leg 8: Changchun Camp (Dec 7)": "High-Speed Bullet Train PEK->CGQ (Maggie arranging)", "Leg 9: Home Return (Dec 7/10/22)": "ACTION NEEDED: Dec 22 CGQ/PEK -> BRU (Quoted PEK->IST->BRU Turkish $705 vs PEK->MUC->BRU Lufthansa $1,063)"}, {"Traveler": "Stijn Desmet", "Role": "Athlete (M)", "Leg 1: Summer Camp (Jul–Sep)": "Jul 13 BRU-AMS-YYC (Seats 20C/39D) / Sep 22 Return (Refunded #2609133703696) | KLM PNR: Y5524F | Tkt: 0742140347324", "Leg 2: WT1 Vancouver (Oct 18)": "Did not race WT1 (Remained in Calgary)", "Leg 3: WT2 Montreal (Oct 26)": "Oct 29: TS 7384 (Porter) YYC->YUL (07:05-13:20) | PNR: XW2ETT | Seat 12A | Hotel Universel", "Leg 4: Post-WT2 Return (Nov 1-2)": "Nov 1: TS 7389 (Porter) YUL->YYC (19:40-23:32) | PNR: XW2ETT | Seat 16F", "Leg 5: WT3 Seoul (Nov 14)": "Skipping WT3 Seoul (Remains in Calgary until Nov 24)", "Leg 6: Shanghai Camp (Nov 23-24)": "Nov 24: AC 205 YYC->YVR (09:00) + AC 25 YVR->PVG (Arr Nov 25 16:00) | PNR: CVCZDA | Tkt: 0149400980797", "Leg 7: WT4 Beijing (Nov 30)": "High-Speed Bullet Train PVG->PEK (Booked by Maggie)", "Leg 8: Changchun Camp (Dec 7)": "High-Speed Bullet Train PEK->CGQ (Maggie arranging)", "Leg 9: Home Return (Dec 7/10/22)": "ACTION NEEDED: Dec 22 CGQ/PEK -> BRU (Quoted PEK->IST->BRU Turkish $705 vs PEK->MUC->BRU Lufthansa $1,063)"}, {"Traveler": "Adriaan Dewagtere", "Role": "Athlete (M)", "Leg 1: Summer Camp (Jul–Sep)": "Jul 2 BRU-AMS-YYC (Seats 21C/27F) / Sep 14 YYC-YYZ-AMS-BRU | KLM PNR: ZLIL9N | Tkt: 0742139952281", "Leg 2: WT1 Vancouver (Oct 18)": "AC 2021 YYC->YVR (12:40-13:18) | PNR: CHTL8O | Tkt: 0149400713479 | Sheraton Wall Centre (Twin w/ Ward)", "Leg 3: WT2 Montreal (Oct 26)": "AC 312 YVR->YUL (09:20-17:04) | PNR: CHTL8O | Tkt: 0149400713479 | Hotel Universel (w/ Ward)", "Leg 4: Post-WT2 Return (Nov 1-2)": "AC 321 YUL->YYC (13:15-17:10) Nov 2 | PNR: CHTL8O | Tkt: 0149400713479", "Leg 5: WT3 Seoul (Nov 14)": "AC 205 YYC->YVR + AC 63 YVR->ICN (Arr Nov 15 17:10) | Group PNR: CM352A | ibis Styles (Twin w/ Enzo)", "Leg 6: Shanghai Camp (Nov 23-24)": "CZ 314 ICN->PVG (12:35-13:55) Nov 23 | PNR: NJXWKL (A44X7U) | Tkt: 7844830129573", "Leg 7: WT4 Beijing (Nov 30)": "High-Speed Bullet Train PVG->PEK (Booked by Maggie)", "Leg 8: Changchun Camp (Dec 7)": "High-Speed Bullet Train PEK->CGQ (Maggie arranging)", "Leg 9: Home Return (Dec 7/10/22)": "ACTION NEEDED: Dec 22 CGQ/PEK -> BRU (Quoted PEK->IST->BRU Turkish $705 vs PEK->MUC->BRU Lufthansa $1,063)"}, {"Traveler": "Warre Noiron", "Role": "Athlete (M)", "Leg 1: Summer Camp (Jul–Sep)": "Jul 2 BRU-AMS-YYC (Seats 21F/28F) / Sep 14 YYC-YYZ-AMS-BRU | KLM PNR: ZLIL9N | Tkt: 0742139952283", "Leg 2: WT1 Vancouver (Oct 18)": "AC 2021 YYC->YVR (12:40-13:18) | PNR: CHTL8O | Tkt: 0149400713481 | Sheraton Wall Centre (Twin w/ Aleyandro)", "Leg 3: WT2 Montreal (Oct 26)": "AC 312 YVR->YUL (09:20-17:04) | PNR: CHTL8O | Tkt: 0149400713481 (+Bag 0144117279436) | Hotel Universel (w/ Aleyandro)", "Leg 4: Post-WT2 Return (Nov 1-2)": "AC 321 YUL->YYC (13:15-17:10) Nov 2 | PNR: CHTL8O | Tkt: 0149400713481", "Leg 5: WT3 Seoul (Nov 14)": "AC 205 YYC->YVR + AC 63 YVR->ICN (Arr Nov 15 17:10) | Group PNR: CM352A | ibis Styles (Twin w/ Aleyandro)", "Leg 6: Shanghai Camp (Nov 23-24)": "CZ 314 ICN->PVG (12:35-13:55) Nov 23 | PNR: NJXWKL (A44X7U) | Tkt: 7844830129574", "Leg 7: WT4 Beijing (Nov 30)": "High-Speed Bullet Train PVG->PEK (Booked by Maggie)", "Leg 8: Changchun Camp (Dec 7)": "High-Speed Bullet Train PEK->CGQ (Maggie arranging)", "Leg 9: Home Return (Dec 7/10/22)": "ACTION NEEDED: Dec 22 CGQ/PEK -> BRU (Quoted PEK->IST->BRU Turkish $705 vs PEK->MUC->BRU Lufthansa $1,063)"}, {"Traveler": "Ward Petre", "Role": "Athlete (M)", "Leg 1: Summer Camp (Jul–Sep)": "Jul 2 BRU-AMS-YYC (Seats 21B/28G) / Sep 14 YYC-YYZ-AMS-BRU | KLM PNR: ZLIL9N | Tkt: 0742139952285", "Leg 2: WT1 Vancouver (Oct 18)": "AC 2021 YYC->YVR (12:40-13:18) | PNR: CHTL8O | Tkt: 0149400713474 | Sheraton Wall Centre (Twin w/ Adriaan)", "Leg 3: WT2 Montreal (Oct 26)": "AC 312 YVR->YUL (09:20-17:04) | PNR: CHTL8O | Tkt: 0149400713474 | Hotel Universel (w/ Adriaan)", "Leg 4: Post-WT2 Return (Nov 1-2)": "AC 321 YUL->YYC (13:15-17:10) Nov 2 | PNR: CHTL8O | Tkt: 0149400713474", "Leg 5: WT3 Seoul (Nov 14)": "Not travelling (Replaced by Enzo Proost on CM352A)", "Leg 6: Shanghai Camp (Nov 23-24)": "Not travelling", "Leg 7: WT4 Beijing (Nov 30)": "Not travelling", "Leg 8: Changchun Camp (Dec 7)": "Not travelling", "Leg 9: Home Return (Dec 7/10/22)": "Check if returning YYC->BRU after Nov 2"}, {"Traveler": "Enzo Proost", "Role": "Athlete (M)", "Leg 1: Summer Camp (Jul–Sep)": "Jul 13 BRU-AMS-YYC (Seats 19E/33D) / Sep 16 YYC-YUL-AMS-BRU | KLM PNR: XNZ4IK | Tkt: 0742140160085", "Leg 2: WT1 Vancouver (Oct 18)": "Did not race WT1", "Leg 3: WT2 Montreal (Oct 26)": "Did not race WT2", "Leg 4: Post-WT2 Return (Nov 1-2)": "In Calgary (YYC)", "Leg 5: WT3 Seoul (Nov 14)": "AC 205 YYC->YVR + AC 63 YVR->ICN (Arr Nov 15 17:10) | Group PNR: CM352A | ibis Styles (Twin w/ Adriaan)", "Leg 6: Shanghai Camp (Nov 23-24)": "CZ 314 ICN->PVG (12:35-13:55) Nov 23 | PNR: NJXWKL (A44X7U) | Tkt: 7844830129575", "Leg 7: WT4 Beijing (Nov 30)": "High-Speed Bullet Train PVG->PEK (Booked by Maggie)", "Leg 8: Changchun Camp (Dec 7)": "High-Speed Bullet Train PEK->CGQ (Maggie arranging)", "Leg 9: Home Return (Dec 7/10/22)": "ACTION NEEDED: Dec 22 CGQ/PEK -> BRU (Quoted PEK->IST->BRU Turkish $705 vs PEK->MUC->BRU Lufthansa $1,063)"}, {"Traveler": "Aleyandro Rivero Maerschalck", "Role": "Athlete (M)", "Leg 1: Summer Camp (Jul–Sep)": "Jul 3 BRU-AMS-YYC (Seats 11F/33G) / Sep 17 YYC-YUL-AMS-BRU | KLM PNR: ZLPFB2 | Tkt: 0742139952293", "Leg 2: WT1 Vancouver (Oct 18)": "AC 2021 YYC->YVR (12:40-13:18) | PNR: CHTL8O | Tkt: 0149400713480 | Sheraton Wall Centre (Twin w/ Warre N)", "Leg 3: WT2 Montreal (Oct 26)": "AC 312 YVR->YUL (09:20-17:04) | PNR: CHTL8O | Tkt: 0149400713480 | Hotel Universel (w/ Warre N)", "Leg 4: Post-WT2 Return (Nov 1-2)": "AC 321 YUL->YYC (13:15-17:10) Nov 2 | PNR: CHTL8O | Tkt: 0149400713480", "Leg 5: WT3 Seoul (Nov 14)": "AC 205 YYC->YVR + AC 63 YVR->ICN (Arr Nov 15 17:10) | Group PNR: CM352A | ibis Styles (Twin w/ Warre N)", "Leg 6: Shanghai Camp (Nov 23-24)": "CZ 314 ICN->PVG (12:35-13:55) Nov 23 | PNR: NJXWKL (A44X7U) | Tkt: 7844830129576", "Leg 7: WT4 Beijing (Nov 30)": "High-Speed Bullet Train PVG->PEK (Booked by Maggie)", "Leg 8: Changchun Camp (Dec 7)": "High-Speed Bullet Train PEK->CGQ (Maggie arranging)", "Leg 9: Home Return (Dec 7/10/22)": "ACTION NEEDED: Dec 22 CGQ/PEK -> BRU (Quoted PEK->IST->BRU Turkish $705 vs PEK->MUC->BRU Lufthansa $1,063)"}, {"Traveler": "Fre Van Damme", "Role": "Athlete (M)", "Leg 1: Summer Camp (Jul–Sep)": "Jul 15 YUL->YYC WestJet WS 567 (17:30-20:15, Seat 10D) | PNR: YLPZHC | Tkt: 8382109902975", "Leg 2: WT1 Vancouver (Oct 18)": "AC 2021 YYC->YVR (12:40-13:18) | PNR: CHTL8O | Tkt: 0149400713475 | Sheraton Wall Centre (Twin w/ Warre VD)", "Leg 3: WT2 Montreal (Oct 26)": "AC 312 YVR->YUL (09:20-17:04) | PNR: CHTL8O | Tkt: 0149400713475 | Hotel Universel (w/ Warre VD)", "Leg 4: Post-WT2 Return (Nov 1-2)": "AC 321 YUL->YYC (13:15-17:10) Nov 2 | PNR: CHTL8O | Tkt: 0149400713475", "Leg 5: WT3 Seoul (Nov 14)": "AC 205 YYC->YVR + AC 63 YVR->ICN (Arr Nov 15 17:10) | Group PNR: CM352A | ibis Styles (Twin w/ Warre VD)", "Leg 6: Shanghai Camp (Nov 23-24)": "CZ 314 ICN->PVG (12:35-13:55) Nov 23 | PNR: PB0DFM (29ABQ2) | Tkt: 7844830129579", "Leg 7: WT4 Beijing (Nov 30)": "High-Speed Bullet Train PVG->PEK (Booked by Maggie)", "Leg 8: Changchun Camp (Dec 7)": "High-Speed Bullet Train PEK->CGQ (Maggie arranging)", "Leg 9: Home Return (Dec 7/10/22)": "ACTION NEEDED: Dec 22 CGQ/PEK -> BRU (Quoted PEK->IST->BRU Turkish $705 vs PEK->MUC->BRU Lufthansa $1,063)"}, {"Traveler": "Warre Van Damme", "Role": "Athlete (M)", "Leg 1: Summer Camp (Jul–Sep)": "Jul 13 BRU-AMS-YYC (Seats 19D/33E) / Sep 16 YYC-YUL-AMS-BRU (Refund #2609133703700) | KLM PNR: XNZ4IK | Tkt: 0742140160087", "Leg 2: WT1 Vancouver (Oct 18)": "AC 2021 YYC->YVR (12:40-13:18) | PNR: CHTL8O | Tkt: 0149400713476 | Sheraton Wall Centre (Twin w/ Fre)", "Leg 3: WT2 Montreal (Oct 26)": "AC 312 YVR->YUL (09:20-17:04) | PNR: CHTL8O | Tkt: 0149400713476 | Hotel Universel (w/ Fre)", "Leg 4: Post-WT2 Return (Nov 1-2)": "AC 321 YUL->YYC (13:15-17:10) Nov 2 | PNR: CHTL8O | Tkt: 0149400713476", "Leg 5: WT3 Seoul (Nov 14)": "AC 205 YYC->YVR + AC 63 YVR->ICN (Arr Nov 15 17:10) | Group PNR: CM352A | ibis Styles (Twin w/ Fre)", "Leg 6: Shanghai Camp (Nov 23-24)": "CZ 314 ICN->PVG (12:35-13:55) Nov 23 | PNR: PB0DFM (29ABQ2) | Tkt: 7844830129580", "Leg 7: WT4 Beijing (Nov 30)": "High-Speed Bullet Train PVG->PEK (Booked by Maggie)", "Leg 8: Changchun Camp (Dec 7)": "High-Speed Bullet Train PEK->CGQ (Maggie arranging)", "Leg 9: Home Return (Dec 7/10/22)": "ACTION NEEDED: Dec 22 CGQ/PEK -> BRU (Quoted PEK->IST->BRU Turkish $705 vs PEK->MUC->BRU Lufthansa $1,063)"}], "vehicleClusters": [{"Cluster_ID": "VEH-UP-01", "Timing_Group": "UPCOMING", "Order_Index": 1, "Date": "2026-11-01", "Display_Date": "Sun, Nov 1, 2026", "Relative_Label": "TODAY (Tonight)", "Dep_Time": "19:40", "Arr_Time": "23:32", "Phase": "3. WT2 Montreal (Return)", "Vehicle_Type": "Flight", "Airline_Operator": "Air Transat (operated by Porter Airlines)", "Flight_Train_No": "TS 7389", "Route": "YUL (Montreal) -> YYC (Calgary)", "PNR_Summary": "XW2ETT", "PNR_Codes": ["XW2ETT"], "Pax_Count": 1, "Booking_Health": "CONFIRMED", "Status_Badge": "CONFIRMED & TICKETED", "Passengers": [{"Traveler": "Stijn Desmet", "Legal_Name": "DESMET / STIJN DOMINIQUE G. MR", "Role": "Athlete (M)", "Airline_PNR": "XW2ETT", "Ticket_Number": "Air Transat E-Tkt (XW2ETT)", "Seat": "16F", "Baggage": "1 Checked Bag (23kg) + Hand Luggage", "Status": "Confirmed / Ticketed"}]}, {"Cluster_ID": "VEH-UP-02", "Timing_Group": "UPCOMING", "Order_Index": 2, "Date": "2026-11-01", "Display_Date": "Sun, Nov 1, 2026", "Relative_Label": "TODAY (Tonight)", "Dep_Time": "20:55", "Arr_Time": "00:50 (+1 Nov 2)", "Phase": "3. WT2 Montreal (Return)", "Vehicle_Type": "Flight", "Airline_Operator": "Air Canada", "Flight_Train_No": "AC 327", "Route": "YUL (Montreal) -> YYC (Calgary)", "PNR_Summary": "CE72IU", "PNR_Codes": ["CE72IU"], "Pax_Count": 1, "Booking_Health": "CONFIRMED", "Status_Badge": "CONFIRMED & TICKETED", "Passengers": [{"Traveler": "Martin Zacharias", "Legal_Name": "ZACHARIAS / MARTIN CHRISTIAN MR", "Role": "Physiotherapist (WT1 & WT2)", "Airline_PNR": "CE72IU", "Ticket_Number": "0142336020077", "Seat": "31D", "Baggage": "1 Checked Bag", "Status": "Confirmed / Ticketed"}]}, {"Cluster_ID": "VEH-UP-03", "Timing_Group": "UPCOMING", "Order_Index": 3, "Date": "2026-11-02", "Display_Date": "Mon, Nov 2, 2026", "Relative_Label": "TOMORROW", "Dep_Time": "13:15", "Arr_Time": "17:10", "Phase": "3. WT2 Montreal (Return)", "Vehicle_Type": "Flight", "Airline_Operator": "Air Canada", "Flight_Train_No": "AC 321", "Route": "YUL (Montreal) -> YYC (Calgary)", "PNR_Summary": "CHTL8O (9 Pax) + AZYECP (1 Pax)", "PNR_Codes": ["CHTL8O", "AZYECP"], "Pax_Count": 10, "Booking_Health": "CONFIRMED", "Status_Badge": "CONFIRMED & TICKETED (10 Pax Across 2 PNRs)", "Passengers": [{"Traveler": "Joey Mantia", "Legal_Name": "MANTIA II / JOSEPH RICHARD MR", "Role": "Head Coach", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713473", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Confirmed / Ticketed"}, {"Traveler": "Matt Zukowski", "Legal_Name": "ZUKOWSKI / MATTHEW HENRY MR", "Role": "Assistant Coach", "Airline_PNR": "AZYECP", "Ticket_Number": "0149400713482", "Seat": "25F", "Baggage": "1 Checked Bag", "Status": "Confirmed / Ticketed"}, {"Traveler": "Hanne Desmet", "Legal_Name": "DESMET / HANNE PATRICIA A. MS", "Role": "Athlete (F)", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713478", "Seat": "—", "Baggage": "1 Bag (+Bike & Extra Bag at YUL check-in)", "Status": "Confirmed / Ticketed"}, {"Traveler": "Tineke Den Dulk", "Legal_Name": "DEN DULK / TINEKE HANNA MS", "Role": "Athlete (F)", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713477", "Seat": "—", "Baggage": "1 Bag (+Bike at YUL check-in)", "Status": "Confirmed / Ticketed"}, {"Traveler": "Adriaan Dewagtere", "Legal_Name": "DEWAGTERE / ADRIAAN FRANK A. MR", "Role": "Athlete (M)", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713479", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Confirmed / Ticketed"}, {"Traveler": "Warre Noiron", "Legal_Name": "NOIRON / WARRE MR", "Role": "Athlete (M)", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713481", "Seat": "—", "Baggage": "1 Bag (+Extra Bag at YUL check-in)", "Status": "Confirmed / Ticketed"}, {"Traveler": "Ward Petre", "Legal_Name": "PETRÉ / WARD ERELAS M. MR", "Role": "Athlete (M)", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713474", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Confirmed / Ticketed"}, {"Traveler": "Aleyandro Rivero Maerschalck", "Legal_Name": "RIVERO MAERSCHALCK / ALEYÁNDRO MR", "Role": "Athlete (M)", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713480", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Confirmed / Ticketed"}, {"Traveler": "Fre Van Damme", "Legal_Name": "VAN DAMME / FRÉ BEA H. MR", "Role": "Athlete (M)", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713475", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Confirmed / Ticketed"}, {"Traveler": "Warre Van Damme", "Legal_Name": "VAN DAMME / WARRE FILIP G. MR", "Role": "Athlete (M)", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713476", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Confirmed / Ticketed"}]}, {"Cluster_ID": "VEH-UP-04", "Timing_Group": "UPCOMING", "Order_Index": 4, "Date": "2026-11-03", "Display_Date": "Tue, Nov 3, 2026 (Post-WT2 Window)", "Relative_Label": "UNBOOKED / VERIFY", "Dep_Time": "TBD", "Arr_Time": "TBD", "Phase": "3B. Post-WT2 Return Home (Belgium)", "Vehicle_Type": "Flight (Placeholder)", "Airline_Operator": "UNBOOKED / NOT ON FILE (Verify Return to Brussels)", "Flight_Train_No": "TBD (YYC -> BRU)", "Route": "YYC (Calgary) -> BRU (Brussels)", "PNR_Summary": "NO PNR ON FILE", "PNR_Codes": [], "Pax_Count": 1, "Booking_Health": "CRITICAL_UNBOOKED", "Status_Badge": "WARNING: NO TICKET ON FILE — FOLLOW UP", "Passengers": [{"Traveler": "Ward Petre", "Legal_Name": "PETRÉ / WARD ERELAS M. MR", "Role": "Athlete (M)", "Airline_PNR": "MISSING / VERIFY", "Ticket_Number": "NOT ON FILE — VERIFY", "Seat": "—", "Baggage": "TBD", "Status": "UNBOOKED / VERIFY RETURN"}]}, {"Cluster_ID": "VEH-UP-05", "Timing_Group": "UPCOMING", "Order_Index": 5, "Date": "2026-11-14", "Display_Date": "Sat, Nov 14, 2026", "Relative_Label": "TICKETING DUE NOV 12", "Dep_Time": "09:00", "Arr_Time": "17:10 (+1 Nov 15)", "Phase": "4. WT3 Seoul (Outbound)", "Vehicle_Type": "Flight (Group Contract)", "Airline_Operator": "Air Canada (Sports Group Block)", "Flight_Train_No": "AC 205 (YYC->YVR) + AC 063 (YVR->ICN)", "Route": "YYC (09:00) -> YVR (09:42 / 11:15) -> ICN T1 (Arr Nov 15 @ 17:10)", "PNR_Summary": "CM352A (Group Contract AC01929004)", "PNR_Codes": ["CM352A"], "Pax_Count": 11, "Booking_Health": "WARNING_PENDING", "Status_Badge": "ACTION NEEDED BY NOV 12: ISSUE 13-DIGIT TICKETS & SWAP ENZO", "Passengers": [{"Traveler": "Joey Mantia", "Legal_Name": "MANTIA II / JOSEPH RICHARD MR", "Role": "Head Coach", "Airline_PNR": "CM352A", "Ticket_Number": "Pending (Due Nov 12)", "Seat": "Group", "Baggage": "1 Checked Bag (+Team Equipment)", "Status": "Group Booked (Tickets Due Nov 12)"}, {"Traveler": "Matt Zukowski", "Legal_Name": "ZUKOWSKI / MATTHEW HENRY MR", "Role": "Assistant Coach", "Airline_PNR": "CM352A", "Ticket_Number": "Pending (Due Nov 12)", "Seat": "Group", "Baggage": "1 Checked Bag", "Status": "Group Booked (Tickets Due Nov 12)"}, {"Traveler": "Jeremy Kozuback", "Legal_Name": "KOZUBACK / JEREMY DAVID MR", "Role": "Physiotherapist (Asia Tour)", "Airline_PNR": "CM352A", "Ticket_Number": "Pending (Due Nov 12)", "Seat": "Group", "Baggage": "1 Checked Bag (+Physio Table)", "Status": "Group Booked (Tickets Due Nov 12)"}, {"Traveler": "Hanne Desmet", "Legal_Name": "DESMET / HANNE PATRICIA A. MS", "Role": "Athlete (F)", "Airline_PNR": "CM352A", "Ticket_Number": "Pending (Due Nov 12)", "Seat": "Group", "Baggage": "1 Checked Bag (+Bike/Skate Bag)", "Status": "Group Booked (Tickets Due Nov 12)"}, {"Traveler": "Tineke Den Dulk", "Legal_Name": "DEN DULK / TINEKE HANNA MS", "Role": "Athlete (F)", "Airline_PNR": "CM352A", "Ticket_Number": "Pending (Due Nov 12)", "Seat": "Group", "Baggage": "1 Checked Bag (+Bike/Skate Bag)", "Status": "Group Booked (Tickets Due Nov 12)"}, {"Traveler": "Adriaan Dewagtere", "Legal_Name": "DEWAGTERE / ADRIAAN FRANK A. MR", "Role": "Athlete (M)", "Airline_PNR": "CM352A", "Ticket_Number": "Pending (Due Nov 12)", "Seat": "Group", "Baggage": "1 Checked Bag", "Status": "Group Booked (Tickets Due Nov 12)"}, {"Traveler": "Warre Noiron", "Legal_Name": "NOIRON / WARRE MR", "Role": "Athlete (M)", "Airline_PNR": "CM352A", "Ticket_Number": "Pending (Due Nov 12)", "Seat": "Group", "Baggage": "1 Checked Bag", "Status": "Group Booked (Tickets Due Nov 12)"}, {"Traveler": "Enzo Proost", "Legal_Name": "PROOST / ENZO MR", "Role": "Athlete (M)", "Airline_PNR": "CM352A", "Ticket_Number": "Pending (Swap for Ward Petre)", "Seat": "Group", "Baggage": "1 Checked Bag", "Status": "Verify Name Swap (Replaces Ward)"}, {"Traveler": "Aleyandro Rivero Maerschalck", "Legal_Name": "RIVERO MAERSCHALCK / ALEYÁNDRO MR", "Role": "Athlete (M)", "Airline_PNR": "CM352A", "Ticket_Number": "Pending (Due Nov 12)", "Seat": "Group", "Baggage": "1 Checked Bag", "Status": "Group Booked (Tickets Due Nov 12)"}, {"Traveler": "Fre Van Damme", "Legal_Name": "VAN DAMME / FRÉ BEA H. MR", "Role": "Athlete (M)", "Airline_PNR": "CM352A", "Ticket_Number": "Pending (Due Nov 12)", "Seat": "Group", "Baggage": "1 Checked Bag", "Status": "Group Booked (Tickets Due Nov 12)"}, {"Traveler": "Warre Van Damme", "Legal_Name": "VAN DAMME / WARRE FILIP G. MR", "Role": "Athlete (M)", "Airline_PNR": "CM352A", "Ticket_Number": "Pending (Due Nov 12)", "Seat": "Group", "Baggage": "1 Checked Bag", "Status": "Group Booked (Tickets Due Nov 12)"}]}, {"Cluster_ID": "VEH-UP-06", "Timing_Group": "UPCOMING", "Order_Index": 6, "Date": "2026-11-23", "Display_Date": "Mon, Nov 23, 2026", "Relative_Label": "In 22 Days", "Dep_Time": "12:35", "Arr_Time": "13:55", "Phase": "5. Shanghai Training Camp", "Vehicle_Type": "Flight", "Airline_Operator": "China Southern Airlines", "Flight_Train_No": "CZ 314", "Route": "ICN Terminal 1 (Seoul) -> PVG Terminal 2 (Shanghai)", "PNR_Summary": "PB0DFM (5 Pax) + NJXWKL (6 Pax)", "PNR_Codes": ["PB0DFM", "NJXWKL"], "Pax_Count": 11, "Booking_Health": "CONFIRMED", "Status_Badge": "CONFIRMED & TICKETED (11 Pax Across 2 PNRs)", "Passengers": [{"Traveler": "Joey Mantia", "Legal_Name": "MANTIA II / JOSEPH RICHARD MR", "Role": "Head Coach", "Airline_PNR": "PB0DFM", "Ticket_Number": "7844830129578", "Seat": "—", "Baggage": "2 Checked Bags Included", "Status": "Confirmed / Ticketed"}, {"Traveler": "Matt Zukowski", "Legal_Name": "ZUKOWSKI / MATTHEW HENRY MR", "Role": "Assistant Coach", "Airline_PNR": "PB0DFM", "Ticket_Number": "7844830129581", "Seat": "—", "Baggage": "2 Checked Bags Included", "Status": "Confirmed / Ticketed"}, {"Traveler": "Jeremy Kozuback", "Legal_Name": "KOZUBACK / JEREMY DAVID MR", "Role": "Physiotherapist (Asia Tour)", "Airline_PNR": "PB0DFM", "Ticket_Number": "7844830129577", "Seat": "—", "Baggage": "2 Checked Bags Included", "Status": "Confirmed / Ticketed"}, {"Traveler": "Fre Van Damme", "Legal_Name": "VAN DAMME / FRÉ BEA H. MR", "Role": "Athlete (M)", "Airline_PNR": "PB0DFM", "Ticket_Number": "7844830129579", "Seat": "—", "Baggage": "2 Checked Bags Included", "Status": "Confirmed / Ticketed"}, {"Traveler": "Warre Van Damme", "Legal_Name": "VAN DAMME / WARRE FILIP G. MR", "Role": "Athlete (M)", "Airline_PNR": "PB0DFM", "Ticket_Number": "7844830129580", "Seat": "—", "Baggage": "2 Checked Bags Included", "Status": "Confirmed / Ticketed"}, {"Traveler": "Tineke Den Dulk", "Legal_Name": "DEN DULK / TINEKE HANNA MS", "Role": "Athlete (F)", "Airline_PNR": "NJXWKL", "Ticket_Number": "7844830129571", "Seat": "—", "Baggage": "2 Checked Bags Included", "Status": "Confirmed / Ticketed"}, {"Traveler": "Hanne Desmet", "Legal_Name": "DESMET / HANNE PATRICIA A. MS", "Role": "Athlete (F)", "Airline_PNR": "NJXWKL", "Ticket_Number": "7844830129572", "Seat": "—", "Baggage": "2 Checked Bags Included", "Status": "Confirmed / Ticketed"}, {"Traveler": "Adriaan Dewagtere", "Legal_Name": "DEWAGTERE / ADRIAAN FRANK A. MR", "Role": "Athlete (M)", "Airline_PNR": "NJXWKL", "Ticket_Number": "7844830129573", "Seat": "—", "Baggage": "2 Checked Bags Included", "Status": "Confirmed / Ticketed"}, {"Traveler": "Warre Noiron", "Legal_Name": "NOIRON / WARRE MR", "Role": "Athlete (M)", "Airline_PNR": "NJXWKL", "Ticket_Number": "7844830129574", "Seat": "—", "Baggage": "2 Checked Bags Included", "Status": "Confirmed / Ticketed"}, {"Traveler": "Enzo Proost", "Legal_Name": "PROOST / ENZO MR", "Role": "Athlete (M)", "Airline_PNR": "NJXWKL", "Ticket_Number": "7844830129575", "Seat": "—", "Baggage": "2 Checked Bags Included", "Status": "Confirmed / Ticketed"}, {"Traveler": "Aleyandro Rivero Maerschalck", "Legal_Name": "RIVERO MAERSCHALCK / ALEYÁNDRO MR", "Role": "Athlete (M)", "Airline_PNR": "NJXWKL", "Ticket_Number": "7844830129576", "Seat": "—", "Baggage": "2 Checked Bags Included", "Status": "Confirmed / Ticketed (Note: Printed MAERSCHALCKRIVERO)"}]}, {"Cluster_ID": "VEH-UP-07", "Timing_Group": "UPCOMING", "Order_Index": 7, "Date": "2026-11-24", "Display_Date": "Tue, Nov 24, 2026", "Relative_Label": "In 23 Days", "Dep_Time": "09:00", "Arr_Time": "16:00 (+1 Nov 25)", "Phase": "5. Shanghai Training Camp (Calgary Joiners)", "Vehicle_Type": "Flight", "Airline_Operator": "Air Canada", "Flight_Train_No": "AC 205 (YYC->YVR) + AC 025 (YVR->PVG T2)", "Route": "YYC (09:00) -> YVR (09:42 / 11:15) -> PVG T2 (Arr Nov 25 @ 16:00)", "PNR_Summary": "CVCZDA (Agency Ref DZMDNX)", "PNR_Codes": ["CVCZDA", "DZMDNX"], "Pax_Count": 2, "Booking_Health": "CONFIRMED", "Status_Badge": "CONFIRMED & TICKETED", "Passengers": [{"Traveler": "Mengyao (Maggie) Qi", "Legal_Name": "QI / MENGYAO MRS", "Role": "Team Leader / Coordinator", "Airline_PNR": "CVCZDA", "Ticket_Number": "0149400980796", "Seat": "—", "Baggage": "1 Checked Bag Included", "Status": "Confirmed / Ticketed"}, {"Traveler": "Stijn Desmet", "Legal_Name": "DESMET / STIJN DOMINIQUE G. MR", "Role": "Athlete (M)", "Airline_PNR": "CVCZDA", "Ticket_Number": "0149400980797", "Seat": "—", "Baggage": "1 Checked Bag Included", "Status": "Confirmed / Ticketed"}]}, {"Cluster_ID": "VEH-UP-08", "Timing_Group": "UPCOMING", "Order_Index": 8, "Date": "2026-11-30", "Display_Date": "Mon, Nov 30, 2026", "Relative_Label": "ADD TRAIN # / SEATS", "Dep_Time": "TBD (Confirm w/ Maggie)", "Arr_Time": "TBD", "Phase": "6. WT4 Beijing (Transfer)", "Vehicle_Type": "High-Speed Train", "Airline_Operator": "China Railway High-Speed (CRH)", "Flight_Train_No": "G-Series Bullet Train (Booked by Maggie Qi)", "Route": "Shanghai -> Beijing", "PNR_Summary": "Booked by Maggie Qi (ID 86466)", "PNR_Codes": [], "Pax_Count": 13, "Booking_Health": "WARNING_PENDING", "Status_Badge": "BOOKED BY MAGGIE — ADD TRAIN # & SEATS", "Passengers": [{"Traveler": "Joey Mantia", "Legal_Name": "MANTIA II / JOSEPH RICHARD MR", "Role": "Head Coach", "Airline_PNR": "Maggie Qi (12306)", "Ticket_Number": "Booked by Maggie (Add Seat #)", "Seat": "TBD", "Baggage": "Standard CRH Train Allowance", "Status": "Booked (Get Train/Seat #)"}, {"Traveler": "Matt Zukowski", "Legal_Name": "ZUKOWSKI / MATTHEW HENRY MR", "Role": "Assistant Coach", "Airline_PNR": "Maggie Qi (12306)", "Ticket_Number": "Booked by Maggie (Add Seat #)", "Seat": "TBD", "Baggage": "Standard CRH Train Allowance", "Status": "Booked (Get Train/Seat #)"}, {"Traveler": "Mengyao (Maggie) Qi", "Legal_Name": "QI / MENGYAO MRS", "Role": "Team Leader / Coordinator", "Airline_PNR": "Maggie Qi (12306)", "Ticket_Number": "Booked by Maggie (Add Seat #)", "Seat": "TBD", "Baggage": "Standard CRH Train Allowance", "Status": "Booked (Get Train/Seat #)"}, {"Traveler": "Jeremy Kozuback", "Legal_Name": "KOZUBACK / JEREMY DAVID MR", "Role": "Physiotherapist (Asia Tour)", "Airline_PNR": "Maggie Qi (12306)", "Ticket_Number": "Booked by Maggie (Add Seat #)", "Seat": "TBD", "Baggage": "Standard CRH Train Allowance", "Status": "Booked (Get Train/Seat #)"}, {"Traveler": "Hanne Desmet", "Legal_Name": "DESMET / HANNE PATRICIA A. MS", "Role": "Athlete (F)", "Airline_PNR": "Maggie Qi (12306)", "Ticket_Number": "Booked by Maggie (Add Seat #)", "Seat": "TBD", "Baggage": "Standard CRH Train Allowance", "Status": "Booked (Get Train/Seat #)"}, {"Traveler": "Tineke Den Dulk", "Legal_Name": "DEN DULK / TINEKE HANNA MS", "Role": "Athlete (F)", "Airline_PNR": "Maggie Qi (12306)", "Ticket_Number": "Booked by Maggie (Add Seat #)", "Seat": "TBD", "Baggage": "Standard CRH Train Allowance", "Status": "Booked (Get Train/Seat #)"}, {"Traveler": "Stijn Desmet", "Legal_Name": "DESMET / STIJN DOMINIQUE G. MR", "Role": "Athlete (M)", "Airline_PNR": "Maggie Qi (12306)", "Ticket_Number": "Booked by Maggie (Add Seat #)", "Seat": "TBD", "Baggage": "Standard CRH Train Allowance", "Status": "Booked (Get Train/Seat #)"}, {"Traveler": "Adriaan Dewagtere", "Legal_Name": "DEWAGTERE / ADRIAAN FRANK A. MR", "Role": "Athlete (M)", "Airline_PNR": "Maggie Qi (12306)", "Ticket_Number": "Booked by Maggie (Add Seat #)", "Seat": "TBD", "Baggage": "Standard CRH Train Allowance", "Status": "Booked (Get Train/Seat #)"}, {"Traveler": "Warre Noiron", "Legal_Name": "NOIRON / WARRE MR", "Role": "Athlete (M)", "Airline_PNR": "Maggie Qi (12306)", "Ticket_Number": "Booked by Maggie (Add Seat #)", "Seat": "TBD", "Baggage": "Standard CRH Train Allowance", "Status": "Booked (Get Train/Seat #)"}, {"Traveler": "Enzo Proost", "Legal_Name": "PROOST / ENZO MR", "Role": "Athlete (M)", "Airline_PNR": "Maggie Qi (12306)", "Ticket_Number": "Booked by Maggie (Add Seat #)", "Seat": "TBD", "Baggage": "Standard CRH Train Allowance", "Status": "Booked (Get Train/Seat #)"}, {"Traveler": "Aleyandro Rivero Maerschalck", "Legal_Name": "RIVERO MAERSCHALCK / ALEYÁNDRO MR", "Role": "Athlete (M)", "Airline_PNR": "Maggie Qi (12306)", "Ticket_Number": "Booked by Maggie (Add Seat #)", "Seat": "TBD", "Baggage": "Standard CRH Train Allowance", "Status": "Booked (Get Train/Seat #)"}, {"Traveler": "Fre Van Damme", "Legal_Name": "VAN DAMME / FRÉ BEA H. MR", "Role": "Athlete (M)", "Airline_PNR": "Maggie Qi (12306)", "Ticket_Number": "Booked by Maggie (Add Seat #)", "Seat": "TBD", "Baggage": "Standard CRH Train Allowance", "Status": "Booked (Get Train/Seat #)"}, {"Traveler": "Warre Van Damme", "Legal_Name": "VAN DAMME / WARRE FILIP G. MR", "Role": "Athlete (M)", "Airline_PNR": "Maggie Qi (12306)", "Ticket_Number": "Booked by Maggie (Add Seat #)", "Seat": "TBD", "Baggage": "Standard CRH Train Allowance", "Status": "Booked (Get Train/Seat #)"}]}, {"Cluster_ID": "VEH-UP-09", "Timing_Group": "UPCOMING", "Order_Index": 9, "Date": "2026-12-07", "Display_Date": "Mon, Dec 7, 2026", "Relative_Label": "PENDING TRAIN BOOKING", "Dep_Time": "TBD", "Arr_Time": "TBD", "Phase": "7. Changchun Training Camp (Transfer)", "Vehicle_Type": "High-Speed Train (Placeholder)", "Airline_Operator": "China Railway High-Speed (CRH)", "Flight_Train_No": "Bullet Train (Maggie Qi Arranging)", "Route": "Beijing -> Changchun", "PNR_Summary": "PENDING (Maggie Qi Arranging)", "PNR_Codes": [], "Pax_Count": 12, "Booking_Health": "WARNING_PENDING", "Status_Badge": "PLACEHOLDER: PENDING BOOKING BY MAGGIE QI", "Passengers": [{"Traveler": "Joey Mantia", "Legal_Name": "MANTIA II / JOSEPH RICHARD MR", "Role": "Head Coach", "Airline_PNR": "PENDING (Maggie)", "Ticket_Number": "Pending Booking (Opens Nov 22)", "Seat": "TBD", "Baggage": "Standard CRH Train Allowance", "Status": "Pending Booking by Maggie"}, {"Traveler": "Matt Zukowski", "Legal_Name": "ZUKOWSKI / MATTHEW HENRY MR", "Role": "Assistant Coach", "Airline_PNR": "PENDING (Maggie)", "Ticket_Number": "Pending Booking (Opens Nov 22)", "Seat": "TBD", "Baggage": "Standard CRH Train Allowance", "Status": "Pending Booking by Maggie"}, {"Traveler": "Mengyao (Maggie) Qi", "Legal_Name": "QI / MENGYAO MRS", "Role": "Team Leader / Coordinator", "Airline_PNR": "PENDING (Maggie)", "Ticket_Number": "Pending Booking (Opens Nov 22)", "Seat": "TBD", "Baggage": "Standard CRH Train Allowance", "Status": "Pending Booking by Maggie"}, {"Traveler": "Hanne Desmet", "Legal_Name": "DESMET / HANNE PATRICIA A. MS", "Role": "Athlete (F)", "Airline_PNR": "PENDING (Maggie)", "Ticket_Number": "Pending Booking (Opens Nov 22)", "Seat": "TBD", "Baggage": "Standard CRH Train Allowance", "Status": "Pending Booking by Maggie"}, {"Traveler": "Tineke Den Dulk", "Legal_Name": "DEN DULK / TINEKE HANNA MS", "Role": "Athlete (F)", "Airline_PNR": "PENDING (Maggie)", "Ticket_Number": "Pending Booking (Opens Nov 22)", "Seat": "TBD", "Baggage": "Standard CRH Train Allowance", "Status": "Pending Booking by Maggie"}, {"Traveler": "Stijn Desmet", "Legal_Name": "DESMET / STIJN DOMINIQUE G. MR", "Role": "Athlete (M)", "Airline_PNR": "PENDING (Maggie)", "Ticket_Number": "Pending Booking (Opens Nov 22)", "Seat": "TBD", "Baggage": "Standard CRH Train Allowance", "Status": "Pending Booking by Maggie"}, {"Traveler": "Adriaan Dewagtere", "Legal_Name": "DEWAGTERE / ADRIAAN FRANK A. MR", "Role": "Athlete (M)", "Airline_PNR": "PENDING (Maggie)", "Ticket_Number": "Pending Booking (Opens Nov 22)", "Seat": "TBD", "Baggage": "Standard CRH Train Allowance", "Status": "Pending Booking by Maggie"}, {"Traveler": "Warre Noiron", "Legal_Name": "NOIRON / WARRE MR", "Role": "Athlete (M)", "Airline_PNR": "PENDING (Maggie)", "Ticket_Number": "Pending Booking (Opens Nov 22)", "Seat": "TBD", "Baggage": "Standard CRH Train Allowance", "Status": "Pending Booking by Maggie"}, {"Traveler": "Enzo Proost", "Legal_Name": "PROOST / ENZO MR", "Role": "Athlete (M)", "Airline_PNR": "PENDING (Maggie)", "Ticket_Number": "Pending Booking (Opens Nov 22)", "Seat": "TBD", "Baggage": "Standard CRH Train Allowance", "Status": "Pending Booking by Maggie"}, {"Traveler": "Aleyandro Rivero Maerschalck", "Legal_Name": "RIVERO MAERSCHALCK / ALEYÁNDRO MR", "Role": "Athlete (M)", "Airline_PNR": "PENDING (Maggie)", "Ticket_Number": "Pending Booking (Opens Nov 22)", "Seat": "TBD", "Baggage": "Standard CRH Train Allowance", "Status": "Pending Booking by Maggie"}, {"Traveler": "Fre Van Damme", "Legal_Name": "VAN DAMME / FRÉ BEA H. MR", "Role": "Athlete (M)", "Airline_PNR": "PENDING (Maggie)", "Ticket_Number": "Pending Booking (Opens Nov 22)", "Seat": "TBD", "Baggage": "Standard CRH Train Allowance", "Status": "Pending Booking by Maggie"}, {"Traveler": "Warre Van Damme", "Legal_Name": "VAN DAMME / WARRE FILIP G. MR", "Role": "Athlete (M)", "Airline_PNR": "PENDING (Maggie)", "Ticket_Number": "Pending Booking (Opens Nov 22)", "Seat": "TBD", "Baggage": "Standard CRH Train Allowance", "Status": "Pending Booking by Maggie"}]}, {"Cluster_ID": "VEH-UP-10", "Timing_Group": "UPCOMING", "Order_Index": 10, "Date": "2026-12-07", "Display_Date": "Mon, Dec 7, 2026", "Relative_Label": "In 36 Days", "Dep_Time": "20:05", "Arr_Time": "20:59 (Same Day)", "Phase": "8. Return Flights (Dec)", "Vehicle_Type": "Flight", "Airline_Operator": "Air Canada", "Flight_Train_No": "AC 030 (PEK T3->YVR) + AC 222 (YVR->YYC)", "Route": "PEK T3 (20:05) -> YVR (15:45 / 18:30) -> YYC (Arr Dec 7 @ 20:59)", "PNR_Summary": "CVDH3J (Agency Ref LEGGOJ)", "PNR_Codes": ["CVDH3J", "LEGGOJ"], "Pax_Count": 1, "Booking_Health": "CONFIRMED", "Status_Badge": "CONFIRMED & TICKETED", "Passengers": [{"Traveler": "Jeremy Kozuback", "Legal_Name": "KOZUBACK / JEREMY DAVID MR", "Role": "Physiotherapist (Asia Tour)", "Airline_PNR": "CVDH3J", "Ticket_Number": "0149400980798", "Seat": "—", "Baggage": "1 Checked Bag Included", "Status": "Confirmed / Ticketed"}]}, {"Cluster_ID": "VEH-UP-11", "Timing_Group": "UPCOMING", "Order_Index": 11, "Date": "2026-12-10", "Display_Date": "Thu, Dec 10, 2026", "Relative_Label": "In 39 Days", "Dep_Time": "11:35", "Arr_Time": "19:59 (Same Day)", "Phase": "8. Return Flights (Dec)", "Vehicle_Type": "Flight", "Airline_Operator": "Asiana Airlines / Air Canada", "Flight_Train_No": "OZ 304 (CGQ->ICN) + AC 064 (ICN->YVR) + AC 218 (YVR->YYC)", "Route": "CGQ T2 (11:35) -> ICN T1 (14:30 / 17:45) -> YVR (10:35 / 17:30) -> YYC (19:59)", "PNR_Summary": "AM4K3G", "PNR_Codes": ["AM4K3G"], "Pax_Count": 2, "Booking_Health": "CONFIRMED", "Status_Badge": "CONFIRMED & TICKETED", "Passengers": [{"Traveler": "Mengyao (Maggie) Qi", "Legal_Name": "QI / MENGYAO MRS", "Role": "Team Leader / Coordinator", "Airline_PNR": "AM4K3G", "Ticket_Number": "0144830214404", "Seat": "—", "Baggage": "1 Checked Bag Included", "Status": "Confirmed / Ticketed"}, {"Traveler": "Matt Zukowski", "Legal_Name": "ZUKOWSKI / MATTHEW HENRY MR", "Role": "Assistant Coach", "Airline_PNR": "AM4K3G", "Ticket_Number": "0144830214405", "Seat": "—", "Baggage": "1 Checked Bag Included", "Status": "Confirmed / Ticketed"}]}, {"Cluster_ID": "VEH-UP-12", "Timing_Group": "UPCOMING", "Order_Index": 12, "Date": "2026-12-22", "Display_Date": "Tue, Dec 22, 2026", "Relative_Label": "In 51 Days", "Dep_Time": "11:35", "Arr_Time": "13:52 (Same Day)", "Phase": "8. Return Flights (Dec)", "Vehicle_Type": "Flight", "Airline_Operator": "Asiana (becomes Korean Air Nov 2) / Delta Air Lines", "Flight_Train_No": "OZ 304 (becomes KE) + KE 5023 (Delta)", "Route": "CGQ T2 (11:35) -> ICN T2 (14:30 / 18:40) -> SLC (Arr Dec 22 @ 13:52)", "PNR_Summary": "2PFJ9Q", "PNR_Codes": ["2PFJ9Q"], "Pax_Count": 1, "Booking_Health": "CONFIRMED", "Status_Badge": "CONFIRMED & TICKETED (Note KE/OZ Merger)", "Passengers": [{"Traveler": "Joey Mantia", "Legal_Name": "MANTIA II / JOSEPH RICHARD MR", "Role": "Head Coach", "Airline_PNR": "2PFJ9Q", "Ticket_Number": "1804830295474", "Seat": "—", "Baggage": "1 Checked Bag Included", "Status": "Confirmed / Ticketed"}]}, {"Cluster_ID": "VEH-UP-13", "Timing_Group": "UPCOMING", "Order_Index": 13, "Date": "2026-12-22", "Display_Date": "Tue, Dec 22, 2026", "Relative_Label": "UNBOOKED PLACEHOLDER", "Dep_Time": "TBD (Select Airline)", "Arr_Time": "TBD", "Phase": "8. Return Flights (Dec — 9 Belgian Athletes)", "Vehicle_Type": "Flight (Unbooked Placeholder)", "Airline_Operator": "NOT YET BOOKED (Turkish Airlines vs Lufthansa Quote)", "Flight_Train_No": "Option 1: Turkish (PEK-IST-BRU) vs Option 2: Lufthansa (PEK-MUC-BRU)", "Route": "Changchun (CGQ) / Beijing (PEK) -> Brussels (BRU)", "PNR_Summary": "NOT BOOKED YET (9 Athletes)", "PNR_Codes": [], "Pax_Count": 9, "Booking_Health": "CRITICAL_UNBOOKED", "Status_Badge": "CRITICAL WARNING: NOT BOOKED YET (9 TICKETS NEEDED)", "Passengers": [{"Traveler": "Hanne Desmet", "Legal_Name": "DESMET / HANNE PATRICIA A. MS", "Role": "Athlete (F)", "Airline_PNR": "NOT BOOKED", "Ticket_Number": "NOT YET TICKETED (Select Option 1 or 2)", "Seat": "—", "Baggage": "Turkish: 2 Bags | Lufthansa: 1 Bag", "Status": "UNBOOKED — ACTION NEEDED"}, {"Traveler": "Tineke Den Dulk", "Legal_Name": "DEN DULK / TINEKE HANNA MS", "Role": "Athlete (F)", "Airline_PNR": "NOT BOOKED", "Ticket_Number": "NOT YET TICKETED (Select Option 1 or 2)", "Seat": "—", "Baggage": "Turkish: 2 Bags | Lufthansa: 1 Bag", "Status": "UNBOOKED — ACTION NEEDED"}, {"Traveler": "Stijn Desmet", "Legal_Name": "DESMET / STIJN DOMINIQUE G. MR", "Role": "Athlete (M)", "Airline_PNR": "NOT BOOKED", "Ticket_Number": "NOT YET TICKETED (Select Option 1 or 2)", "Seat": "—", "Baggage": "Turkish: 2 Bags | Lufthansa: 1 Bag", "Status": "UNBOOKED — ACTION NEEDED"}, {"Traveler": "Adriaan Dewagtere", "Legal_Name": "DEWAGTERE / ADRIAAN FRANK A. MR", "Role": "Athlete (M)", "Airline_PNR": "NOT BOOKED", "Ticket_Number": "NOT YET TICKETED (Select Option 1 or 2)", "Seat": "—", "Baggage": "Turkish: 2 Bags | Lufthansa: 1 Bag", "Status": "UNBOOKED — ACTION NEEDED"}, {"Traveler": "Warre Noiron", "Legal_Name": "NOIRON / WARRE MR", "Role": "Athlete (M)", "Airline_PNR": "NOT BOOKED", "Ticket_Number": "NOT YET TICKETED (Select Option 1 or 2)", "Seat": "—", "Baggage": "Turkish: 2 Bags | Lufthansa: 1 Bag", "Status": "UNBOOKED — ACTION NEEDED"}, {"Traveler": "Enzo Proost", "Legal_Name": "PROOST / ENZO MR", "Role": "Athlete (M)", "Airline_PNR": "NOT BOOKED", "Ticket_Number": "NOT YET TICKETED (Select Option 1 or 2)", "Seat": "—", "Baggage": "Turkish: 2 Bags | Lufthansa: 1 Bag", "Status": "UNBOOKED — ACTION NEEDED"}, {"Traveler": "Aleyandro Rivero Maerschalck", "Legal_Name": "RIVERO MAERSCHALCK / ALEYÁNDRO MR", "Role": "Athlete (M)", "Airline_PNR": "NOT BOOKED", "Ticket_Number": "NOT YET TICKETED (Select Option 1 or 2)", "Seat": "—", "Baggage": "Turkish: 2 Bags | Lufthansa: 1 Bag", "Status": "UNBOOKED — ACTION NEEDED"}, {"Traveler": "Fre Van Damme", "Legal_Name": "VAN DAMME / FRÉ BEA H. MR", "Role": "Athlete (M)", "Airline_PNR": "NOT BOOKED", "Ticket_Number": "NOT YET TICKETED (Select Option 1 or 2)", "Seat": "—", "Baggage": "Turkish: 2 Bags | Lufthansa: 1 Bag", "Status": "UNBOOKED — ACTION NEEDED"}, {"Traveler": "Warre Van Damme", "Legal_Name": "VAN DAMME / WARRE FILIP G. MR", "Role": "Athlete (M)", "Airline_PNR": "NOT BOOKED", "Ticket_Number": "NOT YET TICKETED (Select Option 1 or 2)", "Seat": "—", "Baggage": "Turkish: 2 Bags | Lufthansa: 1 Bag", "Status": "UNBOOKED — ACTION NEEDED"}]}, {"Cluster_ID": "VEH-PAST-01", "Timing_Group": "PAST", "Order_Index": 101, "Date": "2026-10-29", "Display_Date": "2026-10-29", "Relative_Label": "COMPLETED / FLOWN", "Dep_Time": "07:05", "Arr_Time": "13:20", "Phase": "3. WT2 Montreal", "Vehicle_Type": "Flight", "Airline_Operator": "Air Transat (op. by Porter Airlines)", "Flight_Train_No": "TS 7384", "Route": "YYC -> YUL", "PNR_Summary": "XW2ETT", "PNR_Codes": ["XW2ETT"], "Pax_Count": 1, "Booking_Health": "COMPLETED", "Status_Badge": "COMPLETED (1 Pax)", "Passengers": [{"Traveler": "Stijn Desmet", "Legal_Name": "DESMET / STIJN DOMINIQUE G. MR", "Role": "Athlete (M)", "Airline_PNR": "XW2ETT", "Ticket_Number": "Air Transat E-Tkt", "Seat": "12A", "Baggage": "1 Checked Bag (23kg)", "Status": "Confirmed / Flown"}]}, {"Cluster_ID": "VEH-PAST-02", "Timing_Group": "PAST", "Order_Index": 102, "Date": "2026-10-27", "Display_Date": "2026-10-27", "Relative_Label": "COMPLETED / FLOWN", "Dep_Time": "17:10", "Arr_Time": "23:18", "Phase": "3. WT2 Montreal", "Vehicle_Type": "Flight", "Airline_Operator": "Air Canada", "Flight_Train_No": "AC 326", "Route": "YYC -> YUL", "PNR_Summary": "CE72IU", "PNR_Codes": ["CE72IU"], "Pax_Count": 1, "Booking_Health": "COMPLETED", "Status_Badge": "COMPLETED (1 Pax)", "Passengers": [{"Traveler": "Martin Zacharias", "Legal_Name": "ZACHARIAS / MARTIN CHRISTIAN MR", "Role": "Physiotherapist (WT1 & WT2)", "Airline_PNR": "CE72IU", "Ticket_Number": "0142336020077", "Seat": "31D", "Baggage": "1 Checked Bag", "Status": "Confirmed / Flown"}]}, {"Cluster_ID": "VEH-PAST-03", "Timing_Group": "PAST", "Order_Index": 103, "Date": "2026-10-26", "Display_Date": "2026-10-26", "Relative_Label": "COMPLETED / FLOWN", "Dep_Time": "09:20", "Arr_Time": "17:04", "Phase": "3. WT2 Montreal", "Vehicle_Type": "Flight", "Airline_Operator": "Air Canada", "Flight_Train_No": "AC 312 (was AC 304)", "Route": "YVR -> YUL", "PNR_Summary": "CHTL8O (9 Pax) + AZYECP (1 Pax)", "PNR_Codes": ["CHTL8O", "AZYECP"], "Pax_Count": 10, "Booking_Health": "COMPLETED", "Status_Badge": "COMPLETED (10 Pax)", "Passengers": [{"Traveler": "Joey Mantia", "Legal_Name": "MANTIA II / JOSEPH RICHARD MR", "Role": "Head Coach", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713473", "Seat": "—", "Baggage": "1 Bag (+Tineke/Hanne Bikes, Hanne/WarreN XBAG)", "Status": "Rebooked / Flown"}, {"Traveler": "Ward Petre", "Legal_Name": "PETRÉ / WARD ERELAS M. MR", "Role": "Athlete (M)", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713474", "Seat": "—", "Baggage": "1 Bag (+Tineke/Hanne Bikes, Hanne/WarreN XBAG)", "Status": "Rebooked / Flown"}, {"Traveler": "Fre Van Damme", "Legal_Name": "VAN DAMME / FRÉ BEA H. MR", "Role": "Athlete (M)", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713475", "Seat": "—", "Baggage": "1 Bag (+Tineke/Hanne Bikes, Hanne/WarreN XBAG)", "Status": "Rebooked / Flown"}, {"Traveler": "Warre Van Damme", "Legal_Name": "VAN DAMME / WARRE FILIP G. MR", "Role": "Athlete (M)", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713476", "Seat": "—", "Baggage": "1 Bag (+Tineke/Hanne Bikes, Hanne/WarreN XBAG)", "Status": "Rebooked / Flown"}, {"Traveler": "Tineke Den Dulk", "Legal_Name": "DEN DULK / TINEKE HANNA MS", "Role": "Athlete (F)", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713477", "Seat": "—", "Baggage": "1 Bag (+Tineke/Hanne Bikes, Hanne/WarreN XBAG)", "Status": "Rebooked / Flown"}, {"Traveler": "Hanne Desmet", "Legal_Name": "DESMET / HANNE PATRICIA A. MS", "Role": "Athlete (F)", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713478", "Seat": "—", "Baggage": "1 Bag (+Tineke/Hanne Bikes, Hanne/WarreN XBAG)", "Status": "Rebooked / Flown"}, {"Traveler": "Adriaan Dewagtere", "Legal_Name": "DEWAGTERE / ADRIAAN FRANK A. MR", "Role": "Athlete (M)", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713479", "Seat": "—", "Baggage": "1 Bag (+Tineke/Hanne Bikes, Hanne/WarreN XBAG)", "Status": "Rebooked / Flown"}, {"Traveler": "Aleyandro Rivero Maerschalck", "Legal_Name": "RIVERO MAERSCHALCK / ALEYÁNDRO MR", "Role": "Athlete (M)", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713480", "Seat": "—", "Baggage": "1 Bag (+Tineke/Hanne Bikes, Hanne/WarreN XBAG)", "Status": "Rebooked / Flown"}, {"Traveler": "Warre Noiron", "Legal_Name": "NOIRON / WARRE MR", "Role": "Athlete (M)", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713481", "Seat": "—", "Baggage": "1 Bag (+Tineke/Hanne Bikes, Hanne/WarreN XBAG)", "Status": "Rebooked / Flown"}, {"Traveler": "Matt Zukowski", "Legal_Name": "ZUKOWSKI / MATTHEW HENRY MR", "Role": "Assistant Coach", "Airline_PNR": "AZYECP", "Ticket_Number": "0149400713482", "Seat": "38A (was 32F)", "Baggage": "1 Checked Bag", "Status": "Rebooked / Flown"}]}, {"Cluster_ID": "VEH-PAST-04", "Timing_Group": "PAST", "Order_Index": 104, "Date": "2026-10-25", "Display_Date": "2026-10-25", "Relative_Label": "COMPLETED / FLOWN", "Dep_Time": "20:05", "Arr_Time": "22:34", "Phase": "2. WT1 Vancouver (Return)", "Vehicle_Type": "Flight", "Airline_Operator": "Air Canada", "Flight_Train_No": "AC 226", "Route": "YVR -> YYC", "PNR_Summary": "CE5MDM", "PNR_Codes": ["CE5MDM"], "Pax_Count": 1, "Booking_Health": "COMPLETED", "Status_Badge": "COMPLETED (1 Pax)", "Passengers": [{"Traveler": "Martin Zacharias", "Legal_Name": "ZACHARIAS / MARTIN CHRISTIAN MR", "Role": "Physiotherapist (WT1 & WT2)", "Airline_PNR": "CE5MDM", "Ticket_Number": "0142336020072", "Seat": "28D", "Baggage": "1 Checked Bag", "Status": "Confirmed / Flown"}]}, {"Cluster_ID": "VEH-PAST-05", "Timing_Group": "PAST", "Order_Index": 105, "Date": "2026-10-21", "Display_Date": "2026-10-21", "Relative_Label": "COMPLETED / FLOWN", "Dep_Time": "06:50", "Arr_Time": "07:28", "Phase": "2. WT1 Vancouver", "Vehicle_Type": "Flight", "Airline_Operator": "Air Canada", "Flight_Train_No": "AC 203", "Route": "YYC -> YVR", "PNR_Summary": "CE5MDM", "PNR_Codes": ["CE5MDM"], "Pax_Count": 1, "Booking_Health": "COMPLETED", "Status_Badge": "COMPLETED (1 Pax)", "Passengers": [{"Traveler": "Martin Zacharias", "Legal_Name": "ZACHARIAS / MARTIN CHRISTIAN MR", "Role": "Physiotherapist (WT1 & WT2)", "Airline_PNR": "CE5MDM", "Ticket_Number": "0142336020072", "Seat": "31C", "Baggage": "1 Checked Bag", "Status": "Confirmed / Flown"}]}, {"Cluster_ID": "VEH-PAST-06", "Timing_Group": "PAST", "Order_Index": 106, "Date": "2026-10-18", "Display_Date": "2026-10-18", "Relative_Label": "COMPLETED / FLOWN", "Dep_Time": "12:40", "Arr_Time": "13:18", "Phase": "2. WT1 Vancouver", "Vehicle_Type": "Flight", "Airline_Operator": "Air Canada Rouge", "Flight_Train_No": "AC 2021 (was AC 213)", "Route": "YYC -> YVR", "PNR_Summary": "CHTL8O (9 Pax) + AZYECP (1 Pax)", "PNR_Codes": ["CHTL8O", "AZYECP"], "Pax_Count": 10, "Booking_Health": "COMPLETED", "Status_Badge": "COMPLETED (10 Pax)", "Passengers": [{"Traveler": "Joey Mantia", "Legal_Name": "MANTIA II / JOSEPH RICHARD MR", "Role": "Head Coach", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713473", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Rebooked / Flown"}, {"Traveler": "Ward Petre", "Legal_Name": "PETRÉ / WARD ERELAS M. MR", "Role": "Athlete (M)", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713474", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Rebooked / Flown"}, {"Traveler": "Fre Van Damme", "Legal_Name": "VAN DAMME / FRÉ BEA H. MR", "Role": "Athlete (M)", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713475", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Rebooked / Flown"}, {"Traveler": "Warre Van Damme", "Legal_Name": "VAN DAMME / WARRE FILIP G. MR", "Role": "Athlete (M)", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713476", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Rebooked / Flown"}, {"Traveler": "Tineke Den Dulk", "Legal_Name": "DEN DULK / TINEKE HANNA MS", "Role": "Athlete (F)", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713477", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Rebooked / Flown"}, {"Traveler": "Hanne Desmet", "Legal_Name": "DESMET / HANNE PATRICIA A. MS", "Role": "Athlete (F)", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713478", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Rebooked / Flown"}, {"Traveler": "Adriaan Dewagtere", "Legal_Name": "DEWAGTERE / ADRIAAN FRANK A. MR", "Role": "Athlete (M)", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713479", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Rebooked / Flown"}, {"Traveler": "Aleyandro Rivero Maerschalck", "Legal_Name": "RIVERO MAERSCHALCK / ALEYÁNDRO MR", "Role": "Athlete (M)", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713480", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Rebooked / Flown"}, {"Traveler": "Warre Noiron", "Legal_Name": "NOIRON / WARRE MR", "Role": "Athlete (M)", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713481", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Rebooked / Flown"}, {"Traveler": "Matt Zukowski", "Legal_Name": "ZUKOWSKI / MATTHEW HENRY MR", "Role": "Assistant Coach", "Airline_PNR": "AZYECP", "Ticket_Number": "0149400713482", "Seat": "27B (was 26C)", "Baggage": "1 Checked Bag", "Status": "Rebooked / Flown"}]}, {"Cluster_ID": "VEH-PAST-07", "Timing_Group": "PAST", "Order_Index": 107, "Date": "2026-09-22", "Display_Date": "2026-09-22", "Relative_Label": "COMPLETED / FLOWN", "Dep_Time": "15:15", "Arr_Time": "09:40 (+1 Sep 23)", "Phase": "1. Summer Camp (Return)", "Vehicle_Type": "Flight", "Airline_Operator": "KLM Royal Dutch Airlines", "Flight_Train_No": "KL 0678 / KL 1703", "Route": "YYC -> AMS -> BRU", "PNR_Summary": "Y5524F", "PNR_Codes": ["Y5524F"], "Pax_Count": 1, "Booking_Health": "COMPLETED", "Status_Badge": "COMPLETED (1 Pax)", "Passengers": [{"Traveler": "Stijn Desmet", "Legal_Name": "DESMET / STIJN DOMINIQUE G. MR", "Role": "Athlete (M)", "Airline_PNR": "Y5524F", "Ticket_Number": "0742140347324", "Seat": "—", "Baggage": "1 Checked Bag (23kg)", "Status": "Cancelled / Refunded"}]}, {"Cluster_ID": "VEH-PAST-08", "Timing_Group": "PAST", "Order_Index": 108, "Date": "2026-09-17", "Display_Date": "2026-09-17", "Relative_Label": "COMPLETED / FLOWN", "Dep_Time": "10:15", "Arr_Time": "09:40 (+1 Sep 18)", "Phase": "1. Summer Camp (Return)", "Vehicle_Type": "Flight", "Airline_Operator": "KLM / WestJet", "Flight_Train_No": "KL 9669 (WS) / KL 0672 / KL 1703", "Route": "YYC -> YUL -> AMS -> BRU", "PNR_Summary": "ZLPFB2", "PNR_Codes": ["ZLPFB2"], "Pax_Count": 1, "Booking_Health": "COMPLETED", "Status_Badge": "COMPLETED (1 Pax)", "Passengers": [{"Traveler": "Aleyandro Rivero Maerschalck", "Legal_Name": "RIVERO MAERSCHALCK / ALEYÁNDRO MR", "Role": "Athlete (M)", "Airline_PNR": "ZLPFB2", "Ticket_Number": "0742139952293", "Seat": "—", "Baggage": "1 Checked Bag (23kg)", "Status": "Ticketed / Flown"}]}, {"Cluster_ID": "VEH-PAST-09", "Timing_Group": "PAST", "Order_Index": 109, "Date": "2026-09-16", "Display_Date": "2026-09-16", "Relative_Label": "COMPLETED / FLOWN", "Dep_Time": "10:15", "Arr_Time": "09:40 (+1 Sep 17)", "Phase": "1. Summer Camp (Return)", "Vehicle_Type": "Flight", "Airline_Operator": "KLM / WestJet", "Flight_Train_No": "KL 9669 (WS) / KL 0672 / KL 1703", "Route": "YYC -> YUL -> AMS -> BRU", "PNR_Summary": "XNZ4IK", "PNR_Codes": ["XNZ4IK"], "Pax_Count": 2, "Booking_Health": "COMPLETED", "Status_Badge": "COMPLETED (2 Pax)", "Passengers": [{"Traveler": "Enzo Proost", "Legal_Name": "PROOST / ENZO MR", "Role": "Athlete (M)", "Airline_PNR": "XNZ4IK", "Ticket_Number": "0742140160085", "Seat": "—", "Baggage": "1 Checked Bag (23kg)", "Status": "Ticketed / Refunded"}, {"Traveler": "Warre Van Damme", "Legal_Name": "VAN DAMME / WARRE FILIP G. MR", "Role": "Athlete (M)", "Airline_PNR": "XNZ4IK", "Ticket_Number": "0742140160087", "Seat": "—", "Baggage": "1 Checked Bag (23kg)", "Status": "Ticketed / Refunded"}]}, {"Cluster_ID": "VEH-PAST-10", "Timing_Group": "PAST", "Order_Index": 110, "Date": "2026-09-14", "Display_Date": "2026-09-14", "Relative_Label": "COMPLETED / FLOWN", "Dep_Time": "09:35", "Arr_Time": "07:35 (+1 Sep 15)", "Phase": "1. Summer Camp (Return)", "Vehicle_Type": "Flight", "Airline_Operator": "KLM / WestJet", "Flight_Train_No": "KL 9577 (WS) / KL 0692 / KL 1701", "Route": "YYC -> YYZ -> AMS -> BRU", "PNR_Summary": "ZLIL9N", "PNR_Codes": ["ZLIL9N"], "Pax_Count": 5, "Booking_Health": "COMPLETED", "Status_Badge": "COMPLETED (5 Pax)", "Passengers": [{"Traveler": "Tineke Den Dulk", "Legal_Name": "DEN DULK / TINEKE HANNA MS", "Role": "Athlete (F)", "Airline_PNR": "ZLIL9N", "Ticket_Number": "0742139952277", "Seat": "—", "Baggage": "1 Checked Bag (23kg)", "Status": "Ticketed / Flown"}, {"Traveler": "Hanne Desmet", "Legal_Name": "DESMET / HANNE PATRICIA A. MS", "Role": "Athlete (F)", "Airline_PNR": "ZLIL9N", "Ticket_Number": "0742139952279", "Seat": "—", "Baggage": "1 Checked Bag (23kg)", "Status": "Ticketed / Flown"}, {"Traveler": "Adriaan Dewagtere", "Legal_Name": "DEWAGTERE / ADRIAAN FRANK A. MR", "Role": "Athlete (M)", "Airline_PNR": "ZLIL9N", "Ticket_Number": "0742139952281", "Seat": "—", "Baggage": "1 Checked Bag (23kg)", "Status": "Ticketed / Flown"}, {"Traveler": "Warre Noiron", "Legal_Name": "NOIRON / WARRE MR", "Role": "Athlete (M)", "Airline_PNR": "ZLIL9N", "Ticket_Number": "0742139952283", "Seat": "—", "Baggage": "1 Checked Bag (23kg)", "Status": "Ticketed / Flown"}, {"Traveler": "Ward Petre", "Legal_Name": "PETRÉ / WARD ERELAS M. MR", "Role": "Athlete (M)", "Airline_PNR": "ZLIL9N", "Ticket_Number": "0742139952285", "Seat": "—", "Baggage": "1 Checked Bag (23kg)", "Status": "Ticketed / Flown"}]}, {"Cluster_ID": "VEH-PAST-11", "Timing_Group": "PAST", "Order_Index": 111, "Date": "2026-07-15", "Display_Date": "2026-07-15", "Relative_Label": "COMPLETED / FLOWN", "Dep_Time": "17:30", "Arr_Time": "20:15", "Phase": "1. Summer Camp (Calgary)", "Vehicle_Type": "Flight", "Airline_Operator": "WestJet", "Flight_Train_No": "WS 567", "Route": "YUL -> YYC", "PNR_Summary": "YLPZHC", "PNR_Codes": ["YLPZHC"], "Pax_Count": 1, "Booking_Health": "COMPLETED", "Status_Badge": "COMPLETED (1 Pax)", "Passengers": [{"Traveler": "Fre Van Damme", "Legal_Name": "VAN DAMME / FRÉ BEA H. MR", "Role": "Athlete (M)", "Airline_PNR": "YLPZHC", "Ticket_Number": "8382109902975", "Seat": "10D", "Baggage": "1 Included + 1 Paid Bag (#8384426306773)", "Status": "Ticketed / Flown"}]}, {"Cluster_ID": "VEH-PAST-12", "Timing_Group": "PAST", "Order_Index": 112, "Date": "2026-07-13", "Display_Date": "2026-07-13", "Relative_Label": "COMPLETED / FLOWN", "Dep_Time": "10:25", "Arr_Time": "13:25", "Phase": "1. Summer Camp (Calgary)", "Vehicle_Type": "Flight", "Airline_Operator": "KLM Royal Dutch Airlines", "Flight_Train_No": "KL 1704 / KL 0677", "Route": "BRU -> AMS -> YYC", "PNR_Summary": "XNZ4IK (2 Pax) + Y5524F (1 Pax)", "PNR_Codes": ["XNZ4IK", "Y5524F"], "Pax_Count": 3, "Booking_Health": "COMPLETED", "Status_Badge": "COMPLETED (3 Pax)", "Passengers": [{"Traveler": "Enzo Proost", "Legal_Name": "PROOST / ENZO MR", "Role": "Athlete (M)", "Airline_PNR": "XNZ4IK", "Ticket_Number": "0742140160085", "Seat": "19E / 33D", "Baggage": "1 Checked Bag (23kg)", "Status": "Ticketed / Flown"}, {"Traveler": "Warre Van Damme", "Legal_Name": "VAN DAMME / WARRE FILIP G. MR", "Role": "Athlete (M)", "Airline_PNR": "XNZ4IK", "Ticket_Number": "0742140160087", "Seat": "19D / 33E", "Baggage": "1 Checked Bag (23kg)", "Status": "Ticketed / Flown"}, {"Traveler": "Stijn Desmet", "Legal_Name": "DESMET / STIJN DOMINIQUE G. MR", "Role": "Athlete (M)", "Airline_PNR": "Y5524F", "Ticket_Number": "0742140347324", "Seat": "20C / 39D", "Baggage": "1 Checked Bag (23kg)", "Status": "Ticketed / Flown"}]}, {"Cluster_ID": "VEH-PAST-13", "Timing_Group": "PAST", "Order_Index": 113, "Date": "2026-07-03", "Display_Date": "2026-07-03", "Relative_Label": "COMPLETED / FLOWN", "Dep_Time": "10:25", "Arr_Time": "13:25", "Phase": "1. Summer Camp (Calgary)", "Vehicle_Type": "Flight", "Airline_Operator": "KLM Royal Dutch Airlines", "Flight_Train_No": "KL 1704 / KL 0677", "Route": "BRU -> AMS -> YYC", "PNR_Summary": "ZLPFB2", "PNR_Codes": ["ZLPFB2"], "Pax_Count": 1, "Booking_Health": "COMPLETED", "Status_Badge": "COMPLETED (1 Pax)", "Passengers": [{"Traveler": "Aleyandro Rivero Maerschalck", "Legal_Name": "RIVERO MAERSCHALCK / ALEYÁNDRO MR", "Role": "Athlete (M)", "Airline_PNR": "ZLPFB2", "Ticket_Number": "0742139952293", "Seat": "11F / 33G", "Baggage": "1 Checked Bag (23kg)", "Status": "Ticketed / Flown"}]}, {"Cluster_ID": "VEH-PAST-14", "Timing_Group": "PAST", "Order_Index": 114, "Date": "2026-07-02", "Display_Date": "2026-07-02", "Relative_Label": "COMPLETED / FLOWN", "Dep_Time": "10:25", "Arr_Time": "13:25", "Phase": "1. Summer Camp (Calgary)", "Vehicle_Type": "Flight", "Airline_Operator": "KLM Royal Dutch Airlines", "Flight_Train_No": "KL 1704 / KL 0677", "Route": "BRU -> AMS -> YYC", "PNR_Summary": "ZLIL9N", "PNR_Codes": ["ZLIL9N"], "Pax_Count": 5, "Booking_Health": "COMPLETED", "Status_Badge": "COMPLETED (5 Pax)", "Passengers": [{"Traveler": "Tineke Den Dulk", "Legal_Name": "DEN DULK / TINEKE HANNA MS", "Role": "Athlete (F)", "Airline_PNR": "ZLIL9N", "Ticket_Number": "0742139952277", "Seat": "21D / 27E", "Baggage": "2-3 Checked Bags + Bike", "Status": "Ticketed / Flown"}, {"Traveler": "Hanne Desmet", "Legal_Name": "DESMET / HANNE PATRICIA A. MS", "Role": "Athlete (F)", "Airline_PNR": "ZLIL9N", "Ticket_Number": "0742139952279", "Seat": "21A / 27G", "Baggage": "2-3 Checked Bags + Bike", "Status": "Ticketed / Flown"}, {"Traveler": "Adriaan Dewagtere", "Legal_Name": "DEWAGTERE / ADRIAAN FRANK A. MR", "Role": "Athlete (M)", "Airline_PNR": "ZLIL9N", "Ticket_Number": "0742139952281", "Seat": "21C / 27F", "Baggage": "2-3 Checked Bags + Bike", "Status": "Ticketed / Flown"}, {"Traveler": "Warre Noiron", "Legal_Name": "NOIRON / WARRE MR", "Role": "Athlete (M)", "Airline_PNR": "ZLIL9N", "Ticket_Number": "0742139952283", "Seat": "21F / 28F", "Baggage": "2-3 Checked Bags + Bike", "Status": "Ticketed / Flown"}, {"Traveler": "Ward Petre", "Legal_Name": "PETRÉ / WARD ERELAS M. MR", "Role": "Athlete (M)", "Airline_PNR": "ZLIL9N", "Ticket_Number": "0742139952285", "Seat": "21B / 28G", "Baggage": "2-3 Checked Bags + Bike", "Status": "Ticketed / Flown"}]}], "masterFlights": [{"Phase": "1. Summer Camp (Calgary)", "Date": "2026-07-02", "Traveler": "Tineke Den Dulk", "Role": "Athlete (F)", "Airline": "KLM Royal Dutch Airlines", "Flight_No": "KL 1704 / KL 0677", "Route": "BRU -> AMS -> YYC", "Dep_Time": "10:25", "Arr_Time": "13:25", "Airline_PNR": "ZLIL9N", "Ticket_Number": "0742139952277", "Seat": "21D / 27E", "Baggage": "2-3 Checked Bags + Bike", "Status": "Ticketed / Flown"}, {"Phase": "1. Summer Camp (Calgary)", "Date": "2026-07-02", "Traveler": "Hanne Desmet", "Role": "Athlete (F)", "Airline": "KLM Royal Dutch Airlines", "Flight_No": "KL 1704 / KL 0677", "Route": "BRU -> AMS -> YYC", "Dep_Time": "10:25", "Arr_Time": "13:25", "Airline_PNR": "ZLIL9N", "Ticket_Number": "0742139952279", "Seat": "21A / 27G", "Baggage": "2-3 Checked Bags + Bike", "Status": "Ticketed / Flown"}, {"Phase": "1. Summer Camp (Calgary)", "Date": "2026-07-02", "Traveler": "Adriaan Dewagtere", "Role": "Athlete (M)", "Airline": "KLM Royal Dutch Airlines", "Flight_No": "KL 1704 / KL 0677", "Route": "BRU -> AMS -> YYC", "Dep_Time": "10:25", "Arr_Time": "13:25", "Airline_PNR": "ZLIL9N", "Ticket_Number": "0742139952281", "Seat": "21C / 27F", "Baggage": "2-3 Checked Bags + Bike", "Status": "Ticketed / Flown"}, {"Phase": "1. Summer Camp (Calgary)", "Date": "2026-07-02", "Traveler": "Warre Noiron", "Role": "Athlete (M)", "Airline": "KLM Royal Dutch Airlines", "Flight_No": "KL 1704 / KL 0677", "Route": "BRU -> AMS -> YYC", "Dep_Time": "10:25", "Arr_Time": "13:25", "Airline_PNR": "ZLIL9N", "Ticket_Number": "0742139952283", "Seat": "21F / 28F", "Baggage": "2-3 Checked Bags + Bike", "Status": "Ticketed / Flown"}, {"Phase": "1. Summer Camp (Calgary)", "Date": "2026-07-02", "Traveler": "Ward Petre", "Role": "Athlete (M)", "Airline": "KLM Royal Dutch Airlines", "Flight_No": "KL 1704 / KL 0677", "Route": "BRU -> AMS -> YYC", "Dep_Time": "10:25", "Arr_Time": "13:25", "Airline_PNR": "ZLIL9N", "Ticket_Number": "0742139952285", "Seat": "21B / 28G", "Baggage": "2-3 Checked Bags + Bike", "Status": "Ticketed / Flown"}, {"Phase": "1. Summer Camp (Return)", "Date": "2026-09-14", "Traveler": "Tineke Den Dulk", "Role": "Athlete (F)", "Airline": "KLM / WestJet", "Flight_No": "KL 9577 (WS) / KL 0692 / KL 1701", "Route": "YYC -> YYZ -> AMS -> BRU", "Dep_Time": "09:35", "Arr_Time": "07:35 (+1 Sep 15)", "Airline_PNR": "ZLIL9N", "Ticket_Number": "0742139952277", "Seat": "—", "Baggage": "1 Checked Bag (23kg)", "Status": "Ticketed / Flown"}, {"Phase": "1. Summer Camp (Return)", "Date": "2026-09-14", "Traveler": "Hanne Desmet", "Role": "Athlete (F)", "Airline": "KLM / WestJet", "Flight_No": "KL 9577 (WS) / KL 0692 / KL 1701", "Route": "YYC -> YYZ -> AMS -> BRU", "Dep_Time": "09:35", "Arr_Time": "07:35 (+1 Sep 15)", "Airline_PNR": "ZLIL9N", "Ticket_Number": "0742139952279", "Seat": "—", "Baggage": "1 Checked Bag (23kg)", "Status": "Ticketed / Flown"}, {"Phase": "1. Summer Camp (Return)", "Date": "2026-09-14", "Traveler": "Adriaan Dewagtere", "Role": "Athlete (M)", "Airline": "KLM / WestJet", "Flight_No": "KL 9577 (WS) / KL 0692 / KL 1701", "Route": "YYC -> YYZ -> AMS -> BRU", "Dep_Time": "09:35", "Arr_Time": "07:35 (+1 Sep 15)", "Airline_PNR": "ZLIL9N", "Ticket_Number": "0742139952281", "Seat": "—", "Baggage": "1 Checked Bag (23kg)", "Status": "Ticketed / Flown"}, {"Phase": "1. Summer Camp (Return)", "Date": "2026-09-14", "Traveler": "Warre Noiron", "Role": "Athlete (M)", "Airline": "KLM / WestJet", "Flight_No": "KL 9577 (WS) / KL 0692 / KL 1701", "Route": "YYC -> YYZ -> AMS -> BRU", "Dep_Time": "09:35", "Arr_Time": "07:35 (+1 Sep 15)", "Airline_PNR": "ZLIL9N", "Ticket_Number": "0742139952283", "Seat": "—", "Baggage": "1 Checked Bag (23kg)", "Status": "Ticketed / Flown"}, {"Phase": "1. Summer Camp (Return)", "Date": "2026-09-14", "Traveler": "Ward Petre", "Role": "Athlete (M)", "Airline": "KLM / WestJet", "Flight_No": "KL 9577 (WS) / KL 0692 / KL 1701", "Route": "YYC -> YYZ -> AMS -> BRU", "Dep_Time": "09:35", "Arr_Time": "07:35 (+1 Sep 15)", "Airline_PNR": "ZLIL9N", "Ticket_Number": "0742139952285", "Seat": "—", "Baggage": "1 Checked Bag (23kg)", "Status": "Ticketed / Flown"}, {"Phase": "1. Summer Camp (Calgary)", "Date": "2026-07-03", "Traveler": "Aleyandro Rivero Maerschalck", "Role": "Athlete (M)", "Airline": "KLM Royal Dutch Airlines", "Flight_No": "KL 1704 / KL 0677", "Route": "BRU -> AMS -> YYC", "Dep_Time": "10:25", "Arr_Time": "13:25", "Airline_PNR": "ZLPFB2", "Ticket_Number": "0742139952293", "Seat": "11F / 33G", "Baggage": "1 Checked Bag (23kg)", "Status": "Ticketed / Flown"}, {"Phase": "1. Summer Camp (Return)", "Date": "2026-09-17", "Traveler": "Aleyandro Rivero Maerschalck", "Role": "Athlete (M)", "Airline": "KLM / WestJet", "Flight_No": "KL 9669 (WS) / KL 0672 / KL 1703", "Route": "YYC -> YUL -> AMS -> BRU", "Dep_Time": "10:15", "Arr_Time": "09:40 (+1 Sep 18)", "Airline_PNR": "ZLPFB2", "Ticket_Number": "0742139952293", "Seat": "—", "Baggage": "1 Checked Bag (23kg)", "Status": "Ticketed / Flown"}, {"Phase": "1. Summer Camp (Calgary)", "Date": "2026-07-13", "Traveler": "Enzo Proost", "Role": "Athlete (M)", "Airline": "KLM Royal Dutch Airlines", "Flight_No": "KL 1704 / KL 0677", "Route": "BRU -> AMS -> YYC", "Dep_Time": "10:25", "Arr_Time": "13:25", "Airline_PNR": "XNZ4IK", "Ticket_Number": "0742140160085", "Seat": "19E / 33D", "Baggage": "1 Checked Bag (23kg)", "Status": "Ticketed / Flown"}, {"Phase": "1. Summer Camp (Calgary)", "Date": "2026-07-13", "Traveler": "Warre Van Damme", "Role": "Athlete (M)", "Airline": "KLM Royal Dutch Airlines", "Flight_No": "KL 1704 / KL 0677", "Route": "BRU -> AMS -> YYC", "Dep_Time": "10:25", "Arr_Time": "13:25", "Airline_PNR": "XNZ4IK", "Ticket_Number": "0742140160087", "Seat": "19D / 33E", "Baggage": "1 Checked Bag (23kg)", "Status": "Ticketed / Flown"}, {"Phase": "1. Summer Camp (Return)", "Date": "2026-09-16", "Traveler": "Enzo Proost", "Role": "Athlete (M)", "Airline": "KLM / WestJet", "Flight_No": "KL 9669 (WS) / KL 0672 / KL 1703", "Route": "YYC -> YUL -> AMS -> BRU", "Dep_Time": "10:15", "Arr_Time": "09:40 (+1 Sep 17)", "Airline_PNR": "XNZ4IK", "Ticket_Number": "0742140160085", "Seat": "—", "Baggage": "1 Checked Bag (23kg)", "Status": "Ticketed / Refunded"}, {"Phase": "1. Summer Camp (Return)", "Date": "2026-09-16", "Traveler": "Warre Van Damme", "Role": "Athlete (M)", "Airline": "KLM / WestJet", "Flight_No": "KL 9669 (WS) / KL 0672 / KL 1703", "Route": "YYC -> YUL -> AMS -> BRU", "Dep_Time": "10:15", "Arr_Time": "09:40 (+1 Sep 17)", "Airline_PNR": "XNZ4IK", "Ticket_Number": "0742140160087", "Seat": "—", "Baggage": "1 Checked Bag (23kg)", "Status": "Ticketed / Refunded"}, {"Phase": "1. Summer Camp (Calgary)", "Date": "2026-07-13", "Traveler": "Stijn Desmet", "Role": "Athlete (M)", "Airline": "KLM Royal Dutch Airlines", "Flight_No": "KL 1704 / KL 0677", "Route": "BRU -> AMS -> YYC", "Dep_Time": "10:25", "Arr_Time": "13:25", "Airline_PNR": "Y5524F", "Ticket_Number": "0742140347324", "Seat": "20C / 39D", "Baggage": "1 Checked Bag (23kg)", "Status": "Ticketed / Flown"}, {"Phase": "1. Summer Camp (Return)", "Date": "2026-09-22", "Traveler": "Stijn Desmet", "Role": "Athlete (M)", "Airline": "KLM Royal Dutch Airlines", "Flight_No": "KL 0678 / KL 1703", "Route": "YYC -> AMS -> BRU", "Dep_Time": "15:15", "Arr_Time": "09:40 (+1 Sep 23)", "Airline_PNR": "Y5524F", "Ticket_Number": "0742140347324", "Seat": "—", "Baggage": "1 Checked Bag (23kg)", "Status": "Cancelled / Refunded"}, {"Phase": "1. Summer Camp (Calgary)", "Date": "2026-07-15", "Traveler": "Fre Van Damme", "Role": "Athlete (M)", "Airline": "WestJet", "Flight_No": "WS 567", "Route": "YUL -> YYC", "Dep_Time": "17:30", "Arr_Time": "20:15", "Airline_PNR": "YLPZHC", "Ticket_Number": "8382109902975", "Seat": "10D", "Baggage": "1 Included + 1 Paid Bag (#8384426306773)", "Status": "Ticketed / Flown"}, {"Phase": "2. WT1 Vancouver", "Date": "2026-10-18", "Traveler": "Joey Mantia", "Role": "Head Coach", "Airline": "Air Canada Rouge", "Flight_No": "AC 2021 (was AC 213)", "Route": "YYC -> YVR", "Dep_Time": "12:40", "Arr_Time": "13:18", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713473", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Rebooked / Flown"}, {"Phase": "2. WT1 Vancouver", "Date": "2026-10-18", "Traveler": "Ward Petre", "Role": "Athlete (M)", "Airline": "Air Canada Rouge", "Flight_No": "AC 2021 (was AC 213)", "Route": "YYC -> YVR", "Dep_Time": "12:40", "Arr_Time": "13:18", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713474", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Rebooked / Flown"}, {"Phase": "2. WT1 Vancouver", "Date": "2026-10-18", "Traveler": "Fre Van Damme", "Role": "Athlete (M)", "Airline": "Air Canada Rouge", "Flight_No": "AC 2021 (was AC 213)", "Route": "YYC -> YVR", "Dep_Time": "12:40", "Arr_Time": "13:18", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713475", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Rebooked / Flown"}, {"Phase": "2. WT1 Vancouver", "Date": "2026-10-18", "Traveler": "Warre Van Damme", "Role": "Athlete (M)", "Airline": "Air Canada Rouge", "Flight_No": "AC 2021 (was AC 213)", "Route": "YYC -> YVR", "Dep_Time": "12:40", "Arr_Time": "13:18", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713476", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Rebooked / Flown"}, {"Phase": "2. WT1 Vancouver", "Date": "2026-10-18", "Traveler": "Tineke Den Dulk", "Role": "Athlete (F)", "Airline": "Air Canada Rouge", "Flight_No": "AC 2021 (was AC 213)", "Route": "YYC -> YVR", "Dep_Time": "12:40", "Arr_Time": "13:18", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713477", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Rebooked / Flown"}, {"Phase": "2. WT1 Vancouver", "Date": "2026-10-18", "Traveler": "Hanne Desmet", "Role": "Athlete (F)", "Airline": "Air Canada Rouge", "Flight_No": "AC 2021 (was AC 213)", "Route": "YYC -> YVR", "Dep_Time": "12:40", "Arr_Time": "13:18", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713478", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Rebooked / Flown"}, {"Phase": "2. WT1 Vancouver", "Date": "2026-10-18", "Traveler": "Adriaan Dewagtere", "Role": "Athlete (M)", "Airline": "Air Canada Rouge", "Flight_No": "AC 2021 (was AC 213)", "Route": "YYC -> YVR", "Dep_Time": "12:40", "Arr_Time": "13:18", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713479", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Rebooked / Flown"}, {"Phase": "2. WT1 Vancouver", "Date": "2026-10-18", "Traveler": "Aleyandro Rivero Maerschalck", "Role": "Athlete (M)", "Airline": "Air Canada Rouge", "Flight_No": "AC 2021 (was AC 213)", "Route": "YYC -> YVR", "Dep_Time": "12:40", "Arr_Time": "13:18", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713480", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Rebooked / Flown"}, {"Phase": "2. WT1 Vancouver", "Date": "2026-10-18", "Traveler": "Warre Noiron", "Role": "Athlete (M)", "Airline": "Air Canada Rouge", "Flight_No": "AC 2021 (was AC 213)", "Route": "YYC -> YVR", "Dep_Time": "12:40", "Arr_Time": "13:18", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713481", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Rebooked / Flown"}, {"Phase": "3. WT2 Montreal", "Date": "2026-10-26", "Traveler": "Joey Mantia", "Role": "Head Coach", "Airline": "Air Canada", "Flight_No": "AC 312 (was AC 304)", "Route": "YVR -> YUL", "Dep_Time": "09:20", "Arr_Time": "17:04", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713473", "Seat": "—", "Baggage": "1 Bag (+Tineke/Hanne Bikes, Hanne/WarreN XBAG)", "Status": "Rebooked / Flown"}, {"Phase": "3. WT2 Montreal", "Date": "2026-10-26", "Traveler": "Ward Petre", "Role": "Athlete (M)", "Airline": "Air Canada", "Flight_No": "AC 312 (was AC 304)", "Route": "YVR -> YUL", "Dep_Time": "09:20", "Arr_Time": "17:04", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713474", "Seat": "—", "Baggage": "1 Bag (+Tineke/Hanne Bikes, Hanne/WarreN XBAG)", "Status": "Rebooked / Flown"}, {"Phase": "3. WT2 Montreal", "Date": "2026-10-26", "Traveler": "Fre Van Damme", "Role": "Athlete (M)", "Airline": "Air Canada", "Flight_No": "AC 312 (was AC 304)", "Route": "YVR -> YUL", "Dep_Time": "09:20", "Arr_Time": "17:04", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713475", "Seat": "—", "Baggage": "1 Bag (+Tineke/Hanne Bikes, Hanne/WarreN XBAG)", "Status": "Rebooked / Flown"}, {"Phase": "3. WT2 Montreal", "Date": "2026-10-26", "Traveler": "Warre Van Damme", "Role": "Athlete (M)", "Airline": "Air Canada", "Flight_No": "AC 312 (was AC 304)", "Route": "YVR -> YUL", "Dep_Time": "09:20", "Arr_Time": "17:04", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713476", "Seat": "—", "Baggage": "1 Bag (+Tineke/Hanne Bikes, Hanne/WarreN XBAG)", "Status": "Rebooked / Flown"}, {"Phase": "3. WT2 Montreal", "Date": "2026-10-26", "Traveler": "Tineke Den Dulk", "Role": "Athlete (F)", "Airline": "Air Canada", "Flight_No": "AC 312 (was AC 304)", "Route": "YVR -> YUL", "Dep_Time": "09:20", "Arr_Time": "17:04", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713477", "Seat": "—", "Baggage": "1 Bag (+Tineke/Hanne Bikes, Hanne/WarreN XBAG)", "Status": "Rebooked / Flown"}, {"Phase": "3. WT2 Montreal", "Date": "2026-10-26", "Traveler": "Hanne Desmet", "Role": "Athlete (F)", "Airline": "Air Canada", "Flight_No": "AC 312 (was AC 304)", "Route": "YVR -> YUL", "Dep_Time": "09:20", "Arr_Time": "17:04", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713478", "Seat": "—", "Baggage": "1 Bag (+Tineke/Hanne Bikes, Hanne/WarreN XBAG)", "Status": "Rebooked / Flown"}, {"Phase": "3. WT2 Montreal", "Date": "2026-10-26", "Traveler": "Adriaan Dewagtere", "Role": "Athlete (M)", "Airline": "Air Canada", "Flight_No": "AC 312 (was AC 304)", "Route": "YVR -> YUL", "Dep_Time": "09:20", "Arr_Time": "17:04", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713479", "Seat": "—", "Baggage": "1 Bag (+Tineke/Hanne Bikes, Hanne/WarreN XBAG)", "Status": "Rebooked / Flown"}, {"Phase": "3. WT2 Montreal", "Date": "2026-10-26", "Traveler": "Aleyandro Rivero Maerschalck", "Role": "Athlete (M)", "Airline": "Air Canada", "Flight_No": "AC 312 (was AC 304)", "Route": "YVR -> YUL", "Dep_Time": "09:20", "Arr_Time": "17:04", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713480", "Seat": "—", "Baggage": "1 Bag (+Tineke/Hanne Bikes, Hanne/WarreN XBAG)", "Status": "Rebooked / Flown"}, {"Phase": "3. WT2 Montreal", "Date": "2026-10-26", "Traveler": "Warre Noiron", "Role": "Athlete (M)", "Airline": "Air Canada", "Flight_No": "AC 312 (was AC 304)", "Route": "YVR -> YUL", "Dep_Time": "09:20", "Arr_Time": "17:04", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713481", "Seat": "—", "Baggage": "1 Bag (+Tineke/Hanne Bikes, Hanne/WarreN XBAG)", "Status": "Rebooked / Flown"}, {"Phase": "3. WT2 Montreal (Return)", "Date": "2026-11-02", "Traveler": "Joey Mantia", "Role": "Head Coach", "Airline": "Air Canada", "Flight_No": "AC 321", "Route": "YUL -> YYC", "Dep_Time": "13:15", "Arr_Time": "17:10", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713473", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Confirmed / Ticketed"}, {"Phase": "3. WT2 Montreal (Return)", "Date": "2026-11-02", "Traveler": "Ward Petre", "Role": "Athlete (M)", "Airline": "Air Canada", "Flight_No": "AC 321", "Route": "YUL -> YYC", "Dep_Time": "13:15", "Arr_Time": "17:10", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713474", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Confirmed / Ticketed"}, {"Phase": "3. WT2 Montreal (Return)", "Date": "2026-11-02", "Traveler": "Fre Van Damme", "Role": "Athlete (M)", "Airline": "Air Canada", "Flight_No": "AC 321", "Route": "YUL -> YYC", "Dep_Time": "13:15", "Arr_Time": "17:10", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713475", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Confirmed / Ticketed"}, {"Phase": "3. WT2 Montreal (Return)", "Date": "2026-11-02", "Traveler": "Warre Van Damme", "Role": "Athlete (M)", "Airline": "Air Canada", "Flight_No": "AC 321", "Route": "YUL -> YYC", "Dep_Time": "13:15", "Arr_Time": "17:10", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713476", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Confirmed / Ticketed"}, {"Phase": "3. WT2 Montreal (Return)", "Date": "2026-11-02", "Traveler": "Tineke Den Dulk", "Role": "Athlete (F)", "Airline": "Air Canada", "Flight_No": "AC 321", "Route": "YUL -> YYC", "Dep_Time": "13:15", "Arr_Time": "17:10", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713477", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Confirmed / Ticketed"}, {"Phase": "3. WT2 Montreal (Return)", "Date": "2026-11-02", "Traveler": "Hanne Desmet", "Role": "Athlete (F)", "Airline": "Air Canada", "Flight_No": "AC 321", "Route": "YUL -> YYC", "Dep_Time": "13:15", "Arr_Time": "17:10", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713478", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Confirmed / Ticketed"}, {"Phase": "3. WT2 Montreal (Return)", "Date": "2026-11-02", "Traveler": "Adriaan Dewagtere", "Role": "Athlete (M)", "Airline": "Air Canada", "Flight_No": "AC 321", "Route": "YUL -> YYC", "Dep_Time": "13:15", "Arr_Time": "17:10", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713479", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Confirmed / Ticketed"}, {"Phase": "3. WT2 Montreal (Return)", "Date": "2026-11-02", "Traveler": "Aleyandro Rivero Maerschalck", "Role": "Athlete (M)", "Airline": "Air Canada", "Flight_No": "AC 321", "Route": "YUL -> YYC", "Dep_Time": "13:15", "Arr_Time": "17:10", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713480", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Confirmed / Ticketed"}, {"Phase": "3. WT2 Montreal (Return)", "Date": "2026-11-02", "Traveler": "Warre Noiron", "Role": "Athlete (M)", "Airline": "Air Canada", "Flight_No": "AC 321", "Route": "YUL -> YYC", "Dep_Time": "13:15", "Arr_Time": "17:10", "Airline_PNR": "CHTL8O", "Ticket_Number": "0149400713481", "Seat": "—", "Baggage": "1 Checked Bag", "Status": "Confirmed / Ticketed"}, {"Phase": "2. WT1 Vancouver", "Date": "2026-10-18", "Traveler": "Matt Zukowski", "Role": "Assistant Coach", "Airline": "Air Canada Rouge", "Flight_No": "AC 2021 (was AC 213)", "Route": "YYC -> YVR", "Dep_Time": "12:40", "Arr_Time": "13:18", "Airline_PNR": "AZYECP", "Ticket_Number": "0149400713482", "Seat": "27B (was 26C)", "Baggage": "1 Checked Bag", "Status": "Rebooked / Flown"}, {"Phase": "3. WT2 Montreal", "Date": "2026-10-26", "Traveler": "Matt Zukowski", "Role": "Assistant Coach", "Airline": "Air Canada", "Flight_No": "AC 312 (was AC 304)", "Route": "YVR -> YUL", "Dep_Time": "09:20", "Arr_Time": "17:04", "Airline_PNR": "AZYECP", "Ticket_Number": "0149400713482", "Seat": "38A (was 32F)", "Baggage": "1 Checked Bag", "Status": "Rebooked / Flown"}, {"Phase": "3. WT2 Montreal (Return)", "Date": "2026-11-02", "Traveler": "Matt Zukowski", "Role": "Assistant Coach", "Airline": "Air Canada", "Flight_No": "AC 321", "Route": "YUL -> YYC", "Dep_Time": "13:15", "Arr_Time": "17:10", "Airline_PNR": "AZYECP", "Ticket_Number": "0149400713482", "Seat": "25F", "Baggage": "1 Checked Bag", "Status": "Confirmed / Ticketed"}, {"Phase": "2. WT1 Vancouver", "Date": "2026-10-21", "Traveler": "Martin Zacharias", "Role": "Physiotherapist (WT1/WT2)", "Airline": "Air Canada", "Flight_No": "AC 203", "Route": "YYC -> YVR", "Dep_Time": "06:50", "Arr_Time": "07:28", "Airline_PNR": "CE5MDM", "Ticket_Number": "0142336020072", "Seat": "31C", "Baggage": "1 Checked Bag", "Status": "Confirmed / Flown"}, {"Phase": "2. WT1 Vancouver (Return)", "Date": "2026-10-25", "Traveler": "Martin Zacharias", "Role": "Physiotherapist (WT1/WT2)", "Airline": "Air Canada", "Flight_No": "AC 226", "Route": "YVR -> YYC", "Dep_Time": "20:05", "Arr_Time": "22:34", "Airline_PNR": "CE5MDM", "Ticket_Number": "0142336020072", "Seat": "28D", "Baggage": "1 Checked Bag", "Status": "Confirmed / Flown"}, {"Phase": "3. WT2 Montreal", "Date": "2026-10-27", "Traveler": "Martin Zacharias", "Role": "Physiotherapist (WT1/WT2)", "Airline": "Air Canada", "Flight_No": "AC 326", "Route": "YYC -> YUL", "Dep_Time": "17:10", "Arr_Time": "23:18", "Airline_PNR": "CE72IU", "Ticket_Number": "0142336020077", "Seat": "31D", "Baggage": "1 Checked Bag", "Status": "Confirmed / Flown"}, {"Phase": "3. WT2 Montreal (Return)", "Date": "2026-11-01", "Traveler": "Martin Zacharias", "Role": "Physiotherapist (WT1/WT2)", "Airline": "Air Canada", "Flight_No": "AC 327", "Route": "YUL -> YYC", "Dep_Time": "20:55", "Arr_Time": "00:50 (+1 Nov 2)", "Airline_PNR": "CE72IU", "Ticket_Number": "0142336020077", "Seat": "31D", "Baggage": "1 Checked Bag", "Status": "Confirmed / Ticketed"}, {"Phase": "3. WT2 Montreal", "Date": "2026-10-29", "Traveler": "Stijn Desmet", "Role": "Athlete (M)", "Airline": "Air Transat (op. by Porter Airlines)", "Flight_No": "TS 7384", "Route": "YYC -> YUL", "Dep_Time": "07:05", "Arr_Time": "13:20", "Airline_PNR": "XW2ETT", "Ticket_Number": "Air Transat E-Tkt", "Seat": "12A", "Baggage": "1 Checked Bag (23kg)", "Status": "Confirmed / Flown"}, {"Phase": "3. WT2 Montreal (Return)", "Date": "2026-11-01", "Traveler": "Stijn Desmet", "Role": "Athlete (M)", "Airline": "Air Transat (op. by Porter Airlines)", "Flight_No": "TS 7389", "Route": "YUL -> YYC", "Dep_Time": "19:40", "Arr_Time": "23:32", "Airline_PNR": "XW2ETT", "Ticket_Number": "Air Transat E-Tkt", "Seat": "16F", "Baggage": "1 Checked Bag (23kg)", "Status": "Confirmed / Ticketed"}, {"Phase": "4. WT3 Seoul (Outbound)", "Date": "2026-11-14", "Traveler": "Joey Mantia", "Role": "Head Coach", "Airline": "Air Canada (Sports Group)", "Flight_No": "AC 205 / AC 063", "Route": "YYC -> YVR -> ICN", "Dep_Time": "09:00", "Arr_Time": "17:10 (+1 Nov 15)", "Airline_PNR": "CM352A", "Ticket_Number": "Group Block (Due Nov 12)", "Seat": "Group", "Baggage": "1 Bag included (Bike/extra bag list to be submitted)", "Status": "Booked (Final Ticketing Due Nov 12)"}, {"Phase": "4. WT3 Seoul (Outbound)", "Date": "2026-11-14", "Traveler": "Matt Zukowski", "Role": "Assistant Coach", "Airline": "Air Canada (Sports Group)", "Flight_No": "AC 205 / AC 063", "Route": "YYC -> YVR -> ICN", "Dep_Time": "09:00", "Arr_Time": "17:10 (+1 Nov 15)", "Airline_PNR": "CM352A", "Ticket_Number": "Group Block (Due Nov 12)", "Seat": "Group", "Baggage": "1 Bag included (Bike/extra bag list to be submitted)", "Status": "Booked (Final Ticketing Due Nov 12)"}, {"Phase": "4. WT3 Seoul (Outbound)", "Date": "2026-11-14", "Traveler": "Jeremy Kozuback", "Role": "Physiotherapist (Asia)", "Airline": "Air Canada (Sports Group)", "Flight_No": "AC 205 / AC 063", "Route": "YYC -> YVR -> ICN", "Dep_Time": "09:00", "Arr_Time": "17:10 (+1 Nov 15)", "Airline_PNR": "CM352A", "Ticket_Number": "Group Block (Due Nov 12)", "Seat": "Group", "Baggage": "1 Bag included (Bike/extra bag list to be submitted)", "Status": "Booked (Final Ticketing Due Nov 12)"}, {"Phase": "4. WT3 Seoul (Outbound)", "Date": "2026-11-14", "Traveler": "Hanne Desmet", "Role": "Athlete (F)", "Airline": "Air Canada (Sports Group)", "Flight_No": "AC 205 / AC 063", "Route": "YYC -> YVR -> ICN", "Dep_Time": "09:00", "Arr_Time": "17:10 (+1 Nov 15)", "Airline_PNR": "CM352A", "Ticket_Number": "Group Block (Due Nov 12)", "Seat": "Group", "Baggage": "1 Bag included (Bike/extra bag list to be submitted)", "Status": "Booked (Final Ticketing Due Nov 12)"}, {"Phase": "4. WT3 Seoul (Outbound)", "Date": "2026-11-14", "Traveler": "Tineke Den Dulk", "Role": "Athlete (F)", "Airline": "Air Canada (Sports Group)", "Flight_No": "AC 205 / AC 063", "Route": "YYC -> YVR -> ICN", "Dep_Time": "09:00", "Arr_Time": "17:10 (+1 Nov 15)", "Airline_PNR": "CM352A", "Ticket_Number": "Group Block (Due Nov 12)", "Seat": "Group", "Baggage": "1 Bag included (Bike/extra bag list to be submitted)", "Status": "Booked (Final Ticketing Due Nov 12)"}, {"Phase": "4. WT3 Seoul (Outbound)", "Date": "2026-11-14", "Traveler": "Adriaan Dewagtere", "Role": "Athlete (M)", "Airline": "Air Canada (Sports Group)", "Flight_No": "AC 205 / AC 063", "Route": "YYC -> YVR -> ICN", "Dep_Time": "09:00", "Arr_Time": "17:10 (+1 Nov 15)", "Airline_PNR": "CM352A", "Ticket_Number": "Group Block (Due Nov 12)", "Seat": "Group", "Baggage": "1 Bag included (Bike/extra bag list to be submitted)", "Status": "Booked (Final Ticketing Due Nov 12)"}, {"Phase": "4. WT3 Seoul (Outbound)", "Date": "2026-11-14", "Traveler": "Fre Van Damme", "Role": "Athlete (M)", "Airline": "Air Canada (Sports Group)", "Flight_No": "AC 205 / AC 063", "Route": "YYC -> YVR -> ICN", "Dep_Time": "09:00", "Arr_Time": "17:10 (+1 Nov 15)", "Airline_PNR": "CM352A", "Ticket_Number": "Group Block (Due Nov 12)", "Seat": "Group", "Baggage": "1 Bag included (Bike/extra bag list to be submitted)", "Status": "Booked (Final Ticketing Due Nov 12)"}, {"Phase": "4. WT3 Seoul (Outbound)", "Date": "2026-11-14", "Traveler": "Warre Van Damme", "Role": "Athlete (M)", "Airline": "Air Canada (Sports Group)", "Flight_No": "AC 205 / AC 063", "Route": "YYC -> YVR -> ICN", "Dep_Time": "09:00", "Arr_Time": "17:10 (+1 Nov 15)", "Airline_PNR": "CM352A", "Ticket_Number": "Group Block (Due Nov 12)", "Seat": "Group", "Baggage": "1 Bag included (Bike/extra bag list to be submitted)", "Status": "Booked (Final Ticketing Due Nov 12)"}, {"Phase": "4. WT3 Seoul (Outbound)", "Date": "2026-11-14", "Traveler": "Aleyandro Rivero Maerschalck", "Role": "Athlete (M)", "Airline": "Air Canada (Sports Group)", "Flight_No": "AC 205 / AC 063", "Route": "YYC -> YVR -> ICN", "Dep_Time": "09:00", "Arr_Time": "17:10 (+1 Nov 15)", "Airline_PNR": "CM352A", "Ticket_Number": "Group Block (Due Nov 12)", "Seat": "Group", "Baggage": "1 Bag included (Bike/extra bag list to be submitted)", "Status": "Booked (Final Ticketing Due Nov 12)"}, {"Phase": "4. WT3 Seoul (Outbound)", "Date": "2026-11-14", "Traveler": "Enzo Proost", "Role": "Athlete (M)", "Airline": "Air Canada (Sports Group)", "Flight_No": "AC 205 / AC 063", "Route": "YYC -> YVR -> ICN", "Dep_Time": "09:00", "Arr_Time": "17:10 (+1 Nov 15)", "Airline_PNR": "CM352A", "Ticket_Number": "Group Block (Due Nov 12)", "Seat": "Group", "Baggage": "1 Bag included (Bike/extra bag list to be submitted)", "Status": "Booked (Final Ticketing Due Nov 12)"}, {"Phase": "4. WT3 Seoul (Outbound)", "Date": "2026-11-14", "Traveler": "Warre Noiron", "Role": "Athlete (M)", "Airline": "Air Canada (Sports Group)", "Flight_No": "AC 205 / AC 063", "Route": "YYC -> YVR -> ICN", "Dep_Time": "09:00", "Arr_Time": "17:10 (+1 Nov 15)", "Airline_PNR": "CM352A", "Ticket_Number": "Group Block (Due Nov 12)", "Seat": "Group", "Baggage": "1 Bag included (Bike/extra bag list to be submitted)", "Status": "Booked (Final Ticketing Due Nov 12)"}, {"Phase": "5. Shanghai Training Camp", "Date": "2026-11-23", "Traveler": "Jeremy Kozuback", "Role": "Physiotherapist (Asia)", "Airline": "China Southern Airlines", "Flight_No": "CZ 314", "Route": "ICN (T1) -> PVG (T2)", "Dep_Time": "12:35", "Arr_Time": "13:55", "Airline_PNR": "PB0DFM", "Ticket_Number": "7844830129577", "Seat": "—", "Baggage": "2 Checked Bags Included!!", "Status": "Confirmed / Ticketed"}, {"Phase": "5. Shanghai Training Camp", "Date": "2026-11-23", "Traveler": "Joey Mantia", "Role": "Head Coach", "Airline": "China Southern Airlines", "Flight_No": "CZ 314", "Route": "ICN (T1) -> PVG (T2)", "Dep_Time": "12:35", "Arr_Time": "13:55", "Airline_PNR": "PB0DFM", "Ticket_Number": "7844830129578", "Seat": "—", "Baggage": "2 Checked Bags Included!!", "Status": "Confirmed / Ticketed"}, {"Phase": "5. Shanghai Training Camp", "Date": "2026-11-23", "Traveler": "Fre Van Damme", "Role": "Athlete (M)", "Airline": "China Southern Airlines", "Flight_No": "CZ 314", "Route": "ICN (T1) -> PVG (T2)", "Dep_Time": "12:35", "Arr_Time": "13:55", "Airline_PNR": "PB0DFM", "Ticket_Number": "7844830129579", "Seat": "—", "Baggage": "2 Checked Bags Included!!", "Status": "Confirmed / Ticketed"}, {"Phase": "5. Shanghai Training Camp", "Date": "2026-11-23", "Traveler": "Warre Van Damme", "Role": "Athlete (M)", "Airline": "China Southern Airlines", "Flight_No": "CZ 314", "Route": "ICN (T1) -> PVG (T2)", "Dep_Time": "12:35", "Arr_Time": "13:55", "Airline_PNR": "PB0DFM", "Ticket_Number": "7844830129580", "Seat": "—", "Baggage": "2 Checked Bags Included!!", "Status": "Confirmed / Ticketed"}, {"Phase": "5. Shanghai Training Camp", "Date": "2026-11-23", "Traveler": "Matt Zukowski", "Role": "Assistant Coach", "Airline": "China Southern Airlines", "Flight_No": "CZ 314", "Route": "ICN (T1) -> PVG (T2)", "Dep_Time": "12:35", "Arr_Time": "13:55", "Airline_PNR": "PB0DFM", "Ticket_Number": "7844830129581", "Seat": "—", "Baggage": "2 Checked Bags Included!!", "Status": "Confirmed / Ticketed"}, {"Phase": "5. Shanghai Training Camp", "Date": "2026-11-23", "Traveler": "Tineke Den Dulk", "Role": "Athlete (F)", "Airline": "China Southern Airlines", "Flight_No": "CZ 314", "Route": "ICN (T1) -> PVG (T2)", "Dep_Time": "12:35", "Arr_Time": "13:55", "Airline_PNR": "NJXWKL", "Ticket_Number": "7844830129571", "Seat": "—", "Baggage": "2 Checked Bags Included!!", "Status": "Confirmed / Ticketed"}, {"Phase": "5. Shanghai Training Camp", "Date": "2026-11-23", "Traveler": "Hanne Desmet", "Role": "Athlete (F)", "Airline": "China Southern Airlines", "Flight_No": "CZ 314", "Route": "ICN (T1) -> PVG (T2)", "Dep_Time": "12:35", "Arr_Time": "13:55", "Airline_PNR": "NJXWKL", "Ticket_Number": "7844830129572", "Seat": "—", "Baggage": "2 Checked Bags Included!!", "Status": "Confirmed / Ticketed"}, {"Phase": "5. Shanghai Training Camp", "Date": "2026-11-23", "Traveler": "Adriaan Dewagtere", "Role": "Athlete (M)", "Airline": "China Southern Airlines", "Flight_No": "CZ 314", "Route": "ICN (T1) -> PVG (T2)", "Dep_Time": "12:35", "Arr_Time": "13:55", "Airline_PNR": "NJXWKL", "Ticket_Number": "7844830129573", "Seat": "—", "Baggage": "2 Checked Bags Included!!", "Status": "Confirmed / Ticketed"}, {"Phase": "5. Shanghai Training Camp", "Date": "2026-11-23", "Traveler": "Warre Noiron", "Role": "Athlete (M)", "Airline": "China Southern Airlines", "Flight_No": "CZ 314", "Route": "ICN (T1) -> PVG (T2)", "Dep_Time": "12:35", "Arr_Time": "13:55", "Airline_PNR": "NJXWKL", "Ticket_Number": "7844830129574", "Seat": "—", "Baggage": "2 Checked Bags Included!!", "Status": "Confirmed / Ticketed"}, {"Phase": "5. Shanghai Training Camp", "Date": "2026-11-23", "Traveler": "Enzo Proost", "Role": "Athlete (M)", "Airline": "China Southern Airlines", "Flight_No": "CZ 314", "Route": "ICN (T1) -> PVG (T2)", "Dep_Time": "12:35", "Arr_Time": "13:55", "Airline_PNR": "NJXWKL", "Ticket_Number": "7844830129575", "Seat": "—", "Baggage": "2 Checked Bags Included!!", "Status": "Confirmed / Ticketed"}, {"Phase": "5. Shanghai Training Camp", "Date": "2026-11-23", "Traveler": "Aleyandro Rivero Maerschalck", "Role": "Athlete (M)", "Airline": "China Southern Airlines", "Flight_No": "CZ 314", "Route": "ICN (T1) -> PVG (T2)", "Dep_Time": "12:35", "Arr_Time": "13:55", "Airline_PNR": "NJXWKL", "Ticket_Number": "7844830129576", "Seat": "—", "Baggage": "2 Checked Bags Included!!", "Status": "Confirmed / Ticketed"}, {"Phase": "5. Shanghai Training Camp", "Date": "2026-11-24", "Traveler": "Mengyao (Maggie) Qi", "Role": "Team Leader", "Airline": "Air Canada", "Flight_No": "AC 205 / AC 025", "Route": "YYC -> YVR -> PVG (T2)", "Dep_Time": "09:00", "Arr_Time": "16:00 (+1 Nov 25)", "Airline_PNR": "CVCZDA", "Ticket_Number": "0149400980796", "Seat": "—", "Baggage": "1 Checked Bag Included", "Status": "Confirmed / Ticketed"}, {"Phase": "5. Shanghai Training Camp", "Date": "2026-11-24", "Traveler": "Stijn Desmet", "Role": "Athlete (M)", "Airline": "Air Canada", "Flight_No": "AC 205 / AC 025", "Route": "YYC -> YVR -> PVG (T2)", "Dep_Time": "09:00", "Arr_Time": "16:00 (+1 Nov 25)", "Airline_PNR": "CVCZDA", "Ticket_Number": "0149400980797", "Seat": "—", "Baggage": "1 Checked Bag Included", "Status": "Confirmed / Ticketed"}, {"Phase": "6. WT4 Beijing (Train)", "Date": "2026-11-30", "Traveler": "All 13 Team Members in China (9 Athletes + Joey, Matt, Jeremy, Maggie)", "Role": "Full Team (13 Pax)", "Airline": "China Railway High-Speed (CRH)", "Flight_No": "Bullet Train (Booked by Maggie)", "Route": "Shanghai -> Beijing", "Dep_Time": "TBD", "Arr_Time": "TBD", "Airline_PNR": "Maggie Qi", "Ticket_Number": "Booked by Maggie Qi", "Seat": "—", "Baggage": "Standard Train Allowance", "Status": "Booked (Confirm Train # w/ Maggie)"}, {"Phase": "7. Changchun Camp (Train)", "Date": "2026-12-07", "Traveler": "12 Team Members (9 Athletes + Joey, Matt, Maggie; Jeremy flies home)", "Role": "Team (12 Pax)", "Airline": "China Railway High-Speed (CRH)", "Flight_No": "Bullet Train (Maggie arranging)", "Route": "Beijing -> Changchun", "Dep_Time": "TBD", "Arr_Time": "TBD", "Airline_PNR": "Maggie Qi", "Ticket_Number": "Arranged by Maggie Qi", "Seat": "—", "Baggage": "Standard Train Allowance", "Status": "In Progress (Maggie arranging)"}, {"Phase": "8. Return Flights (Dec)", "Date": "2026-12-07", "Traveler": "Jeremy Kozuback", "Role": "Physiotherapist (Asia)", "Airline": "Air Canada", "Flight_No": "AC 030 / AC 222", "Route": "PEK (T3) -> YVR -> YYC", "Dep_Time": "20:05", "Arr_Time": "20:59 (Same Day)", "Airline_PNR": "CVDH3J", "Ticket_Number": "0149400980798", "Seat": "—", "Baggage": "1 Checked Bag Included", "Status": "Confirmed / Ticketed"}, {"Phase": "8. Return Flights (Dec)", "Date": "2026-12-10", "Traveler": "Mengyao (Maggie) Qi", "Role": "Team Leader", "Airline": "Asiana Airlines / Air Canada", "Flight_No": "OZ 304 / AC 064 / AC 218", "Route": "CGQ (T2) -> ICN (T1) -> YVR -> YYC", "Dep_Time": "11:35", "Arr_Time": "19:59 (Same Day)", "Airline_PNR": "AM4K3G", "Ticket_Number": "0144830214404", "Seat": "—", "Baggage": "1 Checked Bag Included", "Status": "Confirmed / Ticketed"}, {"Phase": "8. Return Flights (Dec)", "Date": "2026-12-10", "Traveler": "Matt Zukowski", "Role": "Assistant Coach", "Airline": "Asiana Airlines / Air Canada", "Flight_No": "OZ 304 / AC 064 / AC 218", "Route": "CGQ (T2) -> ICN (T1) -> YVR -> YYC", "Dep_Time": "11:35", "Arr_Time": "19:59 (Same Day)", "Airline_PNR": "AM4K3G", "Ticket_Number": "0144830214405", "Seat": "—", "Baggage": "1 Checked Bag Included", "Status": "Confirmed / Ticketed"}, {"Phase": "8. Return Flights (Dec)", "Date": "2026-12-22", "Traveler": "Joey Mantia", "Role": "Head Coach", "Airline": "Asiana (becomes Korean Air Nov 2) / Delta", "Flight_No": "OZ 304 (becomes KE) / KE 5023", "Route": "CGQ (T2) -> ICN (T2) -> SLC", "Dep_Time": "11:35", "Arr_Time": "13:52 (Same Day)", "Airline_PNR": "2PFJ9Q", "Ticket_Number": "1804830295474", "Seat": "—", "Baggage": "1 Checked Bag Included", "Status": "Confirmed / Ticketed (Note KE/OZ Merger)"}, {"Phase": "8. Return Flights (Dec)", "Date": "2026-12-22", "Traveler": "9 Belgian Athletes (Hanne, Tineke, Stijn, Adriaan, Warre N, Enzo, Aleyandro, Fre, Warre VD)", "Role": "9 Athletes", "Airline": "PENDING SELECTION (Turkish Airlines vs Lufthansa)", "Flight_No": "Option 1: Turkish (quoted PEK-IST-BRU, 2.5h layover) | Option 2: Lufthansa (quoted PEK-MUC-BRU, 2h10m layover)", "Route": "CGQ / PEK -> BRU (Brussels)", "Dep_Time": "TBD", "Arr_Time": "TBD", "Airline_PNR": "PENDING", "Ticket_Number": "NOT YET TICKETED", "Seat": "—", "Baggage": "TBD", "Status": "ACTION NEEDED: Confirm Return Airports & Book"}], "hotelsLogistics": [{"Event_Phase": "2. WT1 Vancouver", "Category": "Hotel & Rooming", "Property_Vendor": "Sheraton Vancouver Wall Centre (1000 Burrard St, Vancouver, BC V6Z 2R9)", "Check_In": "2026-10-18", "Check_Out": "2026-10-26", "Rooming_Details": "Oct 18–26 (8 nights): 2 Single Rooms (Joey Mantia, Matt Zukowski) + 4 Double Rooms (8 Athletes: Tineke/Hanne, Adriaan/Ward, Warre N/Aleyandro, Fre/Warre VD) | Oct 21–25 (4 nights): 1 Single Room (Martin Zacharias) | Oct 21–26 (5 nights): 1 Double Room (Maggie Qi)", "Meals_Services": "Team meals in hotel: 10 pax Oct 18 dinner – Oct 21 lunch; 11 pax Oct 21 dinner – Oct 25 breakfast; 10 pax Oct 25 dinner – Oct 26 breakfast", "Status": "Completed"}, {"Event_Phase": "3. WT2 Montreal", "Category": "Hotel & Rooming", "Property_Vendor": "Hôtel Universel Montréal (5000 Rue Sherbrooke Est, Montréal, QC H1V 1A1)", "Check_In": "2026-10-26", "Check_Out": "2026-11-02", "Rooming_Details": "Oct 26–Nov 2 (7 nights, 6 rooms ): Room 1 (Conf #601114601): Joey Mantia (Single) | Room 2 (Conf #601116761): Matt Zukowski (Single) | Room 3 (Conf #601114599): Tineke Den Dulk & Hanne Desmet | Room 4 (Conf #601114602): Warre Noiron & Aleyandro Rivero | Room 5 (Conf #601114604): Fre Van Damme & Warre Van Damme | Room 6 (Conf #601114600): Adriaan Dewagtere & Ward Petre (+Stijn Desmet Oct 29–Nov 1) || Oct 27–Nov 1 (5 nights, 2 rooms): Room 7 (Conf #601114603): Maggie Qi (Single) | Room 8 (Conf #601116759): Martin Zacharias (Single)", "Meals_Services": "52 Room-Nights total ($10,478.00 net + $1,990.73 taxes + $30 wire fee)", "Status": "Paid (KBC Wire Transfer Oct 21, 2026)"}, {"Event_Phase": "3. WT2 Montreal", "Category": "Team Meals Buffet", "Property_Vendor": "Plaza Universel (9332-3947 Quebec Inc., 5000 Rue Sherbrooke Est)", "Check_In": "2026-10-26", "Check_Out": "2026-11-02", "Rooming_Details": "Team Buffet Package at Hotel Universel", "Meals_Services": "80 Breakfasts ($21 = $1,680) + 70 Lunches ($28 = $1,960) + 80 Dinners ($31 = $2,480) + 18% Admin Fee ($1,101.60) + TPS/TVQ", "Status": "Paid (KBC Wire Transfer Oct 21, 2026)"}, {"Event_Phase": "3. WT2 Montreal", "Category": "Equipment Shipment", "Property_Vendor": "Sportconfex / UPS (willie@sportconfex.nl)", "Check_In": "2026-10-23", "Check_Out": "—", "Rooming_Details": "5 Boxes shipped from Belgium to Montreal", "Meals_Services": "Coordinated with Alexandra Ianculescu & Gunter Noiron", "Status": "Shipped via UPS"}, {"Event_Phase": "4. WT3 Seoul", "Category": "Hotel & Rooming", "Property_Vendor": "ibis Styles Ambassador Seoul Yongsan (Seoul Dragon City, Cheongpa-ro 20-gil 95)", "Check_In": "2026-11-15", "Check_Out": "2026-11-23", "Rooming_Details": "Nov 15–23 (8 nights, updated from Nov 14 due to +1 day flight arrival): 3 Superior Double Rooms @ USD $210/night (Joey Mantia, Matt Zukowski, Jeremy Kozuback) | 4 Superior Twin Rooms @ USD $240/night (Tineke Den Dulk & Hanne Desmet; Adriaan Dewagtere & Enzo Proost; Aleyandro Rivero & Warre Noiron; Fre Van Damme & Warre Van Damme)", "Meals_Services": "Includes Breakfast + Wellness Center Weight Room (6th Floor, 06:00–22:00 free for ibis guests; external One Gym is USD $18/pp). Optional Hotel Lunch/Dinner: USD $51/pp; Venue Lunch Nov 20–22: USD $53/pp.", "Status": "Confirmed (Check-in updated to Nov 15)"}], "reminders": [{"Priority": "HIGH - VISA CHECK", "Category": "1. Visa Check (China - 30 Days)", "Target_Date": "2026-11-14 / 2026-11-23", "Item": "China 30-Day Stay Check for 9 Belgian Athletes (Nov 23 PVG Arrival -> Dec 22 CGQ Departure = 30 Days)", "Details": "8 Belgian athletes arrive in Shanghai (PVG) on Nov 23, 2026 (Stijn arrives Nov 25) and depart Changchun (CGQ) on Dec 22, 2026 = EXACTLY 30 calendar days inclusive. Under China's 30-day unilateral visa-free policy for Belgian citizens, there is ZERO buffer if the Dec 22 flight is delayed past midnight. Verify whether M/F Sports Visas were obtained via Chinese Skating Association (csa@chinacsa.net.cn) or if a visa/extension is needed.", "Status": "ACTION NEEDED - VERIFY VISA"}, {"Priority": "HIGH - VISA CHECK", "Category": "1. Visa Check (China - US/CAN Staff)", "Target_Date": "2026-11-14", "Item": "China Visa Verification for All 3 US & Canadian Staff (Joey Mantia, Matt Zukowski, Jeremy Kozuback)", "Details": "Neither USA nor Canada is on China's 30-day unilateral visa-free list (and 240h TWOV is max 10 days), so all 3 US/Canadian staff members require a valid Chinese Visa in their passport: 1) Joey Mantia (USA, Passport A81316029, staying 30 days Nov 23–Dec 22); 2) Matt Zukowski (CAN, Passport AL683489, staying 18 days Nov 23–Dec 10 — only passport data page is on file, no visa scan in Drive/Gmail); 3) Jeremy Kozuback (CAN, Passport AC107988, staying 15 days Nov 23–Dec 7). (Note: Maggie Qi is a Chinese citizen holding CHN Passport EJ5870719 per Inv #2237273, so she does NOT need a Chinese visa.) Verify all 3 US/CAN staff visas before Nov 14 departure.", "Status": "ACTION NEEDED - VERIFY 3 STAFF VISAS"}, {"Priority": "MEDIUM - VISA CHECK", "Category": "1. Visa Check (South Korea WT3)", "Target_Date": "2026-11-14", "Item": "South Korea Entry (K-ETA Exemption & Q-Code / e-Arrival Card) for WT3 Seoul (Nov 15–23)", "Details": "11 travelers arriving Incheon (ICN) Nov 15 on AC 063: 8 BEL athletes + Joey (USA) + Matt & Jeremy (CAN). Belgium, USA, and Canada are currently exempt from K-ETA through Dec 31, 2026; verify all 11 passports and complete Korea e-Arrival / Q-Code prior to boarding Nov 14.", "Status": "REMINDER (Before Nov 14)"}, {"Priority": "HIGH - PASSPORT EXPIRY", "Category": "1. Passport 6-Month Rule", "Target_Date": "2026-12-23 / 2027-05-18", "Item": "Passport 6-Month Validity Alert: Jeremy Kozuback (Exp: Jun 23, 2027) & Fre Van Damme (Exp: Nov 18, 2027)", "Details": "1) Jeremy Kozuback (CAN Passport AC107988) expires 23 JUN 2027 — has 6 months + 16 days validity left on his Dec 7, 2026 return from Beijing (just clearing China's 6-month rule), and falls under 6 months validity on Dec 23, 2026. 2) Fre Van Damme (BEL Passport GA3632642) expires 18 NOV 2027 — hits the 6-month cutoff on May 18, 2027 (must renew in Spring 2027). All other 12 team passports expire 2028–2036.", "Status": "MONITOR & RENEW"}, {"Priority": "HIGH - DEADLINE NOV 12", "Category": "2. Group Flight Ticketing", "Target_Date": "2026-11-12", "Item": "Issue 11 Individual Tickets for Air Canada Group PNR CM352A (Nov 14 YYC->YVR->ICN) & Swap Enzo for Ward", "Details": "Contract AC01929004 (CAD $12,093.62) requires final passenger names & full payment 48 hours prior to departure (Nov 12, 2026). Kim noted Oct 28 (ID 86823): 'Group contract will be paid upon ticketing (beginning of next week).' Ensure Enzo Proost replaces Ward Petre on the manifest and register bikes + physio table.", "Status": "PENDING TICKETING"}, {"Priority": "MEDIUM", "Category": "2. China High-Speed Trains", "Target_Date": "2026-11-30 & 2026-12-07", "Item": "Book Dec 7 Beijing->Changchun Bullet Train (12 Pax) & Record Train/Seat Numbers for Nov 30 & Dec 7", "Details": "1) Nov 30, 2026: Shanghai -> Beijing bullet train (13 pax: 9 athletes + Joey, Matt, Jeremy, Maggie) — already booked by Maggie (ID 86466). 2) Dec 7, 2026: Beijing -> Changchun bullet train (12 pax; Jeremy flies PEK->YVR->YYC Dec 7) — Maggie arranging.", "Status": "IN PROGRESS"}, {"Priority": "HIGH - THIS WEEKEND (WT2)", "Category": "3. WT2 Montreal On-Site", "Target_Date": "2026-10-31 & 2026-11-01", "Item": "WT2 Montreal: Sat Oct 31 Extra Relay Ice Training + Sun Nov 1 Daylight Saving Time (Clocks Back 1 Hour)", "Details": "1) SATURDAY OCT 31 RELAY TRAINING (WT2 Team Guide p. 5): Extra ice session immediately after Saturday Main Session, reserved for skaters who did NOT compete in an individual distance AND are part of a relay team competing Sunday Nov 1 (eligible list posted on ISU Inside Events app, password: 10WT2Mon). 2) SUNDAY NOV 1 DST: Clocks in Montreal are set BACK 1 hour on Sunday, Nov 1.", "Status": "ACTIVE THIS WEEKEND"}, {"Priority": "HIGH - VENUE RULES (WT2)", "Category": "3. WT2 Montreal On-Site", "Target_Date": "2026-10-30 to 2026-11-01", "Item": "WT2 Montreal: Mandatory Passport/ID for Doping Control & Strict Bike Trainer Storage Rules", "Details": "1) DOPING CONTROL (WT2 Team Guide p. 7): Located next to the Heat Box; all skaters MUST carry a valid ID or passport at the venue (U18 skaters must be accompanied by an adult/staff). 2) BIKE STORAGE (p. 6): Bicycles are strictly prohibited in hallways outside dressing rooms or near West/East entrances; store ONLY in 'Treatment & Bikes' (back of dressing rooms) or 'Warm-Up Area' (adjacent to Pre-Heat Box). 3) THURSDAY PRACTICE STARTS: Restricted to last 10 minutes of each session.", "Status": "ACTIVE THIS WEEKEND"}, {"Priority": "MEDIUM - ACTION NEEDED", "Category": "4. WT3 Seoul & WT4 Beijing", "Target_Date": "2026-11-02", "Item": "Confirm WT3 Seoul & WT4 Beijing Ice Training Schedule + Seoul External Weight Room (One Gym)", "Details": "1) Gunter asked Oct 28 (ID 86816): 'Can I enter the ice trainings at WT 3 & 4 the same as WT 1 & 2: Monday PM ice, Tuesday AM ice + weight room, Wednesday AM ice, Thursday PM ice?' (Note: Official training Nov 16–18 in Seoul is USD $25/skater/50-min session; Nov 19 is free). 2) For Seoul gym: ibis Styles 6th-floor Wellness Center is free (06:00–22:00); if using external One Gym (USD $18/person/entry), must email stwt.seoul@gmail.com with participant count, dates, and times (ID 86643).", "Status": "REPLY TO GUNTER"}, {"Priority": "HIGH - ACTION NEEDED", "Category": "4. WT3 Seoul & WT4 Beijing", "Target_Date": "2026-11-05", "Item": "Create Jeremy Kozuback ORS Profile + Upload Photo, Passport & Signed 2026/27 ISU Declaration Form", "Details": "Gunter emailed Oct 19 (ID 86471) requesting Jeremy Kozuback's photo, passport scan (now in Passport Photos/Jeremy.jpg, AC107988), and signed 2026-2027 ISU Declaration Form so his ORS profile is active before WT3 Final Entries (Nov 10).", "Status": "ACTION NEEDED"}, {"Priority": "MEDIUM - DEADLINE NOV 7", "Category": "4. WT3 Seoul (Nov 15–22)", "Target_Date": "2026-11-07", "Item": "WT3 Seoul Family & Friends Ticket Request Form Deadline (Nov 7 Local Time)", "Details": "Korea Skating Union (Min Kyung Park, stwt.seoul@gmail.com, ID 86799, Oct 28) sent the Family Ticket Request Google Form: https://forms.gle/qDLQKRZJS51wNbjr9 — must be submitted per skater by November 7, 2026 (local time).", "Status": "OPEN UNTIL NOV 7"}, {"Priority": "HIGH - DEADLINE NOV 15 & DEC 15", "Category": "5. 2027 Winter Universiade (Changchun)", "Target_Date": "2026-11-15 & 2026-12-15", "Item": "2027 FISU Winter World University Games (Changchun, Jan 15–25, 2027): Deposit (Nov 15) & Individual Entries (Dec 15)", "Details": "Interested skaters (ID 86185): Warre Van Damme, Fre Van Damme, Lotta (+ Tom Mulder LT). Short Track competitions: Jan 21–23, 2027 (official training starts Jan 17). Deadlines: 1) Nov 15, 2026 (2 mos prior): 50% deposit (CHF 425/athlete) due. 2) Dec 15, 2026 (1 mo prior): Nominative Individual Entries due in FISU GMS (photo, passport exp >= Jul 25, 2027, Certificate of Academic Eligibility). 3) Cost: CHF 85/night/person + CHF 100/athlete ITO fee. Note: Gunter flagged KBSF has no staff/funds to accompany.", "Status": "DECISION & DEPOSIT DUE NOV 15"}, {"Priority": "HIGH - CHAMPIONSHIP DEADLINES", "Category": "5. 2027 European Championships (Dresden)", "Target_Date": "2026-12-04 / 2026-12-31 / 2027-01-05", "Item": "2027 ISU European Championships (Dresden, GER, Jan 15–17, 2027) — Quota: 2W & 2M in All Distances!", "Details": "Per ISU Comm. 2805 (p. 2): Belgium earned 2 Women & 2 Men quota spots in 500m, 1000m, and 1500m (up to 5 skaters/gender if Relay in top 12 European teams at Final Entries closing, else 3). Required 500m Qualifying Time: 45.54 (W) / 43.46 (M) for >1 skater. Key Deadlines: 1) Dec 4, 2026: Preliminary Entries in ORS (6 wks prior). 2) Dec 31, 2026: KBSF communicates EC spots to SC & coaches. 3) Jan 5, 2027 (20:00): Final Entries & Qualifying Time protocol upload in ORS.", "Status": "PRELIM DUE DEC 4 / FINAL JAN 5"}, {"Priority": "MEDIUM - CHAMPIONSHIP DEADLINES", "Category": "5. 2027 Junior World Championships (Astana)", "Target_Date": "2026-12-17 / 2027-01-18", "Item": "2027 ISU Junior World Championships (Astana, KAZ, Jan 28–31, 2027) — Quota: 2 Jr W & 2 Jr M", "Details": "Per ISU Comm. 2805 (p. 3): Belgium has 2 Women & 2 Men per individual distance (max 3 skaters/gender, or 5/gender if entering a Relay team; note 3-skater injury relay start rule is abolished!). Required 500m Qualifying Time: 47.64 (Jr W) / 44.66 (Jr M) for >1 skater (49.36 W / 46.27 M for 1 skater). Preliminary Entries due ~Dec 17, 2026; Final Entries due Jan 18, 2027.", "Status": "FINAL ENTRIES DUE JAN 18"}, {"Priority": "HIGH - CHAMPIONSHIP DEADLINES", "Category": "5. 2027 World Championships (Seoul)", "Target_Date": "2027-01-29 / 2027-02-14 / 2027-03-02", "Item": "2027 ISU World Short Track Championships (Seoul, KOR, Mar 12–14, 2027) — Quota: 2W & 2M in All Distances!", "Details": "Per ISU Comm. 2805 (p. 5): Belgium qualified 2 Women in 500m, 1000m, 1500m AND 2 Men in 500m, 1000m, 1500m! Plus Relay if in top 12 of 2026/27 World Tour Relay Classification. New 2026/27 Rule: Top 20 per distance from World Tour Classification are pre-qualified for Heats (500m/1000m) & Quarter-Finals (1500m), and WCh awards DOUBLE World Ranking points (20,000 pts for 1st). Deadlines: Prelim Entries Jan 29, 2027; KBSF notice Feb 14, 2027; Final Entries Mar 2, 2027.", "Status": "PRELIM JAN 29 / FINAL MAR 2"}, {"Priority": "HIGH - EQUIPMENT & RULES", "Category": "6. ISU Mandatory Equipment Checks", "Target_Date": "Every World Tour & Championship", "Item": "Strict ISU Neck Guard, Blade Tip & Certified Eyewear Inspections + 'Finish No Time' Stand-Up Rule", "Details": "Per ISU Coaches Seminar (Slide 42) & Comm. 2806 §15: 1) NECK GUARDS: Cut-resistant suits must cover the neck completely/properly or skaters MUST wear an extra neck protector, or they will NOT be allowed to start. 2) BLADE TIPS & EYEWEAR: Checked during official practice and randomly during competition (Rule 288 §1.h). 3) 'FINISH NO TIME' RULE: Because Repechage entry caps are back (max 40 in 500/1000m, max 42 in 1500m), skaters MUST stand up and cross the finish line after a fall so they are ranked ahead of DNF/DNS and qualify for Repechage!", "Status": "ONGOING COACHING REMINDER"}], "isuRulesQuotas": [{"Section": "1. Season Calendar & Quotas", "Topic_Event": "WT1 Vancouver (CAN) — Oct 23–25, 2026", "Dates_Location": "Oct 23–25, 2026 | Maurice Richard / Pacific Coliseum, Vancouver", "Belgium_Quota_Target": "Max 3 per distance (4th allowed if 3 BEL skaters in Top 40 of distance World Ranking) | Max 6W + 6M total", "Qualifying_Time_500m": "1 Skater: 46.37 (W) / 44.25 (M) | >1 Skater (incl. Relay): 45.54 (W) / 43.46 (M)", "Key_Rules_Deadlines": "Completed. Invoice #1220-2824 (CAD $2,981.28 for Oct 19–21 ice + 36 venue lunches).", "Source_Doc": "ISU Comm. 2806"}, {"Section": "1. Season Calendar & Quotas", "Topic_Event": "WT2 Montreal (CAN) — Oct 30 – Nov 1, 2026", "Dates_Location": "Oct 30 – Nov 1, 2026 | Maurice-Richard Arena, Montreal", "Belgium_Quota_Target": "9 Skaters entered (Hanne, Tineke, Stijn, Adriaan, Warre N, Ward, Aleyandro, Fre, Warre VD)", "Qualifying_Time_500m": "1 Skater: 46.37 (W) / 44.25 (M) | >1 Skater: 45.54 (W) / 43.46 (M)", "Key_Rules_Deadlines": "Inside Events App pwd: 10WT2Mon | Sat Oct 31 extra relay ice after Main Session | Sun Nov 1 DST clocks back 1 hr | Carry ID for Doping Control.", "Source_Doc": "Team Guide_Template_STWT Montreal_Final.pdf"}, {"Section": "1. Season Calendar & Quotas", "Topic_Event": "WT3 Seoul (KOR) — Nov 20–22, 2026", "Dates_Location": "Nov 20–22, 2026 | Mokdong Ice Rink, Seoul (Stay: ibis Styles Yongsan Nov 15–23)", "Belgium_Quota_Target": "8 Skaters (Hanne, Tineke, Adriaan, Fre, Warre VD, Aleyandro, Enzo, Warre N) + 3 Staff (Joey, Matt, Jeremy)", "Qualifying_Time_500m": ">1 Skater: 45.54 (W) / 43.46 (M) — upload protocol in ORS by Nov 10", "Key_Rules_Deadlines": "Family Tickets due Nov 7 | Final Entries due Nov 10 (20:00 KST) | Distance Entries due Nov 18 (18:00 KST) | Pre-comp ice Nov 16–18 ($25/skater/session) | $100 cash transponder deposit Nov 19.", "Source_Doc": "Announcement ISU Short Track World Tour 3 Seoul 2026.pdf"}, {"Section": "1. Season Calendar & Quotas", "Topic_Event": "WT4/5 Beijing (CHN) — Dec 4–6, 2026", "Dates_Location": "Dec 4–6, 2026 | Capital Indoor Stadium, Beijing (Note: WT4 Shanghai Nov 27–29 cancelled; team trains in Shanghai Nov 23–30)", "Belgium_Quota_Target": "9 Skaters (Stijn Desmet joins the 8 WT3 skaters) + 4 Staff (Joey, Matt, Jeremy, Maggie)", "Qualifying_Time_500m": ">1 Skater: 45.54 (W) / 43.46 (M)", "Key_Rules_Deadlines": "Final Entries due Nov 24 (20:00 CST) | Distance Entries due Dec 2 (18:00 CST — wait for WT3 Seoul protocol/rankings to finalize before submitting!).", "Source_Doc": "ISU Comm. 2806 / KBSF Selection Criteria"}, {"Section": "1. Season Calendar & Quotas", "Topic_Event": "2027 ISU European Championships — Dresden (GER)", "Dates_Location": "Jan 15–17, 2027 | Joynext Arena, Dresden, Germany", "Belgium_Quota_Target": "BELGIUM QUOTA: 2 Women & 2 Men in ALL distances (500m, 1000m, 1500m) + Relay if Top 12 EUR in World Ranking (max 5/gender w/ Relay, else 3)", "Qualifying_Time_500m": "1 Skater: 46.37 (W) / 44.25 (M) | >1 Skater: 45.54 (W) / 43.46 (M)", "Key_Rules_Deadlines": "Prelim Entries due Dec 4, 2026 | KBSF Selection notice by Dec 31, 2026 | Final Entries & Qualifying Time protocol in ORS due Jan 5, 2027 (20:00).", "Source_Doc": "ISU Comm. 2805 (p. 2)"}, {"Section": "1. Season Calendar & Quotas", "Topic_Event": "2027 FISU Winter World University Games — Changchun (CHN)", "Dates_Location": "Jan 15–25, 2027 (Short Track: Jan 21–23, 2027; Official Training Jan 17)", "Belgium_Quota_Target": "Up to 6 Women & 6 Men (Max 3 per individual distance, 1 Relay team per gender) | Interested: Warre VD, Fre VD, Lotta", "Qualifying_Time_500m": "FISU Academic Eligibility (Born Jan 1, 2002 – Dec 31, 2009)", "Key_Rules_Deadlines": "50% Deposit (CHF 425/athlete) due Nov 15, 2026 | Individual Entries in FISU GMS due Dec 15, 2026 | Distance Entries due Jan 19, 2027 @ 18:00.", "Source_Doc": "20260213_FISU_Regulations_Changchun_2027_Winter_Universiade.pdf"}, {"Section": "1. Season Calendar & Quotas", "Topic_Event": "2027 ISU Junior World Championships — Astana (KAZ)", "Dates_Location": "Jan 28–31, 2027 | Alau Ice Palace, Astana, Kazakhstan", "Belgium_Quota_Target": "BELGIUM QUOTA: 2 Jr Women & 2 Jr Men per distance (Max 3/gender, or 5/gender if entering a Relay team; 3-skater injury relay start abolished!)", "Qualifying_Time_500m": "1 Skater: 49.36 (Jr W) / 46.27 (Jr M) | >1 Skater: 47.64 (Jr W) / 44.66 (Jr M)", "Key_Rules_Deadlines": "KBSF Selection Committee Dec 2026 | Prelim Entries due ~Dec 17, 2026 | Final Entries due Jan 18, 2027.", "Source_Doc": "ISU Comm. 2805 (p. 3)"}, {"Section": "1. Season Calendar & Quotas", "Topic_Event": "WT6 Gdansk (POL) & WT7 Tilburg (NED) — Feb 2027", "Dates_Location": "WT6 Gdansk: Feb 5–7, 2027 | WT7 Tilburg: Feb 12–14, 2027 (Crystal Globe Ceremony Feb 14)", "Belgium_Quota_Target": "Max 3 per distance (4th allowed if 3 BEL skaters in Top 40 of distance World Ranking) | Max 6W + 6M total", "Qualifying_Time_500m": "1 Skater: 46.37 (W) / 44.25 (M) | >1 Skater: 45.54 (W) / 43.46 (M)", "Key_Rules_Deadlines": "KBSF SC Meeting Jan 2027 | WT6 Final Entries due Jan 26, 2027 (Distance Feb 3) | WT7 Final Entries due Feb 2, 2027 (Distance Feb 10).", "Source_Doc": "ISU Comm. 2806"}, {"Section": "1. Season Calendar & Quotas", "Topic_Event": "2027 ISU World Short Track Championships — Seoul (KOR)", "Dates_Location": "Mar 12–14, 2027 | Mokdong Ice Rink, Seoul, South Korea", "Belgium_Quota_Target": "BELGIUM QUOTA: 2 Women in 500m, 1000m, 1500m AND 2 Men in 500m, 1000m, 1500m! + Relay if Top 12 in WT Classification", "Qualifying_Time_500m": "1 Skater: 46.37 (W) / 44.25 (M) | >1 Skater: 45.54 (W) / 43.46 (M)", "Key_Rules_Deadlines": "Top 20 per distance in WT Classification pre-qualify for Heats/QFs | WCh counts for DOUBLE World Ranking pts (20,000 for 1st) | Prelim Jan 29, KBSF Feb 14, Final Mar 2.", "Source_Doc": "ISU Comm. 2805 (p. 5)"}, {"Section": "2. 2026/27 ISU Rule Updates", "Topic_Event": "Repechage Caps & 'Finish No Time' (Stand Up After a Fall!)", "Dates_Location": "Effective All 2026/27 World Tours (Comm. 2806 §6 & Seminar Slide 42)", "Belgium_Quota_Target": "Repechage Caps: Max 40 skaters in 500m/1000m (or max 25 from Prelims) | Max 42 skaters in 1500m (or max 28 from Heats)", "Qualifying_Time_500m": "Sorting Priority: Rank -> Tie-break -> Time -> 'Finish No Time' -> PEN/DNF/DNS by previous ranking", "Key_Rules_Deadlines": "CRITICAL COACHING REMINDER: Skaters who fall in Prelims/Heats MUST stand up and cross the finish line ('Finish No Time') so they rank ahead of DNF/DNS and make the Repechage cut!", "Source_Doc": "ISU Seminar Slide 42 / Comm. 2806 §6"}, {"Section": "2. 2026/27 ISU Rule Updates", "Topic_Event": "Cumulative Penalty System (3 / 5 / 7 Sanctions Block Distance Entries)", "Dates_Location": "Effective Across World Tour Series (Rule 295 & Comm. 2806 §8, Slide 18)", "Belgium_Quota_Target": "Applies to: Yellow Card (YC), Red Card (RC), or Penalty (PEN) for Impeding / Kicking Out in Individual Distances (Relays & Championships excluded)", "Qualifying_Time_500m": "3 Sanctions = Lose #1 highest-ranked distance | 5 Sanctions = Lose top 2 distances | 7 Sanctions = Lose ALL 3 individual distances at next WT", "Key_Rules_Deadlines": "Accumulated sanctions list is published in the Protocol after each World Tour. ORS automatically blocks the skater from being entered in restricted distance(s) at the next WT.", "Source_Doc": "ISU Seminar Slide 18 / Comm. 2806 §8"}, {"Section": "2. 2026/27 ISU Rule Updates", "Topic_Event": "Relay Last Exchange Rule Change (Penalty R2 - Illegal Relay Touch)", "Dates_Location": "Effective 2026/27 Season (ISU Seminar Slide 11)", "Belgium_Quota_Target": "Women's 3000m Relay, Men's 5000m Relay, Mixed 2000m Relay", "Qualifying_Time_500m": "Last 2 laps skated by same skater (unless fall); last exchange must be completed BEFORE the 1st block of the corner", "Key_Rules_Deadlines": "Rule changed from finish line to 1st apex block: If the last relay touch is not completed in the straight BEFORE the first block of the corner, the team receives Penalty R2.", "Source_Doc": "ISU Seminar Slide 11"}, {"Section": "2. 2026/27 ISU Rule Updates", "Topic_Event": "New 'Embellishment (EMB)' Sanction & Coach Conduct Yellow Card", "Dates_Location": "Effective 2026/27 Season (Rule 295 §2.b, Seminar Slides 8–10 & 19)", "Belgium_Quota_Target": "All Skaters, Coaches & Team Leaders", "Qualifying_Time_500m": "EMB = Exaggerating/feigning contact effects | Coach YC = Suspension from Field of Play for the day", "Key_Rules_Deadlines": "1) Exaggerating contact to draw a penalty is now a sanctionable breach ('EMB'); exaggerated outcomes will not count as significant outcomes. 2) Disrespectful conduct by a Coach/TL toward Officials can result in a Yellow Card (suspended from Field of Play for the day).", "Source_Doc": "ISU Seminar Slides 8–10, 19"}, {"Section": "2. 2026/27 ISU Rule Updates", "Topic_Event": "Advancement (ADV) Restored & Lane Assignment by Rank First, Then Time", "Dates_Location": "Effective 2026/27 Season (Rule 291 §8.g & Rule 293 §7, Slides 12–17)", "Belgium_Quota_Target": "All Individual & Relay Races", "Qualifying_Time_500m": "Lane Order: All 1st place by time -> All 2nd place by time -> All 3rd place by time -> Repechage qualifiers after direct qualifiers", "Key_Rules_Deadlines": "1) ADV: Only skaters in a direct qualifying position (excluding time qualifiers) at the moment of infringement are advanced (in Semis, skaters in Final B qualifying position are advanced to Final B). 2) Lanes after Rd 1 are assigned by finishing place first, then time.", "Source_Doc": "ISU Seminar Slides 12–17"}, {"Section": "2. 2026/27 ISU Rule Updates", "Topic_Event": "Neck Guard, Blade Tip & Eyewear Checks + '5 on the Line' Start Test", "Dates_Location": "Effective 2026/27 Season (Rule 288 §1.h, Comm. 2806 §15, Slides 37–43)", "Belgium_Quota_Target": "All Skaters", "Qualifying_Time_500m": "Mandatory full neck coverage + rounded blade tips + certified eyewear (Comm. 2636 / 2810)", "Key_Rules_Deadlines": "1) Skaters without full neck coverage (suit + neck guard if needed) will NOT be allowed to start. 2) '5 on the Line' start procedure tested at WT1 & WT2 ahead of Dec 1, 2026 rule deadline (skaters 6 & 7 line up on 2nd row behind 4 & 5). 3) Thursday practice starts limited to last 10 mins of session.", "Source_Doc": "ISU Seminar Slides 37–43"}], "roster": [{"name": "Joey Mantia", "legal_name": "MANTIA II / JOSEPH RICHARD MR", "role": "Head Coach", "nationality": "USA", "passport_masked": "••••6029", "passport_expiry": "2036-04-05", "frequent_flyer": "Delta SkyMiles: 9103978283", "home_airport": "SLC / YYC"}, {"name": "Matt Zukowski", "legal_name": "ZUKOWSKI / MATTHEW HENRY MR", "role": "Assistant Coach", "nationality": "CAN", "passport_masked": "••••3489", "passport_expiry": "2031-10-06", "frequent_flyer": "Air Canada Aeroplan: 467502984", "home_airport": "YYC (Calgary)"}, {"name": "Mengyao (Maggie) Qi", "legal_name": "QI / MENGYAO MRS", "role": "Team Leader / Coordinator", "nationality": "CHN (Based in CAN)", "passport_masked": "••••0719", "passport_expiry": "Verify > Jun 2027", "frequent_flyer": "—", "home_airport": "YYC (Calgary)"}, {"name": "Jeremy Kozuback", "legal_name": "KOZUBACK / JEREMY DAVID MR", "role": "Physiotherapist (Asia Tour)", "nationality": "CAN", "passport_masked": "••••7988", "passport_expiry": "2027-06-23 (ALERT: <6 mos after Dec 23, 2026)", "frequent_flyer": "—", "home_airport": "YYC (Calgary)"}, {"name": "Martin Zacharias", "legal_name": "ZACHARIAS / MARTIN CHRISTIAN MR", "role": "Physiotherapist (WT1 & WT2)", "nationality": "CAN", "passport_masked": "••••07LS", "passport_expiry": "2035-02-27", "frequent_flyer": "—", "home_airport": "YYC (Calgary)"}, {"name": "Hanne Desmet", "legal_name": "DESMET / HANNE PATRICIA A. MS", "role": "Athlete (F)", "nationality": "BEL", "passport_masked": "••••3567", "passport_expiry": "2031-04-02", "frequent_flyer": "KLM Flying Blue: 005076182391", "home_airport": "BRU (Brussels)"}, {"name": "Tineke Den Dulk", "legal_name": "DEN DULK / TINEKE HANNA MS", "role": "Athlete (F)", "nationality": "BEL", "passport_masked": "••••1272", "passport_expiry": "2028-12-21", "frequent_flyer": "KLM Flying Blue: 005129107722", "home_airport": "BRU (Brussels)"}, {"name": "Stijn Desmet", "legal_name": "DESMET / STIJN DOMINIQUE G. MR", "role": "Athlete (M)", "nationality": "BEL", "passport_masked": "••••7418", "passport_expiry": "2031-03-21", "frequent_flyer": "KLM Flying Blue: 005076197780", "home_airport": "BRU (Brussels)"}, {"name": "Adriaan Dewagtere", "legal_name": "DEWAGTERE / ADRIAAN FRANK A. MR", "role": "Athlete (M)", "nationality": "BEL", "passport_masked": "••••2460", "passport_expiry": "2030-05-25", "frequent_flyer": "KLM Flying Blue: 005063731815", "home_airport": "BRU (Brussels)"}, {"name": "Warre Noiron", "legal_name": "NOIRON / WARRE MR", "role": "Athlete (M)", "nationality": "BEL", "passport_masked": "••••6373", "passport_expiry": "2031-05-23", "frequent_flyer": "—", "home_airport": "BRU (Brussels)"}, {"name": "Ward Petre", "legal_name": "PETRÉ / WARD ERELAS M. MR", "role": "Athlete (M)", "nationality": "BEL", "passport_masked": "••••0946", "passport_expiry": "2031-04-14", "frequent_flyer": "KLM Flying Blue: 005063344925", "home_airport": "BRU (Brussels)"}, {"name": "Enzo Proost", "legal_name": "PROOST / ENZO MR", "role": "Athlete (M)", "nationality": "BEL", "passport_masked": "••••1050", "passport_expiry": "2028-09-12", "frequent_flyer": "KLM Flying Blue: 005077290480", "home_airport": "BRU (Brussels)"}, {"name": "Aleyandro Rivero Maerschalck", "legal_name": "RIVERO MAERSCHALCK / ALEYÁNDRO MR", "role": "Athlete (M)", "nationality": "BEL", "passport_masked": "••••9631", "passport_expiry": "2033-05-12", "frequent_flyer": "KLM Flying Blue: 005243811796", "home_airport": "BRU (Brussels)"}, {"name": "Fre Van Damme", "legal_name": "VAN DAMME / FRÉ BEA H. MR", "role": "Athlete (M)", "nationality": "BEL", "passport_masked": "••••2642", "passport_expiry": "2027-11-18 (Note: Renew Spring 2027)", "frequent_flyer": "—", "home_airport": "BRU (Brussels)"}, {"name": "Warre Van Damme", "legal_name": "VAN DAMME / WARRE FILIP G. MR", "role": "Athlete (M)", "nationality": "BEL", "passport_masked": "••••1537", "passport_expiry": "2030-05-25", "frequent_flyer": "KLM Flying Blue: 005062362534", "home_airport": "BRU (Brussels)"}, {"name": "Alexandra Ianculescu", "legal_name": "IANCULESCU / ALEXANDRA MS", "role": "Media / Content (WT1 & WT2)", "nationality": "ROU / CAN", "passport_masked": "—", "passport_expiry": "—", "frequent_flyer": "—", "home_airport": "—"}]};
+let currentTab = 'matrix';
+
+function esc(s) {
+  if (s === null || s === undefined) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function highlightPNR(text) {
+  let t = esc(text);
+  t = t.replace(/\b(CHTL8O|KSQRPL|AZYECP|QZPCLF|CE5MDM|CE72IU|XW2ETT|CM352A|PB0DFM|29ABQ2|NJXWKL|A44X7U|CVCZDA|DZMDNX|CVDH3J|LEGGOJ|AM4K3G|2PFJ9Q|ZLIL9N|ZLPFB2|XNZ4IK|Y5524F|YLPZHC|10WT2Mon)\b/g, '<span class="badge-pnr">$1</span>');
+  t = t.replace(/\b(ACTION NEEDED|URGENT|VISA CHECK)\b/gi, '<span class="badge badge-crit">$1</span>');
+  t = t.replace(/\b(PENDING)\b/gi, '<span class="badge badge-warn">$1</span>');
+  t = t.replace(/(https:\/\/forms\.gle\/[a-zA-Z0-9_-]+)/g, '<a href="$1" target="_blank" rel="noopener" style="color:#0f172a;font-weight:600;">Open Form</a>');
+  return t;
+}
+
+function formatCalmRelLabel(rel) {
+  const s = String(rel || '');
+  if (s.includes('TODAY')) return 'Today';
+  if (s.includes('TOMORROW')) return 'Tomorrow';
+  const m = s.match(/IN\s+(\d+)\s+DAYS/i);
+  if (m) return `In ${m[1]}d`;
+  if (s.includes('COMPLETED')) return 'Completed';
+  return s.trim();
+}
+
+function formatCalmBaggage(seatStr, bagStr) {
+  const seat = (seatStr && seatStr !== '—' && seatStr !== 'TBD')
+    ? `<span class="mono" style="font-weight:600; color:#0f172a; margin-right:6px;">Seat ${esc(seatStr)}</span>`
+    : '';
+  const b = String(bagStr || '').replace(/!!+/g, '').trim();
+  let noteHtml = '';
+  if (/bike/i.test(b)) {
+    noteHtml = `<span class="badge badge-warn">${esc(b)}</span>`;
+  } else if (/2 Checked Bags Included/i.test(b)) {
+    noteHtml = `<span style="color:#64748b;">2 bags</span>`;
+  } else if (/1 Checked Bag Included/i.test(b)) {
+    noteHtml = `<span style="color:#64748b;">1 bag</span>`;
+  } else if (b && b !== '—' && b !== 'Standard') {
+    noteHtml = `<span style="color:#64748b;">${esc(b)}</span>`;
+  }
+  return (seat + noteHtml) || '<span style="color:#94a3b8;">—</span>';
+}
+
+function switchTab(tab, btn) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  document.querySelectorAll('.view-section').forEach(s => s.classList.add('hidden'));
+  document.getElementById('view-' + tab).classList.remove('hidden');
+  renderActive();
+}
+
+function matchesFilter(rowObj, q, person) {
+  const str = JSON.stringify(rowObj).toLowerCase();
+  if (q && !str.includes(q)) return false;
+  if (person) {
+    const pLow = person.toLowerCase();
+    const firstName = pLow.split(' ')[0];
+    if (!str.includes(pLow) && !str.includes(firstName)) return false;
+  }
+  return true;
+}
+
+function renderActive() {
+  const q = document.getElementById('searchBox').value.trim().toLowerCase();
+  const person = document.getElementById('personFilter').value;
+
+  if (currentTab === 'matrix') {
+    const rows = DATA.personMatrix.filter(r => (!person || r.Traveler === person) && matchesFilter(r, q, ''));
+    const cols = Object.keys(DATA.personMatrix[0]);
+    let html = '<div class="table-wrap"><table><thead><tr>';
+    for (const c of cols) html += `<th>${esc(c)}</th>`;
+    html += '</tr></thead><tbody>';
+    for (const r of rows) {
+      html += '<tr>';
+      cols.forEach((c, idx) => {
+        html += idx === 0 ? `<td><strong>${esc(r[c])}</strong></td>` : `<td>${highlightPNR(r[c])}</td>`;
+      });
+      html += '</tr>';
+    }
+    html += '</tbody></table></div>';
+    document.getElementById('view-matrix').innerHTML = html;
+  }
+
+  if (currentTab === 'vehicles') {
+    const allClusters = DATA.vehicleClusters || [];
+    const upcomingAll = allClusters.filter(v => v.Timing_Group === 'UPCOMING').sort((a, b) => (a.Order_Index || 99) - (b.Order_Index || 99));
+    const pastAll = allClusters.filter(v => v.Timing_Group === 'PAST').sort((a, b) => (a.Order_Index || 999) - (b.Order_Index || 999));
+    const showPast = window.__athleteShowPastVeh || false;
+    const sourceList = showPast ? [...upcomingAll, ...pastAll] : upcomingAll;
+
+    const filteredClusters = sourceList.filter(vc => {
+      if (!matchesFilter(vc, q, '')) return false;
+      if (person) {
+        return (vc.Passengers || []).some(p => p.Traveler === person);
+      }
+      return true;
+    });
+
+    let html = `<div class="vehicle-filter-bar no-print">
+      <div class="v-subfilter-group">
+        <button class="v-subfilter-btn ${!showPast ? 'active' : ''}" onclick="window.__athleteShowPastVeh = false; renderActive();">Upcoming Trips (${upcomingAll.length})</button>
+        <button class="v-subfilter-btn ${showPast ? 'active' : ''}" onclick="window.__athleteShowPastVeh = true; renderActive();">Include Past Trips (+${pastAll.length})</button>
+      </div>
+      <div style="font-size:12px; color:#64748b;">Select your name in the top-right dropdown to filter to your flights &amp; highlight your row</div>
+    </div>`;
+
+    let shownPastBanner = false;
+    filteredClusters.forEach(vc => {
+      if (vc.Timing_Group === 'PAST' && !shownPastBanner) {
+        shownPastBanner = true;
+        html += `<div style="font-weight:600; font-size:12px; text-transform:uppercase; padding:8px 14px; background:#f8fafc; border:1px solid #e2e8f0; border-left:4px solid #64748b; border-radius:8px; margin:20px 0 10px; color:#475569;">Completed / Past Flights (Jul 2 – Oct 29, 2026)</div>`;
+      }
+      const pnrPillsHtml = (vc.PNR_Codes && vc.PNR_Codes.length)
+        ? vc.PNR_Codes.map(code => `<button class="pnr-copy-pill" onclick="copyToClipboard('${esc(code)}', this)">PNR: ${esc(code)} <span style="color:#94a3b8; font-weight:400; font-size:10px;">(Copy)</span></button>`).join(' ')
+        : `<span class="badge badge-warn">Being Finalized</span>`;
+
+      html += `<div class="vehicle-card health-${vc.Booking_Health}">
+        <div class="vehicle-card-header">
+          <div>
+            <div class="v-primary-line">
+              <span class="v-date-text">${esc(vc.Display_Date)}</span>
+              <span class="v-countdown-badge">${esc(formatCalmRelLabel(vc.Relative_Label))}</span>
+              <span class="v-sep">&middot;</span>
+              <span class="v-time-text">${esc(vc.Dep_Time)} &rarr; ${esc(vc.Arr_Time)}</span>
+              <span class="v-sep">&middot;</span>
+              <span class="v-route-text">${esc(vc.Route)}</span>
+              <span class="v-flight-chip">${esc(vc.Flight_Train_No)}</span>
+            </div>
+            <div class="v-subtitle-line">
+              ${esc(vc.Airline_Operator)} &middot; ${esc(vc.Phase)} &middot; ${vc.Pax_Count} ${vc.Pax_Count === 1 ? 'Traveler' : 'Travelers'}
+            </div>
+          </div>
+          <div class="v-pnr-box">
+            ${pnrPillsHtml}
+          </div>
+        </div>
+        <div class="table-wrap" style="border:none; border-radius:0; box-shadow:none;">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:36px;">#</th>
+                <th style="width:24%;">Traveler</th>
+                <th style="width:22%;">Legal Ticket Name</th>
+                <th style="width:16%;">Booking Code (PNR)</th>
+                <th style="width:20%;">13-Digit Ticket #</th>
+                <th>Seat &amp; Baggage</th>
+              </tr>
+            </thead>
+            <tbody>`;
+      (vc.Passengers || []).forEach((p, pIdx) => {
+        const hi = person && p.Traveler === person;
+        const canCopyTkt = p.Ticket_Number && /\d{10,14}/.test(p.Ticket_Number);
+        const tktHtml = canCopyTkt
+          ? `<button class="tkt-copy-btn" onclick="copyToClipboard('${esc(p.Ticket_Number)}', this)">${esc(p.Ticket_Number)} <span style="color:#94a3b8; font-size:10px;">(Copy)</span></button>`
+          : `<span class="mono" style="color:#64748b;">${esc(p.Ticket_Number)}</span>`;
+        html += `<tr class="${hi ? 'pax-highlight' : ''}">
+          <td class="mono" style="color:#94a3b8;">${pIdx + 1}</td>
+          <td><strong style="color:#0f172a;">${esc(p.Traveler)}</strong> <span style="color:#94a3b8; font-size:12px; margin-left:4px;">${esc(p.Role)}</span></td>
+          <td class="mono" style="font-size:11.5px; color:#64748b;">${esc(p.Legal_Name)}</td>
+          <td class="mono" style="font-weight:600; color:#0f172a;">${esc(p.Airline_PNR)}</td>
+          <td>${tktHtml}</td>
+          <td>${formatCalmBaggage(p.Seat, p.Baggage)}</td>
+        </tr>`;
+      });
+      html += `</tbody></table></div></div>`;
+    });
+    document.getElementById('view-vehicles').innerHTML = html;
+  }
+
+  if (currentTab === 'legs') {
+    const rows = DATA.masterFlights.filter(r => (!person || r.Traveler === person) && matchesFilter(r, q, ''));
+    let html = '<div class="table-wrap"><table><thead><tr>' +
+      '<th>Phase</th><th>Date</th><th>Traveler</th><th>Airline</th><th>Flight #</th>' +
+      '<th>Route</th><th>Time</th><th>Booking Code (PNR)</th><th>Ticket #</th><th>Seat</th><th>Baggage</th><th>Status</th>' +
+      '</tr></thead><tbody>';
+    for (const r of rows) {
+      html += `<tr>
+        <td>${esc(r.Phase)}</td>
+        <td style="white-space:nowrap"><strong>${esc(r.Date)}</strong></td>
+        <td><strong>${esc(r.Traveler)}</strong></td>
+        <td>${esc(r.Airline)}</td>
+        <td class="mono"><strong>${esc(r.Flight_No)}</strong></td>
+        <td style="white-space:nowrap"><strong>${esc(r.Route)}</strong></td>
+        <td style="white-space:nowrap">${esc(r.Dep_Time)} &rarr; ${esc(r.Arr_Time)}</td>
+        <td>${highlightPNR(r.Airline_PNR)}</td>
+        <td class="mono">${esc(r.Ticket_Number)}</td>
+        <td class="mono"><strong>${esc(r.Seat)}</strong></td>
+        <td>${esc(r.Baggage)}</td>
+        <td>${highlightPNR(r.Status)}</td>
+      </tr>`;
+    }
+    html += '</tbody></table></div>';
+    document.getElementById('view-legs').innerHTML = html;
+  }
+
+  if (currentTab === 'hotels') {
+    const rows = DATA.hotelsLogistics.filter(r => matchesFilter(r, q, person));
+    let html = '<div class="table-wrap"><table><thead><tr>' +
+      '<th>Event / Phase</th><th>Category</th><th>Hotel / Carrier</th><th>Check-In</th><th>Check-Out</th>' +
+      '<th>Rooming List &amp; Roommates</th><th>Meals &amp; Weight Room Info</th><th>Status</th>' +
+      '</tr></thead><tbody>';
+    for (const r of rows) {
+      html += `<tr>
+        <td><strong>${esc(r.Event_Phase)}</strong></td>
+        <td><strong>${esc(r.Category)}</strong></td>
+        <td><strong>${esc(r.Property_Vendor)}</strong></td>
+        <td style="white-space:nowrap">${esc(r.Check_In)}</td>
+        <td style="white-space:nowrap">${esc(r.Check_Out)}</td>
+        <td>${highlightPNR(r.Rooming_Details)}</td>
+        <td>${esc(r.Meals_Services)}</td>
+        <td><span class="badge badge-ok">${esc(r.Status)}</span></td>
+      </tr>`;
+    }
+    html += '</tbody></table></div>';
+    document.getElementById('view-hotels').innerHTML = html;
+  }
+
+  if (currentTab === 'reminders') {
+    const rows = DATA.reminders.filter(r => matchesFilter(r, q, ''));
+    let html = '<div class="table-wrap"><table><thead><tr>' +
+      '<th>Priority</th><th>Category</th><th>Date / Deadline</th><th>Reminder / Rule</th><th>Details &amp; Action</th><th>Status</th>' +
+      '</tr></thead><tbody>';
+    for (const a of rows) {
+      html += `<tr>
+        <td>${highlightPNR(a.Priority)}</td>
+        <td><strong>${esc(a.Category)}</strong></td>
+        <td style="white-space:nowrap"><strong>${esc(a.Target_Date)}</strong></td>
+        <td><strong>${esc(a.Item)}</strong></td>
+        <td>${highlightPNR(a.Details)}</td>
+        <td>${highlightPNR(a.Status)}</td>
+      </tr>`;
+    }
+    html += '</tbody></table></div>';
+    document.getElementById('view-reminders').innerHTML = html;
+  }
+
+  if (currentTab === 'isurules') {
+    const rows = DATA.isuRulesQuotas.filter(r => matchesFilter(r, q, ''));
+    let html = '<div class="table-wrap"><table><thead><tr>' +
+      '<th>Section</th><th>Event / 2026-27 Rule</th><th>Dates / Venue</th>' +
+      '<th>Belgium Quota / Rule Scope</th><th>500m Qualifying Time / Sanction</th><th>Key Rules &amp; Deadlines</th>' +
+      '</tr></thead><tbody>';
+    for (const r of rows) {
+      html += `<tr>
+        <td><strong>${esc(r.Section)}</strong></td>
+        <td><strong>${esc(r.Topic_Event)}</strong></td>
+        <td>${esc(r.Dates_Location)}</td>
+        <td><strong>${highlightPNR(r.Belgium_Quota_Target)}</strong></td>
+        <td class="mono">${highlightPNR(r.Qualifying_Time_500m)}</td>
+        <td>${highlightPNR(r.Key_Rules_Deadlines)}</td>
+      </tr>`;
+    }
+    html += '</tbody></table></div>';
+    document.getElementById('view-isurules').innerHTML = html;
+  }
+
+  if (currentTab === 'roster') {
+    const rows = DATA.roster.filter(r => (!person || r.name === person) && matchesFilter(r, q, ''));
+    let html = '<div class="table-wrap"><table><thead><tr>' +
+      '<th>Name</th><th>Legal Ticket Name</th><th>Role</th><th>Nationality</th>' +
+      '<th>Passport (Masked)</th><th>Passport Expiry</th><th>Frequent Flyer #</th><th>Home Airport</th>' +
+      '</tr></thead><tbody>';
+    for (const r of rows) {
+      html += `<tr>
+        <td><strong>${esc(r.name)}</strong></td>
+        <td class="mono">${esc(r.legal_name)}</td>
+        <td>${esc(r.role)}</td>
+        <td><strong>${esc(r.nationality)}</strong></td>
+        <td class="mono">${esc(r.passport_masked)}</td>
+        <td class="mono">${highlightPNR(r.passport_expiry)}</td>
+        <td class="mono">${esc(r.frequent_flyer)}</td>
+        <td>${esc(r.home_airport)}</td>
+      </tr>`;
+    }
+    html += '</tbody></table></div>';
+    document.getElementById('view-roster').innerHTML = html;
+  }
+}
+
+const ATHLETE_TAB_LABELS = {
+  matrix: '1. Athlete Trip Overview (Person-by-Person)',
+  vehicles: 'Tickets by Vehicle (Clustered Closest Departure First)',
+  legs: '2. Flights & Trains Schedule',
+  hotels: '3. Hotels, Rooming Lists & Weight Room Info',
+  reminders: '4. Athlete Reminders & On-Site Rules',
+  isurules: '5. 2026/27 Season Schedule, Quotas & ISU Rules',
+  roster: '6. Frequent Flyer #s & Passport Expiry'
+};
+
+function copyToClipboard(text, btnEl) {
+  if (navigator.clipboard) navigator.clipboard.writeText(text);
+  if (btnEl) {
+    const orig = btnEl.innerHTML;
+    btnEl.innerHTML = 'Copied: ' + esc(text);
+    setTimeout(() => { btnEl.innerHTML = orig; }, 1400);
+  }
+}
+
+function updatePrintBanner(labelOverride) {
+  const person = document.getElementById('personFilter').value;
+  const q = document.getElementById('searchBox').value.trim();
+  const baseLabel = labelOverride || ATHLETE_TAB_LABELS[currentTab] || currentTab;
+  let extra = [];
+  if (person) extra.push('Athlete: ' + person);
+  if (q) extra.push('Search: "' + q + '"');
+  document.getElementById('printBanner').textContent =
+    'ATHLETE READ-ONLY EDITION — ' + baseLabel + (extra.length ? ' (' + extra.join(' | ') + ')' : '') + ' • Team Belgium Short Track (2026/27)';
+}
+
+function printCurrentTab() {
+  const origTitle = document.title;
+  const person = document.getElementById('personFilter').value;
+  const cleanTabName = (ATHLETE_TAB_LABELS[currentTab] || currentTab).replace(/[^a-zA-Z0-9_-]+/g, '_');
+  const cleanPerson = person ? ('_' + person.replace(/[^a-zA-Z0-9_-]+/g, '_')) : '';
+  document.title = 'Team_Belgium_Athlete_' + cleanTabName + cleanPerson;
+  updatePrintBanner();
+  window.print();
+  document.title = origTitle;
+}
+
+function printAllTabs() {
+  const origTitle = document.title;
+  const savedTab = currentTab;
+  document.title = 'Team_Belgium_Athlete_Hub_All_Sections';
+  for (const t of Object.keys(ATHLETE_TAB_LABELS)) {
+    currentTab = t;
+    renderActive();
+  }
+  currentTab = savedTab;
+  updatePrintBanner('ALL SECTIONS (1–6 Complete Athlete Read-Only Pack)');
+  document.body.classList.add('print-all-mode');
+  window.print();
+  document.body.classList.remove('print-all-mode');
+  document.title = origTitle;
+  renderActive();
+}
+
+(function initFromQuery() {
+  const params = new URLSearchParams(window.location.search);
+  const p = params.get('person');
+  if (p) {
+    const sel = document.getElementById('personFilter');
+    if (sel) sel.value = p;
+  }
+  const t = params.get('tab');
+  if (t && ATHLETE_TAB_LABELS[t]) {
+    const btn = document.querySelector(`.tab-btn[data-tab="${t}"]`);
+    switchTab(t, btn);
+    updatePrintBanner();
+  } else {
+    renderActive();
+    updatePrintBanner();
+  }
+})();
+</script>
+</body>
+</html>
